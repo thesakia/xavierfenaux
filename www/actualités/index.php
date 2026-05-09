@@ -738,6 +738,7 @@ function shortDate($d) {
         }, { threshold: 0.07 });
         reveals.forEach(el => observer.observe(el));
     </script>
+    <script src="/js/umami-events.js" defer></script>
 
 </body>
 </html>

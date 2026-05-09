@@ -86,5 +86,6 @@ const track=document.getElementById('ticker');const html=items.map(i=>`<span><b>
 function count(el,target){let s=performance.now(),d=1600;function step(n){let p=Math.min((n-s)/d,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(e*target).toLocaleString('fr-FR');if(p<1)requestAnimationFrame(step)}requestAnimationFrame(step)}
 const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');if(e.target.classList.contains('stats'))document.querySelectorAll('[data-count]').forEach(el=>count(el,+el.dataset.count));io.unobserve(e.target)}})},{threshold:.16});document.querySelectorAll('.reveal,.stats').forEach(el=>io.observe(el));
 </script>
+    <script src="/js/umami-events.js" defer></script>
 </body>
 </html>
