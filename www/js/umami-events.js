@@ -1,6 +1,7 @@
 (function () {
-    const CLICK_EVENT_NAME = 'click';
+    const CLICK_EVENT_PREFIX = 'click';
     const MAX_TEXT_LENGTH = 80;
+    const MAX_EVENT_NAME_LENGTH = 96;
 
     function cleanText(value) {
         return (value || '')
@@ -47,6 +48,12 @@
         return text || cleanText(imageAlt) || element.tagName.toLowerCase();
     }
 
+    function getEventName(label, hrefType) {
+        const readableLabel = cleanText(label) || 'element';
+        const suffix = hrefType && hrefType !== 'none' ? `${hrefType}: ${readableLabel}` : readableLabel;
+        return `${CLICK_EVENT_PREFIX}: ${suffix}`.slice(0, MAX_EVENT_NAME_LENGTH);
+    }
+
     function classifyHref(href) {
         if (!href) return 'none';
         if (href.startsWith('#')) return 'anchor';
@@ -74,7 +81,8 @@
         const hrefType = classifyHref(href);
         const label = getLabel(element);
 
-        window.umami.track(CLICK_EVENT_NAME, {
+        window.umami.track(getEventName(label, hrefType), {
+            event_category: CLICK_EVENT_PREFIX,
             label,
             href: href ? href.slice(0, 220) : '',
             href_type: hrefType,

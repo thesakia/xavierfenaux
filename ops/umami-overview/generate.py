@@ -58,12 +58,12 @@ def load_summary():
             w.domain,
             count(*) filter (where e.event_type = 1 and e.created_at >= now() - interval '24 hours') as pageviews_24h,
             count(distinct e.session_id) filter (where e.event_type = 1 and e.created_at >= now() - interval '24 hours') as visitors_24h,
-            count(*) filter (where e.event_name = 'click' and e.created_at >= now() - interval '24 hours') as clicks_24h,
+            count(*) filter (where e.event_name like 'click%' and e.created_at >= now() - interval '24 hours') as clicks_24h,
             count(*) filter (where e.event_type = 1 and e.created_at >= now() - interval '7 days') as pageviews_7d,
             count(distinct e.session_id) filter (where e.event_type = 1 and e.created_at >= now() - interval '7 days') as visitors_7d,
-            count(*) filter (where e.event_name = 'click' and e.created_at >= now() - interval '7 days') as clicks_7d,
+            count(*) filter (where e.event_name like 'click%' and e.created_at >= now() - interval '7 days') as clicks_7d,
             count(*) filter (where e.event_type = 1) as pageviews_total,
-            count(*) filter (where e.event_name = 'click') as clicks_total
+            count(*) filter (where e.event_name like 'click%') as clicks_total
         from website w
         left join website_event e on e.website_id = w.website_id
         where w.domain in ('{domains}') and w.deleted_at is null
@@ -92,7 +92,7 @@ def load_daily():
             w.domain,
             to_char(date_trunc('day', e.created_at), 'YYYY-MM-DD') as day,
             count(*) filter (where e.event_type = 1) as pageviews,
-            count(*) filter (where e.event_name = 'click') as clicks
+            count(*) filter (where e.event_name like 'click%') as clicks
         from website_event e
         join website w on w.website_id = e.website_id
         where w.domain in ('{domains}')
@@ -164,7 +164,7 @@ def load_top_clicks():
             left join click_data cd on cd.website_event_id = e.event_id
             where w.domain in ('{domains}')
               and w.deleted_at is null
-              and e.event_name = 'click'
+              and e.event_name like 'click%'
               and e.created_at >= now() - interval '7 days'
             group by w.domain, label, section, href, href_type
         )
