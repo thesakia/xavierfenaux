@@ -20,7 +20,7 @@ jobs:
           install -m 700 -d ~/.ssh
           printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H 76.13.48.6 >> ~/.ssh/known_hosts
+          ssh-keyscan -T 20 -H 76.13.48.6 >> ~/.ssh/known_hosts || true
 
       - name: Deploy website
         run: |
@@ -29,5 +29,5 @@ jobs:
             --exclude='.github' \
             --exclude='.env' \
             --exclude='.well-known/acme-challenge' \
-            -e "ssh -i ~/.ssh/deploy_key" \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new" \
             www/ root@76.13.48.6:/var/www/xavierfenaux/
