@@ -4,3 +4,4 @@ remote-backup-before-umami-*/
 .bashrc
 .htpasswd_dashboard
 .ovhconfig
+.deploy/
