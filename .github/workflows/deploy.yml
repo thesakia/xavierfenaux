@@ -32,3 +32,5 @@ jobs:
             --timeout=60 \
             -e "ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=2 -o StrictHostKeyChecking=accept-new" \
             ./ root@76.13.48.6:/var/www/xavierfenaux/
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new \
+            root@76.13.48.6 "printf '%s\n' '$GITHUB_SHA' > /var/www/xavierfenaux/.deploy-revision"

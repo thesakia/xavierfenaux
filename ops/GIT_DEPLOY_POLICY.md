@@ -18,6 +18,8 @@ For these projects, the expected workflow is:
 
 Direct edits on the VPS should be emergency-only. If a direct VPS edit is made, commit and push it back to GitHub immediately.
 
+The live `/var/www/...` directories for automatically deployed sites are deployment artifacts. Their active Git commit is recorded in `.deploy-revision`; Git history lives on GitHub.
+
 ## Snapshot repositories
 
 These repositories are backups of what was found on the VPS. They are not automatic deployment sources unless explicitly promoted later:
