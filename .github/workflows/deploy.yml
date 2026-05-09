@@ -29,5 +29,6 @@ jobs:
             --exclude='.github' \
             --exclude='.env' \
             --exclude='.well-known/acme-challenge' \
-            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new" \
+            --timeout=60 \
+            -e "ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=2 -o StrictHostKeyChecking=accept-new" \
             www/ root@76.13.48.6:/var/www/xavierfenaux/
