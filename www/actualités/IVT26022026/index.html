@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ce que les abonnés IVT ont vécu le 26 février 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent-primary: #6F4FF2;
+      --accent-hover:   #5a3fd4;
+      --vip-accent:     #249DDF;
+      --vip-accent-light: rgba(36, 157, 223, 0.14);
+      --logo-gold:      #F4B454;
+      --bg-white:     #FFFFFF;
+      --bg-soft:      #F5F4FF;
+      --bg-dark:      #0f0f0f;
+      --text-primary: #1a1a1a;
+      --text-muted:   #555;
+      --text-light:   #888;
+      --text-white:   #ffffff;
+      --border-soft:  #e6e3ff;
+      --border-light: rgba(26, 26, 26, 0.08);
+      --border-hover: rgba(111, 79, 242, 0.3);
+      --shadow-card:         0 12px 40px rgba(111, 79, 242, 0.08);
+      --shadow-card-hover:   0 18px 55px rgba(15, 15, 15, 0.09);
+      --shadow-button:       0 6px 20px rgba(111, 79, 242, 0.25);
+      --shadow-button-hover: 0 10px 28px rgba(111, 79, 242, 0.32);
+      --section-padding: clamp(4rem, 7vw, 6rem);
+      --card-padding: 1.75rem;
+      --card-padding-large: 2.5rem;
+      --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px;
+      --radius-xl: 16px; --radius-3xl: 20px; --radius-full: 999px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Inter", Arial, sans-serif;
+      background: var(--bg-white); color: var(--text-primary);
+      line-height: 1.6; overflow-x: hidden;
+    }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-soft);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 2rem;
+    }
+    .logo { font-family: "Montserrat", Arial, sans-serif; font-size: 1rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; }
+    .logo em { font-style: normal; color: var(--accent-primary); }
+    .header-badge { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; color: var(--text-light); }
+
+    .hero {
+      background: var(--bg-soft);
+      padding: clamp(3.5rem, 8vw, 6rem) 1.5rem clamp(3rem, 7vw, 5rem);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+      width: 700px; height: 400px;
+      background: radial-gradient(ellipse, rgba(111,79,242,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; max-width: 760px; margin: 0 auto; }
+
+    .kicker {
+      display: inline-block; font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent-primary); margin-bottom: 1.25rem;
+    }
+    .hero-title {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(2.5rem, 5.5vw, 4.2rem); font-weight: 800;
+      color: var(--text-primary); line-height: 1.05; letter-spacing: -0.03em;
+      margin-bottom: 1.25rem; opacity: 0; animation: fadeInUp 0.7s 0.1s ease forwards;
+    }
+    .hero-title mark { background: none; color: var(--accent-primary); }
+    .hero-lead {
+      font-size: clamp(1.05rem, 2vw, 1.2rem); color: var(--text-muted);
+      max-width: 620px; margin: 0 auto 2.5rem; line-height: 1.6;
+      opacity: 0; animation: fadeInUp 0.7s 0.25s ease forwards;
+    }
+    .hero-stats {
+      display: inline-flex; border: 1px solid var(--border-soft);
+      border-radius: var(--radius-xl); background: var(--bg-white);
+      overflow: hidden; box-shadow: var(--shadow-card);
+      opacity: 0; animation: fadeInUp 0.7s 0.4s ease forwards;
+    }
+    .stat-item { padding: 1.25rem 2rem; text-align: center; border-right: 1px solid var(--border-soft); }
+    .stat-item:last-child { border-right: none; }
+    .stat-value {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 800;
+      color: var(--text-primary); line-height: 1; letter-spacing: -0.03em;
+    }
+    .stat-value.purple { color: var(--accent-primary); }
+    .stat-value.blue   { color: var(--vip-accent); }
+    .stat-label { font-size: 0.75rem; color: var(--text-light); margin-top: 0.3rem; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+    .section { padding: var(--section-padding) 1.5rem; }
+    .section-bg-soft  { background: var(--bg-soft); }
+    .section-bg-white { background: var(--bg-white); }
+    .section-header { max-width: 900px; margin: 0 auto 2.5rem; }
+    .section-title {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 800;
+      color: var(--text-primary); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 0.5rem;
+    }
+    .section-sub { font-size: clamp(0.95rem, 1.5vw, 1rem); color: var(--text-muted); line-height: 1.6; }
+
+    .stats-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .stat-card {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); padding: var(--card-padding);
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: var(--border-hover); }
+    .stat-card-value {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.35rem; color: var(--text-primary);
+    }
+    .stat-card-value.purple { color: var(--accent-primary); }
+    .stat-card-value.blue   { color: var(--vip-accent); }
+    .stat-card-value.green  { color: #16a34a; }
+    .stat-card-label { font-size: clamp(0.85rem, 1.2vw, 0.9rem); color: var(--text-muted); line-height: 1.4; }
+
+    .salles-grid { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+    .salle-card {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); padding: var(--card-padding-large);
+      position: relative; overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease, border-color 0.25s ease;
+    }
+    .salle-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: var(--border-hover); }
+    .salle-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 4px 0 0 4px;
+    }
+    .salle-card.indices::before  { background: var(--accent-primary); }
+    .salle-card.europe::before   { background: #16a34a; }
+    .salle-card.us::before       { background: #16a34a; }
+    .salle-card.crypto::before   { background: var(--logo-gold); }
+    .salle-card.forex::before    { background: var(--vip-accent); }
+    .salle-card.global::before   { background: var(--accent-primary); }
+
+    .salle-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .salle-meta { display: flex; align-items: center; gap: 0.85rem; }
+    .salle-icon {
+      width: 44px; height: 44px; border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+      background: var(--bg-soft); border: 1px solid var(--border-soft); flex-shrink: 0;
+    }
+    .salle-name { font-family: "Montserrat", Arial, sans-serif; font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.1rem; }
+    .salle-coach { font-size: 0.82rem; color: var(--text-light); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;
+      padding: 0.3rem 0.75rem; border-radius: var(--radius-full); white-space: nowrap;
+    }
+    .badge-purple { background: rgba(111,79,242,0.08); color: var(--accent-primary); border: 1px solid var(--border-soft); }
+    .badge-green  { background: rgba(22,163,74,0.08);  color: #16a34a; border: 1px solid rgba(22,163,74,0.2); }
+    .badge-gold   { background: rgba(244,180,84,0.1);  color: #b45309; border: 1px solid rgba(244,180,84,0.3); }
+    .badge-blue   { background: var(--vip-accent-light); color: var(--vip-accent); border: 1px solid rgba(36,157,223,0.25); }
+
+    .salle-body { font-size: clamp(0.95rem, 1.5vw, 1rem); color: var(--text-muted); line-height: 1.75; }
+    .salle-body p + p { margin-top: 0.75rem; }
+    .salle-body strong { color: var(--text-primary); font-weight: 600; }
+
+    .trade-box {
+      margin-top: 1rem; background: var(--bg-soft); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg); padding: 1rem 1.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem;
+    }
+    .trade-box-item { font-size: 0.82rem; color: var(--text-muted); }
+    .trade-box-item span { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: var(--text-primary); margin-left: 0.3rem; }
+    .trade-box-item span.green { color: #16a34a; }
+    .trade-box-item span.red   { color: #dc2626; }
+
+    .quote-block {
+      margin-top: 1rem; border-left: 3px solid var(--accent-primary);
+      padding: 0.75rem 1.25rem; background: var(--bg-soft);
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      font-size: 0.92rem; color: var(--text-muted); font-style: italic; line-height: 1.7;
+    }
+    .quote-block strong { font-style: normal; color: var(--text-primary); font-weight: 600; }
+
+    .vip-section { background: var(--bg-dark); color: var(--text-white); padding: var(--section-padding) 1.5rem; }
+    .vip-kicker {
+      display: inline-block; font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--vip-accent); margin-bottom: 1.25rem;
+    }
+    .vip-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--text-white); margin-bottom: 2.5rem;
+    }
+    .vip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .vip-card {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-3xl); padding: 1.75rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+      transition: background 0.25s ease, border-color 0.25s ease;
+    }
+    .vip-card:hover { background: rgba(36,157,223,0.08); border-color: rgba(36,157,223,0.25); }
+    .vip-card-icon {
+      width: 40px; height: 40px; border-radius: var(--radius-lg);
+      background: var(--vip-accent-light); border: 1px solid rgba(36,157,223,0.25);
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .vip-card-title { font-family: "Montserrat", Arial, sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--text-white); margin-bottom: 0.35rem; }
+    .vip-card-text { font-size: 0.88rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+    /* ── PERF DU JOUR ── */
+    .perf-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .perf-card {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); padding: var(--card-padding);
+      position: relative; overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .perf-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: var(--border-hover); }
+    .perf-card.featured {
+      grid-column: span 1;
+      border-color: rgba(22,163,74,0.3);
+      background: linear-gradient(135deg, #fff 60%, rgba(22,163,74,0.04) 100%);
+    }
+    .perf-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
+    }
+    .perf-card.green-top::after  { background: #16a34a; }
+    .perf-card.purple-top::after { background: var(--accent-primary); }
+    .perf-card.gold-top::after   { background: var(--logo-gold); }
+    .perf-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .perf-card-icon {
+      width: 36px; height: 36px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+      background: var(--bg-soft); border: 1px solid var(--border-soft); flex-shrink: 0;
+    }
+    .perf-badge-tag {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.62rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.2rem 0.6rem; border-radius: var(--radius-full);
+    }
+    .perf-badge-tag.green { background: rgba(22,163,74,0.08); color: #16a34a; border: 1px solid rgba(22,163,74,0.2); }
+    .perf-badge-tag.purple { background: rgba(111,79,242,0.08); color: var(--accent-primary); border: 1px solid var(--border-soft); }
+    .perf-badge-tag.gold { background: rgba(244,180,84,0.1); color: #b45309; border: 1px solid rgba(244,180,84,0.3); }
+    .perf-value {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.3rem;
+    }
+    .perf-value.green  { color: #16a34a; }
+    .perf-value.purple { color: var(--accent-primary); }
+    .perf-value.gold   { color: #b45309; }
+    .perf-title {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.82rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;
+    }
+    .perf-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+    .perf-detail {
+      margin-top: 0.85rem; background: var(--bg-soft); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md); padding: 0.65rem 0.9rem;
+      display: flex; flex-wrap: wrap; gap: 0.3rem 1rem;
+    }
+    .perf-detail-item { font-size: 0.75rem; color: var(--text-muted); }
+    .perf-detail-item span { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: var(--text-primary); margin-left: 0.25rem; }
+    .perf-detail-item span.g { color: #16a34a; }
+    .perf-detail-item span.r { color: #dc2626; }
+
+    @media (max-width: 720px) { .perf-grid { grid-template-columns: 1fr; } }
+
+    .honesty-wrap { max-width: 900px; margin: 0 auto; }
+    .honesty-block {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-left: 3px solid var(--accent-primary);
+      border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+      padding: 2rem 2rem 2rem 2.25rem;
+    }
+    .honesty-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: clamp(1.1rem, 2vw, 1.4rem);
+      font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem; letter-spacing: -0.01em;
+    }
+    .honesty-body { font-size: clamp(0.95rem, 1.5vw, 1rem); color: var(--text-muted); line-height: 1.75; }
+    .honesty-body p + p { margin-top: 0.75rem; }
+    .honesty-body strong { color: var(--text-primary); font-weight: 600; }
+
+    .table-wrap {
+      max-width: 900px; margin: 0 auto; border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); overflow: hidden; box-shadow: var(--shadow-card);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    thead tr { background: var(--bg-soft); }
+    th {
+      font-family: "Montserrat", Arial, sans-serif; font-size: 0.65rem; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-primary);
+      padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border-soft);
+    }
+    td { padding: 1rem 1.5rem; color: var(--text-muted); border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--bg-soft); }
+    .coach-cell { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: var(--text-primary); font-size: 0.88rem; }
+    .market-pill {
+      display: inline-block; font-size: 0.7rem; font-weight: 600;
+      padding: 0.2rem 0.6rem; border-radius: var(--radius-full);
+      background: rgba(111,79,242,0.07); border: 1px solid var(--border-soft);
+      color: var(--accent-primary); white-space: nowrap;
+    }
+    .g { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: #16a34a; }
+
+    .cta-section { background: var(--bg-soft); padding: var(--section-padding) 1.5rem; text-align: center; }
+    .cta-inner { max-width: 620px; margin: 0 auto; }
+    .cta-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 1rem;
+    }
+    .cta-text { font-size: clamp(0.95rem, 1.5vw, 1.05rem); color: var(--text-muted); line-height: 1.6; margin-bottom: 2.25rem; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent-primary); color: var(--text-white);
+      font-family: "Montserrat", Arial, sans-serif; font-size: 0.85rem; font-weight: 700;
+      padding: 0.9rem 1.75rem; border-radius: var(--radius-md);
+      text-decoration: none; border: none; cursor: pointer;
+      box-shadow: var(--shadow-button); transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: var(--shadow-button-hover); }
+    .cta-recap { margin-top: 1.5rem; font-size: 0.82rem; color: var(--text-light); line-height: 1.6; }
+
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .vip-grid { grid-template-columns: 1fr; }
+      .hero-stats { flex-direction: column; width: fit-content; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border-soft); }
+      .stat-item:last-child { border-bottom: none; }
+      th, td { padding: 0.75rem 1rem; }
+    }
+    @media (max-width: 900px) {
+      .salle-header { flex-direction: column; gap: 0.75rem; }
+    }
+  </style>
+    <script defer src="https://analytics.parentsdejumeaux.fr/script.js" data-website-id="3b10c5e0-1aea-4ae4-935f-64b27cf0caf9" data-domains="xavierfenaux.com,www.xavierfenaux.com"></script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="logo">Interactiv<em>Trading</em></div>
+    <span class="header-badge">Rapport de journée · 26 fév. 2026</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="kicker">Rapport de journée · Jeudi 26 février 2026</div>
+      <h1 class="hero-title">Ce que les abonnés IVT<br />ont vécu le <mark>26 février</mark></h1>
+      <p class="hero-lead">
+        ENGIE encaisse +50% en swing, Inchi prépare la fusée FERNANDA, le marché salue les contrats de $VST et Rodolphe lance les hostilités dès 4h45. 19 notifications, de 04h20 à 20h49.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-value purple">19</div>
+          <div class="stat-label">Notifications</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">6</div>
+          <div class="stat-label">Coachs actifs</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value blue">16h+</div>
+          <div class="stat-label">Couverture</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Salles</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-white reveal">
+    <div class="section-header container">
+      <div class="kicker">La journée en chiffres</div>
+      <h2 class="section-title">6 coachs. 5 salles. Un jeudi de performances.</h2>
+      <p class="section-sub">Des prises de profits magistrales en swing, une euphorie asiatique prolongée et un suivi rigoureux sur les pépites européennes.</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-value purple">19</div>
+        <div class="stat-card-label">Notifications envoyées</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value">6</div>
+        <div class="stat-card-label">Coachs actifs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value blue">5</div>
+        <div class="stat-card-label">Salles couvertes<br /><span style="font-size:0.78rem;color:var(--text-light);font-weight:400">Actions EU · Actions US · Indices · Crypto · ALL</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value">16h30</div>
+        <div class="stat-card-label">04h20 à 20h49</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value green">+50%</div>
+        <div class="stat-card-label">TP1 ENGIE Validé<br /><span style="font-size:0.78rem;color:var(--text-light);font-weight:400">Plan Swing Rodolphe</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value">+100%</div>
+        <div class="stat-card-label">WINAMP en Février<br /><span style="font-size:0.78rem;color:var(--text-light);font-weight:400">Impact Méthode FERNANDA</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-soft reveal">
+    <div class="section-header container">
+      <div class="kicker">Les temps forts</div>
+      <h2 class="section-title">Ce qui s'est passé dans chaque salle</h2>
+      <p class="section-sub">Un réveil matinal, des prises de profits spectaculaires, l'effervescence du QG européen et l'anticipation des contrats nucléaires US. Le détail, salle par salle.</p>
+    </div>
+    <div class="salles-grid">
+
+      <div class="salle-card global">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">☕</div>
+            <div>
+              <div class="salle-name">Briefing & Mindset</div>
+              <div class="salle-coach">Rodolphe (cofondateur)</div>
+            </div>
+          </div>
+          <span class="badge badge-purple">Dès 04h45</span>
+        </div>
+        <div class="salle-body">
+          <p>La journée a commencé très tôt. Dès 4h45, Rodolphe ouvrait la salle pour un live d'analyse. Mais c'est surtout à 7h50 qu'il a partagé un message clé sur la psychologie, la patience et le money management ("La patience fait partie du job").</p>
+          <p>Un message d'autant plus humain qu'il concluait en mentionnant l'anniversaire de son fils ("10 ans, on est d'accord, ça reste frites-nuggets"). Derrière l'écran, le trading reste une affaire d'équilibre.</p>
+          <div class="quote-block">
+            <strong>"Justement, c'est dans ces périodes là qu'on construit les bons automatismes, la bonne psychologie, et une vision 360° du marché."</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="salle-card europe">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">🇪🇺</div>
+            <div>
+              <div class="salle-name">Actions Europe · Swing & FERNANDA</div>
+              <div class="salle-coach">Rodolphe · 3VG (Inchi)</div>
+            </div>
+          </div>
+          <span class="badge badge-green">TP1 ENGIE ✓</span>
+        </div>
+        <div class="salle-body">
+          <p>C'est l'un des trades de l'année sur la salle : <strong>ENGIE a vu son TP1 déclenché !</strong> Entrés à 20€, les abonnés ont pu sécuriser 40% de leur position à 29,15€, soit <strong>+50% de performance en swing</strong>.</p>
+          <p>Du côté du QG (qui rassemble 400 membres/jour), Inchi prépare le grand live de dimanche "En route vers Mars". Il a rappelé la performance explosive de <strong>WINAMP (+100% en février)</strong> grâce à un impact FERNANDA hebdo. Le suivi continue sur VALBIOTIS et TONNER DRONES.</p>
+          <div class="trade-box">
+            <div class="trade-box-item">Sous-jacent <span>ENGIE</span></div>
+            <div class="trade-box-item">Ordre <span>BUY Swing</span></div>
+            <div class="trade-box-item">Entrée <span>20€</span></div>
+            <div class="trade-box-item">Sortie Partielle <span class="green">29,15€ (+50%)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="salle-card us">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">🇺🇸</div>
+            <div>
+              <div class="salle-name">Actions US · Portefeuille Investisseur</div>
+              <div class="salle-coach">Sylvain</div>
+            </div>
+          </div>
+          <span class="badge badge-purple">Guidance Robuste</span>
+        </div>
+        <div class="salle-body">
+          <p>Sylvain a démarré avec l'euphorie asiatique post-Nvidia, avant de se concentrer sur les annonces clés. En Europe, focus sur l'année historique de Schneider Electric (CA record de 40 Mds€).</p>
+          <p>Sur le portefeuille investisseur US, zoom sur <strong>Vistra ($VST)</strong> qui affiche une belle dynamique en pré-open, portée par une guidance 2026 dépassant les attentes et des contrats nucléaires majeurs avec les hyperscalers. </p>
+        </div>
+      </div>
+
+      <div class="salle-card crypto">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">₿</div>
+            <div>
+              <div class="salle-name">Crypto · Débrief & Live</div>
+              <div class="salle-coach">Hark · Xavier</div>
+            </div>
+          </div>
+          <span class="badge badge-gold">Live Ouinex 20h</span>
+        </div>
+        <div class="salle-body">
+          <p>Après la violente poussée de la veille, <strong>Hark</strong> a posté son débriefing vidéo pour faire le point sur le marché de manière "rapide, simple, efficace". Le soir, <strong>Xavier</strong> a rassemblé la communauté pour un Live spécial Ouinex avec l'équipe dirigeante, analysant les perspectives de 2026.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="vip-section reveal">
+    <div class="container">
+      <div class="vip-kicker">Membres VIP · Inclus dans l'abonnement</div>
+      <h2 class="vip-title">En plus des trades,<br />les membres ont aussi reçu…</h2>
+      <div class="vip-grid">
+        <div class="vip-card">
+          <div class="vip-card-icon">🧠</div>
+          <div>
+            <div class="vip-card-title">Cadrage psychologique de haut niveau</div>
+            <div class="vip-card-text">Rodolphe a remis les pendules à l'heure à 7h50 : gérer son exposition (50%), construire de bons automatismes et faire preuve de patience quand les flux sont capricieux.</div>
+          </div>
+        </div>
+        <div class="vip-card">
+          <div class="vip-card-icon">🎯</div>
+          <div>
+            <div class="vip-card-title">Le plan pour "aller sur Mars"</div>
+            <div class="vip-card-text">Inchi a détaillé son plan d'attaque FERNANDA (mensuel et hebdo) en vue du Live de dimanche. Le suivi des pépites du CAC 40 décortiqué en amont.</div>
+          </div>
+        </div>
+        <div class="vip-card">
+          <div class="vip-card-icon">🎥</div>
+          <div>
+            <div class="vip-card-title">Live & Replay Quotidiens</div>
+            <div class="vip-card-text">Ludovick sur le Pre-Market Indices, Hark sur le débrief Crypto en vidéo, et un Live Ouinex à 20h. Tout pour se former en continu.</div>
+          </div>
+        </div>
+        <div class="vip-card">
+          <div class="vip-card-icon">📊</div>
+          <div>
+            <div class="vip-card-title">Analyse Fondamentale US</div>
+            <div class="vip-card-text">Comprendre pourquoi $VST explose (contrats hyperscalers, guidance EBITDA révisée à la hausse). La donnée traduite en plan d'action.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-white reveal">
+    <div class="section-header container">
+      <div class="kicker">La perf du jour</div>
+      <h2 class="section-title">Les trades qui ont marqué le 26 février.</h2>
+      <p class="section-sub">Quand l'analyse devient encaissement : un TP1 faramineux sur Engie et des pépites qui doublent de valeur.</p>
+    </div>
+    <div class="perf-grid container">
+
+      <div class="perf-card featured green-top">
+        <div class="perf-card-header">
+          <div class="perf-card-icon">📈</div>
+          <span class="perf-badge-tag green">Incroyable Swing</span>
+        </div>
+        <div class="perf-value green">+50%</div>
+        <div class="perf-title">ENGIE — Plan BUY Swing</div>
+        <div class="perf-desc">Un plan exécuté à la perfection. De 20€ à 29.15€, Rodolphe encaisse le TP1 sur 40% de la position d'un trade longuement partagé.</div>
+        <div class="perf-detail">
+          <div class="perf-detail-item">Entrée <span>20€</span></div>
+          <div class="perf-detail-item">Sortie <span>29,15€</span></div>
+          <div class="perf-detail-item">Gestion <span class="g">TP1 (40% pos.)</span></div>
+        </div>
+      </div>
+
+      <div class="perf-card gold-top">
+        <div class="perf-card-header">
+          <div class="perf-card-icon">🧨</div>
+          <span class="perf-badge-tag gold">Pépite EU</span>
+        </div>
+        <div class="perf-value gold">+100%</div>
+        <div class="perf-title">WINAMP — Impact FERNANDA</div>
+        <div class="perf-desc">Un magnifique +100% en février suite à l'impact sur la zone proposée par Inchi. Un succès qui récompense le suivi.</div>
+        <div class="perf-detail">
+          <div class="perf-detail-item">Actif <span>WINAMP</span></div>
+          <div class="perf-detail-item">Méthode <span>FERNANDA Hebdo</span></div>
+          <div class="perf-detail-item">Timing <span class="g">Février 2026</span></div>
+        </div>
+      </div>
+
+      <div class="perf-card purple-top">
+        <div class="perf-card-header">
+          <div class="perf-card-icon">🇺🇸</div>
+          <span class="perf-badge-tag purple">Portefeuille Invest</span>
+        </div>
+        <div class="perf-value purple">$VST</div>
+        <div class="perf-title">Vistra — Guidance validée</div>
+        <div class="perf-desc">Réaction positive attendue suite à une guidance 2026 très robuste, tirée par des contrats nucléaires avec les géants de la tech.</div>
+        <div class="perf-detail">
+          <div class="perf-detail-item">Catalyseur <span>Contrats Nucléaires</span></div>
+          <div class="perf-detail-item">EBITDA 2025 <span>Battu de 112M$</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section section-bg-soft reveal">
+    <div class="honesty-wrap">
+      <div class="honesty-block">
+        <div class="honesty-title">Le point d'honnêteté</div>
+        <div class="honesty-body">
+          <p>Le marché manque cruellement de flux directionnel fluide en ce début d'année. <strong>Rodolphe</strong> l'a rappelé sans détour : il faut accepter de n'être exposé qu'à 50% pour protéger son capital, et ne pas céder à la frustration.</p>
+          <p>La transparence, c'est de dire qu'un marché mou est normal, et que c'est précisément le moment de forger sa patience et sa psychologie. Et du côté d'<strong>Inchi</strong>, il le rappelle aussi : "Fernanda ne fait pas +100% à chaque fois, il y a des faux départs". C'est cette gestion rigoureuse, loin des promesses mirobolantes, qui permet au final d'encaisser des +50% en swing sur Engie.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-soft reveal">
+    <div class="section-header container">
+      <div class="kicker">Résumé des performances</div>
+      <h2 class="section-title">La journée du 26 février, en un coup d'oeil</h2>
+      <p class="section-sub">19 notifications, 6 coachs, une gestion de main de maître sur ENGIE et un mindset à toute épreuve.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Coach</th>
+            <th>Salle</th>
+            <th>Fait marquant</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="coach-cell">Rodolphe</span></td>
+            <td><span class="market-pill">ALL & Actions EU</span></td>
+            <td>TP1 sur ENGIE déclenché : <strong>de 20€ à 29,15€ (+50%)</strong>. Briefing mindset ultra important dès le matin.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">3VG (Inchi)</span></td>
+            <td><span class="market-pill">Actions Europe</span></td>
+            <td>Validation de <strong>WINAMP à +100%</strong> sur février. Préparation active du grand Live "Vers Mars" de dimanche.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Sylvain</span></td>
+            <td><span class="market-pill">Actions US</span></td>
+            <td>Analyse de la guidance de <strong>$VST (Vistra)</strong>. Focus sur Schneider Electric et l'euphorie asiatique post-Nvidia.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Hark</span></td>
+            <td><span class="market-pill">Crypto</span></td>
+            <td>Vidéo de débriefing sur le rebond massif de la veille : rapide, simple et efficace.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Xavier</span></td>
+            <td><span class="market-pill">Crypto</span></td>
+            <td>Animation du Live Mensuel exceptionnel avec Ouinex à 20h.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Ludovick</span></td>
+            <td><span class="market-pill">Indices</span></td>
+            <td>Replay du Pre-Market avec tous les plans intraday et swing bien cadrés.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="cta-section reveal">
+    <div class="cta-inner">
+      <div class="kicker">Rejoindre IVT</div>
+      <h2 class="cta-title">Tu veux vivre ça<br />de l'intérieur ?</h2>
+      <p class="cta-text">
+        Chaque jour, nos coachs partagent leurs analyses, leurs trades et leur pédagogie en temps réel. Pas de promesses en l'air, pas de résultats embellis. Juste une équipe de passionnés qui trade avec toi, t'explique chaque décision, et t'aide à forger la psychologie nécessaire pour tenir sur la durée.
+      </p>
+      <a href="https://interactivtrading.com/vip?aff=xf-actus" class="btn-primary">
+        Découvrir l'abonnement VIP
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <p class="cta-recap">
+        26 fév. 2026 · 19 notifications · ENGIE +50% · WINAMP +100% · Live Ouinex · Et demain, ça recommence.
+      </p>
+    </div>
+  </section>
+
+  <script>
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.07 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

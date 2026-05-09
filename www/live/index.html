@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5 — Contexte Macroéconomique & Fondamental | IVT</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,600&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple: #6F4FF2;
+  --purple-light: #8B6FF2;
+  --purple-deep: #5a3fd4;
+  --purple-glow: rgba(111, 79, 242, 0.08);
+  --purple-soft: #F5F4FF;
+  --gold: #F4B454;
+  --orange: #ef6d4a;
+  --text: #1a1a1a;
+  --text-muted: #666;
+  --text-light: #999;
+  --white: #ffffff;
+  --bg: #FAFAF8;
+  --bg-card: #ffffff;
+  --border: #e6e3ff;
+  --border-light: rgba(26,26,26,0.06);
+  --blue: #249DDF;
+  --green: #22c55e;
+  --red: #ef4444;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── SLIDE ENGINE ── */
+.deck { width: 100%; height: 100%; position: relative; }
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  background: var(--bg);
+}
+.slide.active { opacity: 1; visibility: visible; }
+
+.slide-inner {
+  flex: 1; display: flex; flex-direction: column;
+  justify-content: center;
+  padding: 90px 100px 70px;
+  position: relative; z-index: 2;
+  max-width: 1400px; margin: 0 auto; width: 100%;
+}
+.slide-inner.centered { align-items: center; text-align: center; }
+
+/* ── TOP BAR ── */
+.top-bar {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 40px;
+  background: linear-gradient(to bottom, var(--bg) 60%, transparent);
+}
+.top-bar img { height: 26px; }
+.top-bar-right {
+  display: flex; align-items: center; gap: 20px;
+}
+.slide-counter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem; color: var(--text-light);
+  letter-spacing: 0.05em;
+}
+.module-badge {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--purple); background: var(--purple-soft);
+  padding: 6px 14px; border-radius: 999px;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-track {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: var(--border-light); z-index: 100;
+}
+.progress-fill {
+  height: 100%; border-radius: 0 3px 3px 0;
+  background: linear-gradient(90deg, var(--purple), var(--purple-light));
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── NAV HINT ── */
+.nav-hint {
+  position: absolute; bottom: 16px; right: 40px; z-index: 100;
+  font-size: 0.65rem; color: var(--text-light);
+  font-family: 'JetBrains Mono', monospace;
+  opacity: 0.5;
+}
+
+/* ── DECORATIVE ELEMENTS ── */
+.deco-circle {
+  position: absolute; border-radius: 50%; z-index: 0;
+  pointer-events: none;
+}
+.deco-grid {
+  position: absolute; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(var(--border-light) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-light) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.4;
+}
+.deco-gradient {
+  position: absolute; border-radius: 50%;
+  filter: blur(120px); opacity: 0.5; z-index: 0;
+  pointer-events: none;
+}
+
+/* ── TYPOGRAPHY ── */
+.kicker {
+  font-size: 0.65rem; font-weight: 800;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 16px;
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.kicker::before {
+  content: ''; width: 20px; height: 2px;
+  background: var(--purple); display: block;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 5.5vw, 4.8rem);
+  font-weight: 800; line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 700; line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--text);
+}
+
+h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--text); line-height: 1.3;
+}
+
+.purple { color: var(--purple); }
+.gold { color: var(--gold); }
+.blue { color: var(--blue); }
+.orange { color: var(--orange); }
+.muted { color: var(--text-muted); }
+
+.subtitle {
+  font-size: clamp(1rem, 1.4vw, 1.12rem);
+  line-height: 1.7; color: var(--text-muted);
+  max-width: 580px; margin-top: 20px;
+  font-weight: 400;
+}
+
+/* ── CARDS ── */
+.cards-row {
+  display: grid; gap: 18px; width: 100%; margin-top: 36px;
+}
+.cards-4 { grid-template-columns: repeat(4, 1fr); }
+.cards-3 { grid-template-columns: repeat(3, 1fr); }
+.cards-2 { grid-template-columns: repeat(2, 1fr); }
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 16px; padding: 28px 24px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--purple); opacity: 0; transition: opacity 0.4s ease;
+}
+.card:hover {
+  border-color: var(--border);
+  box-shadow: 0 12px 40px rgba(111, 79, 242, 0.06);
+  transform: translateY(-3px);
+}
+.card:hover::before { opacity: 1; }
+
+.card-emoji {
+  font-size: 1.6rem; margin-bottom: 14px;
+  display: block;
+}
+.card p {
+  font-size: 0.85rem; line-height: 1.65;
+  color: var(--text-muted); margin-top: 8px;
+}
+
+/* ── TIMELINE ── */
+.timeline {
+  display: flex; flex-direction: column;
+  max-width: 660px; width: 100%; margin-top: 32px;
+  position: relative;
+}
+.timeline::before {
+  content: ''; position: absolute;
+  left: 23px; top: 10px; bottom: 10px; width: 2px;
+  background: linear-gradient(to bottom, var(--purple), var(--border));
+}
+.tl-item {
+  display: flex; gap: 22px; padding: 14px 0;
+  align-items: flex-start;
+}
+.tl-dot {
+  width: 48px; height: 48px; min-width: 48px;
+  border-radius: 14px;
+  background: var(--purple-soft);
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; z-index: 2;
+  transition: all 0.4s ease;
+}
+.tl-item:hover .tl-dot {
+  border-color: var(--purple);
+  background: var(--white);
+  box-shadow: 0 4px 16px rgba(111,79,242,0.12);
+}
+.tl-body h3 { margin-bottom: 3px; }
+.tl-body p {
+  font-size: 0.85rem; color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ── TWO COLUMNS ── */
+.split {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 50px; width: 100%; margin-top: 36px;
+  align-items: start;
+}
+.split-col h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; font-weight: 700;
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.split-list { list-style: none; }
+.split-list li {
+  padding: 10px 0; display: flex; align-items: center; gap: 12px;
+  font-size: 0.9rem; color: var(--text-muted);
+  border-bottom: 1px solid var(--border-light);
+}
+.split-list li:last-child { border: none; }
+.split-list .arrow {
+  color: var(--purple); font-weight: 700; font-size: 0.8rem;
+  min-width: 16px;
+}
+
+/* ── TABLE ── */
+.eco-table {
+  width: 100%; margin-top: 32px;
+  border-collapse: separate; border-spacing: 0;
+  background: var(--white); border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+.eco-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-light); padding: 16px 18px;
+  text-align: left;
+  background: var(--purple-soft);
+  border-bottom: 1px solid var(--border);
+}
+.eco-table td {
+  padding: 16px 18px; font-size: 0.85rem;
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+.eco-table tr:last-child td { border-bottom: none; }
+.eco-table .event-name { font-weight: 600; color: var(--text); }
+.eco-table .mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem; color: var(--text-muted);
+}
+.impact-dots { display: flex; gap: 3px; }
+.impact-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.impact-dot.on { background: var(--orange); }
+.impact-dot.off { background: var(--border-light); }
+.asset-pill {
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 0.68rem; font-weight: 600;
+  background: var(--purple-soft); color: var(--purple);
+  display: inline-block;
+}
+.asset-pill.gold-pill { background: #fef3cd; color: #b8860b; }
+.asset-pill.blue-pill { background: #dbeafe; color: #1d4ed8; }
+
+/* ── KEY POINTS ── */
+.key-list { list-style: none; max-width: 740px; width: 100%; margin-top: 28px; }
+.key-list li {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.key-list li:last-child { border: none; }
+.kl-icon {
+  width: 36px; height: 36px; min-width: 36px;
+  border-radius: 10px; display: flex;
+  align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  background: var(--purple-soft);
+}
+.kl-text { font-size: 0.95rem; line-height: 1.6; color: var(--text-muted); }
+.kl-text strong { color: var(--text); }
+
+/* ── QUOTE ── */
+.quote-wrap { max-width: 680px; text-align: center; }
+.quote-mark {
+  font-family: 'Playfair Display', serif;
+  font-size: 6rem; line-height: 0.4;
+  color: var(--purple); opacity: 0.2;
+}
+.quote-text {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+  font-weight: 600; font-style: italic;
+  line-height: 1.35; color: var(--text);
+  margin: 24px 0 16px;
+}
+.quote-author {
+  font-size: 0.85rem; color: var(--text-light);
+}
+
+/* ── PILLS ── */
+.pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.pill {
+  padding: 7px 16px; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 600;
+  background: var(--purple-soft);
+  color: var(--purple);
+}
+.pill.gold-p { background: #fef9ee; color: #b8860b; }
+.pill.blue-p { background: #eef6fd; color: #1a6fb5; }
+.pill.green-p { background: #ecfdf5; color: #15803d; }
+
+/* ══════════════════════════════
+   ANIMATIONS — LONG & PREMIUM
+   ══════════════════════════════ */
+
+/* --- Staggered Reveal --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  will-change: opacity, transform;
+}
+.slide.active .reveal {
+  animation: revealUp 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.slide.active .d0 { animation-delay: 0s; }
+.slide.active .d1 { animation-delay: 0.15s; }
+.slide.active .d2 { animation-delay: 0.3s; }
+.slide.active .d3 { animation-delay: 0.5s; }
+.slide.active .d4 { animation-delay: 0.7s; }
+.slide.active .d5 { animation-delay: 0.9s; }
+.slide.active .d6 { animation-delay: 1.1s; }
+.slide.active .d7 { animation-delay: 1.3s; }
+
+@keyframes revealUp {
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Scale Reveal for hero elements --- */
+.reveal-scale {
+  opacity: 0; transform: scale(0.92);
+  will-change: opacity, transform;
+}
+.slide.active .reveal-scale {
+  animation: scaleReveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes scaleReveal {
+  0% { opacity: 0; transform: scale(0.92); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* --- Slide from left --- */
+.reveal-left {
+  opacity: 0; transform: translateX(-60px);
+}
+.slide.active .reveal-left {
+  animation: revealLeft 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes revealLeft {
+  0% { opacity: 0; transform: translateX(-60px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* --- Slide from right --- */
+.reveal-right {
+  opacity: 0; transform: translateX(60px);
+}
+.slide.active .reveal-right {
+  animation: revealRight 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes revealRight {
+  0% { opacity: 0; transform: translateX(60px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* --- Card cascade --- */
+.slide.active .card-cascade .card:nth-child(1) { animation-delay: 0.3s; }
+.slide.active .card-cascade .card:nth-child(2) { animation-delay: 0.45s; }
+.slide.active .card-cascade .card:nth-child(3) { animation-delay: 0.6s; }
+.slide.active .card-cascade .card:nth-child(4) { animation-delay: 0.75s; }
+.card-cascade .card {
+  opacity: 0; transform: translateY(30px) scale(0.97);
+}
+.slide.active .card-cascade .card {
+  animation: cardPop 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes cardPop {
+  0% { opacity: 0; transform: translateY(30px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* --- Timeline stagger --- */
+.slide.active .tl-item:nth-child(1) { animation-delay: 0.3s; }
+.slide.active .tl-item:nth-child(2) { animation-delay: 0.55s; }
+.slide.active .tl-item:nth-child(3) { animation-delay: 0.8s; }
+.slide.active .tl-item:nth-child(4) { animation-delay: 1.05s; }
+.tl-item {
+  opacity: 0; transform: translateX(-30px);
+}
+.slide.active .tl-item {
+  animation: revealLeft 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* --- Table row stagger --- */
+.eco-table tbody tr {
+  opacity: 0; transform: translateY(12px);
+}
+.slide.active .eco-table tbody tr {
+  animation: revealUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.slide.active .eco-table tbody tr:nth-child(1) { animation-delay: 0.4s; }
+.slide.active .eco-table tbody tr:nth-child(2) { animation-delay: 0.55s; }
+.slide.active .eco-table tbody tr:nth-child(3) { animation-delay: 0.7s; }
+.slide.active .eco-table tbody tr:nth-child(4) { animation-delay: 0.85s; }
+
+/* --- Key list stagger --- */
+.key-list li {
+  opacity: 0; transform: translateY(20px);
+}
+.slide.active .key-list li {
+  animation: revealUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.slide.active .key-list li:nth-child(1) { animation-delay: 0.2s; }
+.slide.active .key-list li:nth-child(2) { animation-delay: 0.35s; }
+.slide.active .key-list li:nth-child(3) { animation-delay: 0.5s; }
+.slide.active .key-list li:nth-child(4) { animation-delay: 0.65s; }
+.slide.active .key-list li:nth-child(5) { animation-delay: 0.8s; }
+.slide.active .key-list li:nth-child(6) { animation-delay: 0.95s; }
+
+/* --- Floating deco animation --- */
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -15px) scale(1.03); }
+}
+@keyframes floatSlow {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-15px, 10px); }
+}
+
+/* --- Line draw --- */
+.line-draw {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+.slide.active .line-draw {
+  animation: drawLine 2s ease forwards 0.5s;
+}
+@keyframes drawLine {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1000px) {
+  .slide-inner { padding: 80px 40px 60px; }
+  .cards-4 { grid-template-columns: repeat(2, 1fr); }
+  .split { grid-template-columns: 1fr; gap: 28px; }
+}
+@media (max-width: 600px) {
+  .slide-inner { padding: 70px 24px 50px; }
+  .cards-4, .cards-3 { grid-template-columns: 1fr; }
+  .top-bar { padding: 16px 20px; }
+}
+
+/* ── CTA SLIDE ── */
+.cta-card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 24px; padding: 48px 44px;
+  max-width: 680px; width: 100%;
+  box-shadow: 0 20px 60px rgba(111,79,242,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.cta-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--purple), var(--purple-light), var(--gold));
+}
+.cta-card h2 {
+  text-align: center; margin-bottom: 6px;
+}
+.cta-subtitle {
+  font-size: 1rem; color: var(--text-muted);
+  margin-bottom: 32px; line-height: 1.6;
+}
+.cta-row {
+  display: flex; flex-direction: column; gap: 14px;
+  margin-bottom: 28px;
+}
+.cta-option {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px;
+  border-radius: 14px;
+  border: 1px solid var(--border-light);
+  background: var(--bg);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cta-option:hover {
+  border-color: var(--border);
+  box-shadow: 0 4px 16px rgba(111,79,242,0.06);
+  transform: translateX(4px);
+}
+.cta-option-text { text-align: left; }
+.cta-option-text h3 { font-size: 1rem; margin-bottom: 2px; }
+.cta-option-text p { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
+.cta-tag {
+  padding: 5px 14px; border-radius: 999px;
+  font-size: 0.62rem; font-weight: 800;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  white-space: nowrap;
+}
+.cta-tag.purple-tag { background: var(--purple-soft); color: var(--purple); }
+.cta-tag.blue-tag { background: #eef6fd; color: #1a6fb5; }
+
+.cta-bottom-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.9rem; font-style: italic;
+  color: var(--purple); opacity: 0.7;
+  margin-bottom: 28px;
+}
+.cta-buttons {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+}
+.btn {
+  padding: 14px 32px; border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem; font-weight: 700;
+  text-decoration: none; display: inline-flex;
+  align-items: center; gap: 8px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer; border: none;
+}
+.btn-primary {
+  background: var(--purple); color: var(--white);
+  box-shadow: 0 6px 20px rgba(111,79,242,0.25);
+}
+.btn-primary:hover {
+  background: var(--purple-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(111,79,242,0.32);
+}
+.btn-secondary {
+  background: var(--white); color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+  border-color: var(--purple);
+  color: var(--purple);
+  transform: translateY(-2px);
+}
+.cta-stats {
+  display: flex; gap: 32px; justify-content: center;
+  margin-top: 24px;
+}
+.cta-stat { text-align: center; }
+.cta-stat-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; font-weight: 800;
+  color: var(--text);
+}
+.cta-stat-label {
+  font-size: 0.7rem; color: var(--text-light);
+  margin-top: 2px;
+}
+</style>
+    <script defer src="https://analytics.parentsdejumeaux.fr/script.js" data-website-id="3b10c5e0-1aea-4ae4-935f-64b27cf0caf9" data-domains="xavierfenaux.com,www.xavierfenaux.com"></script>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ── TOP BAR ── -->
+  <div class="top-bar">
+    <img src="https://interactivtrading.com/_next/image/?url=%2Fimages%2Flogo_wide_violet.png&w=640&q=75" alt="IVT">
+    <div class="top-bar-right">
+      <span class="module-badge">Module 5</span>
+      <span class="slide-counter" id="counter">01 / 09</span>
+    </div>
+  </div>
+
+  <!-- ── PROGRESS ── -->
+  <div class="progress-track">
+    <div class="progress-fill" id="progress" style="width:12.5%"></div>
+  </div>
+
+  <div class="nav-hint">← → &nbsp;espace &nbsp;clic</div>
+
+
+  <!-- ═══════ SLIDE 1 — TITRE ═══════ -->
+  <div class="slide active" id="s1">
+    <div class="deco-gradient" style="width:600px;height:600px;background:var(--purple-soft);top:-20%;right:-10%;animation:float 14s ease-in-out infinite;"></div>
+    <div class="deco-gradient" style="width:400px;height:400px;background:#fef3cd;bottom:-15%;left:-5%;animation:floatSlow 18s ease-in-out infinite;"></div>
+    <div class="deco-grid"></div>
+    <div class="slide-inner centered">
+      <div class="kicker reveal d0">Formation IVT · 1h de live</div>
+      <h1 class="reveal d1">Contexte<br><span class="purple">macroéconomique</span><br>& fondamental</h1>
+      <p class="subtitle reveal d2" style="text-align:center;">Comprendre les forces invisibles qui font bouger chaque actif, chaque jour. De la théorie à l'exploitation en live.</p>
+      <div class="pills reveal d3" style="justify-content:center;">
+        <span class="pill">PIB · CPI · NFP · PMI</span>
+        <span class="pill gold-p">Banques centrales</span>
+        <span class="pill blue-p">Géopolitique</span>
+        <span class="pill green-p">Calendrier éco</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════ SLIDE 2 — INDICATEURS MACRO ═══════ -->
+  <div class="slide" id="s2">
+    <div class="deco-gradient" style="width:500px;height:500px;background:var(--purple-soft);top:10%;right:-15%;animation:float 16s ease-in-out infinite;"></div>
+    <div class="slide-inner">
+      <div class="kicker reveal d0">Les fondations</div>
+      <h2 class="reveal d1">Les indicateurs macro<br>que tu <span class="purple">dois</span> connaître</h2>
+      <p class="subtitle reveal d2">Quatre chiffres font trembler les marchés chaque mois. Les voilà.</p>
+      <div class="cards-row cards-4 card-cascade" style="margin-top:36px;">
+        <div class="card">
+          <span class="card-emoji">📊</span>
+          <h3>PIB</h3>
+          <p>Croissance d'un pays. Trimestriel. Le baromètre santé de l'économie.</p>
+        </div>
+        <div class="card">
+          <span class="card-emoji">🔥</span>
+          <h3>Inflation (CPI)</h3>
+          <p>L'indice des prix. Le chiffre n°1 que la Fed et la BCE scrutent pour décider des taux.</p>
+        </div>
+        <div class="card">
+          <span class="card-emoji">👷</span>
+          <h3>Emploi (NFP)</h3>
+          <p>Non-Farm Payrolls. Premier vendredi du mois. Le marché retient son souffle.</p>
+        </div>
+        <div class="card">
+          <span class="card-emoji">🏭</span>
+          <h3>PMI</h3>
+          <p>Au-dessus de 50 = expansion. En dessous = contraction. Simple et redoutable.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════ SLIDE 3 — BANQUES CENTRALES + TAUX ═══════ -->
+  <div class="slide" id="s3">
+    <div class="deco-gradient" style="width:450px;height:450px;background:#dbeafe;bottom:-10%;left:-10%;animation:floatSlow 15s ease-in-out infinite;"></div>
+    <div class="slide-inner">
+      <div class="kicker reveal d0">Le nerf de la guerre</div>
+      <h2 class="reveal d1">Banques centrales<br>& <span class="blue">taux d'intérêt</span></h2>
+      <p class="subtitle reveal d2">Elles fixent le prix de l'argent. Tout le reste en découle.</p>
+      <div class="split" style="margin-top:36px;">
+        <div class="split-col reveal-left d3">
+          <div class="cards-row cards-3" style="grid-template-columns:1fr;gap:12px;">
+            <div class="card" style="padding:20px;">
+              <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:1.4rem;">🇺🇸</span><h3 style="margin:0">Federal Reserve</h3></div>
+              <p style="margin-top:6px;">Pilote le dollar et, par extension, les marchés mondiaux.</p>
+            </div>
+            <div class="card" style="padding:20px;">
+              <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:1.4rem;">🇪🇺</span><h3 style="margin:0">BCE</h3></div>
+              <p style="margin-top:6px;">Politique monétaire zone euro. Impact direct sur EUR/USD.</p>
+            </div>
+            <div class="card" style="padding:20px;">
+              <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:1.4rem;">🇯🇵</span><h3 style="margin:0">Bank of Japan</h3></div>
+              <p style="margin-top:6px;">Pionnière du QE. Le Yen comme baromètre du risk-on/off.</p>
+            </div>
+          </div>
+        </div>
+        <div class="split-col reveal-right d3">
+          <h3>📈 Taux en hausse</h3>
+          <ul class="split-list">
+            <li><span class="arrow">→</span> Dollar renforcé, growth sous pression</li>
+            <li><span class="arrow">→</span> Obligations en baisse</li>
+            <li><span class="arrow">→</span> Or sous pression (coût d'opportunité)</li>
+          </ul>
+          <h3 style="margin-top:20px;">📉 Taux en baisse</h3>
+          <ul class="split-list">
+            <li><span class="arrow">→</span> Actions reprennent, surtout la tech</li>
+            <li><span class="arrow">→</span> Or attire les capitaux</li>
+            <li><span class="arrow">→</span> Liquidité abondante = euphorie</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════ SLIDE 4 — CYCLES ÉCONOMIQUES ═══════ -->
+  <div class="slide" id="s4">
+    <div class="deco-gradient" style="width:500px;height:500px;background:#fef3cd;top:-10%;left:50%;animation:float 17s ease-in-out infinite;"></div>
+    <div class="slide-inner">
+      <div class="kicker reveal d0">Le rythme des marchés</div>
+      <h2 class="reveal d1">Les 4 phases du<br>cycle <span class="gold">économique</span></h2>
+      <p class="subtitle reveal d2">Savoir où on en est dans le cycle, c'est savoir quoi acheter et quand.</p>
+      <div class="timeline" style="margin-top:32px;">
+        <div class="tl-item">
+          <div class="tl-dot">🚀</div>
+          <div class="tl-body">
+            <h3>Expansion</h3>
+            <p>PIB en hausse, emploi solide, confiance haute. Actions performent. Phase "risk-on".</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">⚡</div>
+          <div class="tl-body">
+            <h3>Surchauffe</h3>
+            <p>Inflation accélère, banques centrales resserrent. Volatilité en hausse. Premiers signaux d'alerte.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">📉</div>
+          <div class="tl-body">
+            <h3>Contraction</h3>
+            <p>PIB ralentit ou recule. Licenciements. Flight to safety : obligations, or, cash.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">🌱</div>
+          <div class="tl-body">
+            <h3>Reprise</h3>
+            <p>Banques centrales baissent les taux. La confiance revient. Les plus malins se positionnent ici.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════ SLIDE 5 — GÉOPOLITIQUE ═══════ -->
+  <div class="slide" id="s5">
+    <div class="deco-gradient" style="width:500px;height:500px;background:#fee2e2;top:0;right:-10%;animation:floatSlow 16s ease-in-out infinite;"></div>
+    <div class="slide-inner">
+      <div class="kicker reveal d0">Le facteur imprévisible</div>
+      <h2 class="reveal d1">Géopolitique &<br>marchés <span class="orange">financiers</span></h2>
+      <p class="subtitle reveal d2">Les conflits, sanctions et tensions redessinent les flux de capitaux en temps réel.</p>
+      <div class="cards-row cards-4 card-cascade" style="margin-top:32px;">
+        <div class="card">
+          <span class="card-emoji">⚔️</span>
+          <h3>Conflits armés</h3>
+          <p>Pétrole, défense, or explosent. Indices plongent sur le choc. L'impulsion s'applique.</p>
+        </div>
+        <div class="card">
+          <span class="card-emoji">🛢️</span>
+          <h3>Énergie</h3>
+          <p>Hormuz, OPEP+, sanctions. Le pétrole est l'actif le plus géopolitique qui existe.</p>
+        </div>
+        <div class="card">
+          <span class="card-emoji">🌐</span>
+          <h3>Guerres commerciales</h3>
+          <p>Tarifs, restrictions tech, découplage US/Chine. Impact direct sur les chaînes de valeur.</p>
+        </div>
+        <div class="card">
+          <span class="card-emoji">🏦</span>
+          <h3>Sanctions</h3>
+          <p>SWIFT, gel d'actifs, embargo. Le dollar comme arme. Le marché reprice instantanément.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════ SLIDE 6 — CALENDRIER ÉCONOMIQUE ═══════ -->
+  <div class="slide" id="s6">
+    <div class="deco-gradient" style="width:400px;height:400px;background:var(--purple-soft);bottom:-10%;right:20%;animation:float 14s ease-in-out infinite;"></div>
+    <div class="slide-inner">
+      <div class="kicker reveal d0">L'outil quotidien</div>
+      <h2 class="reveal d1">Lire le <span class="purple">calendrier</span><br>économique</h2>
+      <p class="subtitle reveal d2">Avant d'ouvrir un trade, tu ouvres le calendrier. Toujours.</p>
+      <table class="eco-table reveal-scale d3">
+        <thead>
+          <tr><th>Heure</th><th>Événement</th><th>Impact</th><th>Consensus</th><th>Actif clé</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">08:00</td>
+            <td class="event-name">PMI Manufacturier 🇩🇪</td>
+            <td><div class="impact-dots"><div class="impact-dot on"></div><div class="impact-dot on"></div><div class="impact-dot off"></div></div></td>
+            <td class="mono">47.8</td>
+            <td><span class="asset-pill">DAX</span></td>
+          </tr>
+          <tr>
+            <td class="mono">14:30</td>
+            <td class="event-name">CPI Core 🇺🇸</td>
+            <td><div class="impact-dots"><div class="impact-dot on"></div><div class="impact-dot on"></div><div class="impact-dot on"></div></div></td>
+            <td class="mono">3.2%</td>
+            <td><span class="asset-pill gold-pill">SP500</span></td>
+          </tr>
+          <tr>
+            <td class="mono">20:00</td>
+            <td class="event-name">Fed Funds Rate 🇺🇸</td>
+            <td><div class="impact-dots"><div class="impact-dot on"></div><div class="impact-dot on"></div><div class="impact-dot on"></div></div></td>
+            <td class="mono">4.50%</td>
+            <td><span class="asset-pill blue-pill">TOUT</span></td>
+          </tr>
+          <tr>
+            <td class="mono">20:30</td>
+            <td class="event-name">Conférence Powell 🇺🇸</td>
+            <td><div class="impact-dots"><div class="impact-dot on"></div><div class="impact-dot on"></div><div class="impact-dot on"></div></div></td>
+            <td class="mono">—</td>
+            <td><span class="asset-pill blue-pill">TOUT</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="reveal d4" style="margin-top:20px;padding:14px 20px;background:var(--purple-soft);border-radius:12px;border-left:3px solid var(--purple);font-size:0.88rem;">
+        <strong style="color:var(--purple);">Règle IVT :</strong> <span class="muted">Pas de position ouverte 30 min avant un événement triple impact 🔴🔴🔴</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════ SLIDE 7 — STRATÉGÈME DE L'IMPULSION ═══════ -->
+  <div class="slide" id="s7">
+    <div class="deco-gradient" style="width:600px;height:600px;background:var(--purple-soft);top:-15%;left:-15%;animation:float 18s ease-in-out infinite;"></div>
+    <div class="deco-gradient" style="width:300px;height:300px;background:#ecfdf5;bottom:10%;right:-5%;animation:floatSlow 12s ease-in-out infinite;"></div>
+    <div class="slide-inner">
+      <div class="kicker reveal d0">Application concrète</div>
+      <h2 class="reveal d1">Le stratégème de<br><span class="purple">l'impulsion</span></h2>
+      <p class="subtitle reveal d2">La méthode Xavier Fenaux : catalyseur macro → signal technique → exécution.</p>
+      <div class="split" style="margin-top:36px;">
+        <div class="timeline" style="margin-top:0;">
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#fef9ee;border-color:var(--gold);">💥</div>
+            <div class="tl-body">
+              <h3><span class="gold">①</span> Catalyseur macro</h3>
+              <p>Décision de taux, NFP surprise, choc géopolitique. Le déséquilibre est créé.</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot">📐</div>
+            <div class="tl-body">
+              <h3><span class="purple">②</span> Cassure de niveau</h3>
+              <p>Le prix casse un support ou résistance identifié. Le flux directionnel démarre.</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#eef6fd;border-color:var(--blue);">✅</div>
+            <div class="tl-body">
+              <h3><span class="blue">③</span> Confirmation H1</h3>
+              <p>Casquette verte ou rouge confirmée. L'impulsion est validée. On entre.</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#ecfdf5;border-color:var(--green);">💰</div>
+            <div class="tl-body">
+              <h3 style="color:var(--green);">④ Gestion</h3>
+              <p>Breakeven rapide +15 pts. TP partiel 30%. Trailing sur le reste.</p>
+            </div>
+          </div>
+        </div>
+        <div class="reveal-right d4" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="card" style="border-left:3px solid var(--gold);border-radius:12px;">
+            <h3>🦠 COVID-19</h3>
+            <p>-35% en 23 jours. QE illimité annoncé → rally historique. Ceux qui lisaient la macro ont pris le train.</p>
+          </div>
+          <div class="card" style="border-left:3px solid var(--orange);border-radius:12px;">
+            <h3>📈 Inflation 2022</h3>
+            <p>CPI à 9.1%. Fed de 0% à 5.5%. Nasdaq -33%. Growth massacré, Value en vedette.</p>
+          </div>
+          <div class="card" style="border-left:3px solid var(--blue);border-radius:12px;">
+            <h3>⚔️ Ukraine 2022</h3>
+            <p>Pétrole $130, gaz x10. Défense +40%. Macro + géo = mouvement de prix.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════ SLIDE 8 — RÉCAP + CLOSE ═══════ -->
+  <div class="slide" id="s8">
+    <div class="deco-gradient" style="width:500px;height:500px;background:var(--purple-soft);top:-10%;right:-10%;animation:float 16s ease-in-out infinite;"></div>
+    <div class="deco-gradient" style="width:350px;height:350px;background:#fef3cd;bottom:-10%;left:30%;animation:floatSlow 14s ease-in-out infinite;"></div>
+    <div class="deco-grid"></div>
+    <div class="slide-inner centered">
+      <div class="kicker reveal d0">Ce qu'on retient</div>
+      <h2 class="reveal d1" style="text-align:center;">Les clés du<br><span class="purple">Module 5</span></h2>
+      <ul class="key-list reveal d2" style="text-align:left;">
+        <li><div class="kl-icon">📊</div><div class="kl-text"><strong>PIB, CPI, NFP, PMI</strong> — les 4 indicateurs à suivre en priorité</div></li>
+        <li><div class="kl-icon" style="background:#eef6fd;">🏛️</div><div class="kl-text"><strong>Fed, BCE, BoJ</strong> — leurs décisions de taux pilotent toutes les classes d'actifs</div></li>
+        <li><div class="kl-icon" style="background:#fef9ee;">🔄</div><div class="kl-text"><strong>4 phases du cycle</strong> — expansion, surchauffe, contraction, reprise</div></li>
+        <li><div class="kl-icon" style="background:#fee2e2;">⚔️</div><div class="kl-text"><strong>Géopolitique</strong> — le risque qu'on ne modélise pas mais qu'on doit anticiper</div></li>
+        <li><div class="kl-icon" style="background:#ecfdf5;">📅</div><div class="kl-text"><strong>Calendrier éco</strong> — jamais de position avant un événement triple impact</div></li>
+        <li><div class="kl-icon">💥</div><div class="kl-text"><strong>Stratégème de l'impulsion</strong> — catalyseur + cassure + confirmation H1 = signal</div></li>
+      </ul>
+      <div class="reveal d5" style="margin-top:40px;">
+        <div class="quote-wrap">
+          <p class="quote-text" style="font-size:1.4rem;">"Ne rien faire, c'est aussi une décision.<br>Et parfois, c'est la meilleure."</p>
+          <p class="quote-author">— Xavier Fenaux</p>
+        </div>
+      </div>
+      <div class="reveal d6" style="margin-top:28px;">
+        <p style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--gold);">Force, honneur, billets à tous 💪</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════ SLIDE 9 — CTA ÉCOSYSTÈME IVT ═══════ -->
+  <div class="slide" id="s9">
+    <div class="deco-gradient" style="width:600px;height:600px;background:var(--purple-soft);top:-20%;left:-10%;animation:float 16s ease-in-out infinite;"></div>
+    <div class="deco-gradient" style="width:400px;height:400px;background:#eef6fd;bottom:-15%;right:-5%;animation:floatSlow 18s ease-in-out infinite;"></div>
+    <div class="deco-grid"></div>
+    <div class="slide-inner centered">
+
+      <div class="cta-card reveal-scale d1">
+        <div class="kicker" style="justify-content:center;margin-bottom:12px;">Rejoins l'écosystème</div>
+        <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);">Passe à <span class="purple">l'action.</span><br>Là où le cash circule.</h2>
+        <p class="cta-subtitle">Deux piliers. Un seul objectif : ta liberté financière.</p>
+
+        <div class="cta-row">
+          <div class="cta-option reveal d3">
+            <div class="cta-option-text">
+              <h3>Interactiv Trading</h3>
+              <p>Trading actif, notifications en temps réel, analyses live.</p>
+            </div>
+            <span class="cta-tag purple-tag">Trading actif</span>
+          </div>
+          <div class="cta-option reveal d4">
+            <div class="cta-option-text">
+              <h3>Interactiv Life</h3>
+              <p>Gestion patrimoniale, PEA, ETF, investissement long terme.</p>
+            </div>
+            <span class="cta-tag blue-tag">Patrimoine</span>
+          </div>
+        </div>
+
+        <p class="cta-bottom-text reveal d5">Deux horizons de temps. Une complémentarité évidente.</p>
+
+        <div class="cta-buttons reveal d6">
+          <a href="https://interactivtrading.com/vip" class="btn btn-primary" target="_blank">Devenir VIP →</a>
+          <a href="https://interactivtrading.com" class="btn btn-secondary" target="_blank">Découvrir l'approche</a>
+        </div>
+
+        <div class="cta-stats reveal d7">
+          <div class="cta-stat">
+            <div class="cta-stat-value">45 000+</div>
+            <div class="cta-stat-label">membres</div>
+          </div>
+          <div class="cta-stat">
+            <div class="cta-stat-value">2013</div>
+            <div class="cta-stat-label">depuis</div>
+          </div>
+          <div class="cta-stat">
+            <div class="cta-stat-value">24/5</div>
+            <div class="cta-stat-label">couverture marchés</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  const total = slides.length;
+  let current = 0;
+  let transitioning = false;
+
+  const pad = n => String(n).padStart(2, '0');
+
+  function resetAnimations(slide) {
+    const animatedEls = slide.querySelectorAll(
+      '.reveal, .reveal-scale, .reveal-left, .reveal-right, .card-cascade .card, .tl-item, .eco-table tbody tr, .key-list li'
+    );
+    animatedEls.forEach(el => {
+      el.style.animation = 'none';
+      void el.offsetHeight;
+      el.style.animation = '';
+    });
+  }
+
+  function goTo(index) {
+    if (index < 0 || index >= total || transitioning) return;
+    transitioning = true;
+
+    slides[current].classList.remove('active');
+    resetAnimations(slides[current]);
+
+    current = index;
+    slides[current].classList.add('active');
+    counter.textContent = `${pad(current + 1)} / ${pad(total)}`;
+    progress.style.width = `${((current + 1) / total) * 100}%`;
+
+    setTimeout(() => { transitioning = false; }, 700);
+  }
+
+  const next = () => goTo(current + 1);
+  const prev = () => goTo(current - 1);
+
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
+    if (['ArrowLeft', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
+    if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+  });
+
+  document.getElementById('deck').addEventListener('click', e => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    (e.clientX - rect.left > rect.width * 0.5) ? next() : prev();
+  });
+
+  let tx = 0;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const d = tx - e.changedTouches[0].clientX;
+    if (Math.abs(d) > 50) d > 0 ? next() : prev();
+  }, { passive: true });
+
+  goTo(0);
+})();
+</script>
+</body>
+</html>

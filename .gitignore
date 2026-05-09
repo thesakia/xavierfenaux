@@ -1,0 +1,6 @@
+remote-backup-before-umami-*/
+.bash_logout
+.bash_profile
+.bashrc
+.htpasswd_dashboard
+.ovhconfig

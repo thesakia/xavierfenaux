@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ce que les abonnés IVT ont vécu le 23 février 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent-primary: #6F4FF2;
+      --accent-hover:   #5a3fd4;
+      --vip-accent:     #249DDF;
+      --vip-accent-light: rgba(36, 157, 223, 0.14);
+      --logo-gold:      #F4B454;
+      --bg-white:     #FFFFFF;
+      --bg-soft:      #F5F4FF;
+      --bg-dark:      #0f0f0f;
+      --text-primary: #1a1a1a;
+      --text-muted:   #555;
+      --text-light:   #888;
+      --text-white:   #ffffff;
+      --border-soft:  #e6e3ff;
+      --border-light: rgba(26, 26, 26, 0.08);
+      --border-hover: rgba(111, 79, 242, 0.3);
+      --shadow-card:         0 12px 40px rgba(111, 79, 242, 0.08);
+      --shadow-card-hover:   0 18px 55px rgba(15, 15, 15, 0.09);
+      --shadow-button:       0 6px 20px rgba(111, 79, 242, 0.25);
+      --shadow-button-hover: 0 10px 28px rgba(111, 79, 242, 0.32);
+      --section-padding: clamp(4rem, 7vw, 6rem);
+      --card-padding: 1.75rem;
+      --card-padding-large: 2.5rem;
+      --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px;
+      --radius-xl: 16px; --radius-3xl: 20px; --radius-full: 999px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Inter", Arial, sans-serif;
+      background: var(--bg-white); color: var(--text-primary);
+      line-height: 1.6; overflow-x: hidden;
+    }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-soft);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 2rem;
+    }
+    .logo { font-family: "Montserrat", Arial, sans-serif; font-size: 1rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; }
+    .logo em { font-style: normal; color: var(--accent-primary); }
+    .header-badge { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; color: var(--text-light); }
+
+    .hero {
+      background: var(--bg-soft);
+      padding: clamp(3.5rem, 8vw, 6rem) 1.5rem clamp(3rem, 7vw, 5rem);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+      width: 700px; height: 400px;
+      background: radial-gradient(ellipse, rgba(111,79,242,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; max-width: 760px; margin: 0 auto; }
+
+    .kicker {
+      display: inline-block; font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent-primary); margin-bottom: 1.25rem;
+    }
+    .hero-title {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(2.5rem, 5.5vw, 4.2rem); font-weight: 800;
+      color: var(--text-primary); line-height: 1.05; letter-spacing: -0.03em;
+      margin-bottom: 1.25rem; opacity: 0; animation: fadeInUp 0.7s 0.1s ease forwards;
+    }
+    .hero-title mark { background: none; color: var(--accent-primary); }
+    .hero-lead {
+      font-size: clamp(1.05rem, 2vw, 1.2rem); color: var(--text-muted);
+      max-width: 620px; margin: 0 auto 2.5rem; line-height: 1.6;
+      opacity: 0; animation: fadeInUp 0.7s 0.25s ease forwards;
+    }
+    .hero-stats {
+      display: inline-flex; border: 1px solid var(--border-soft);
+      border-radius: var(--radius-xl); background: var(--bg-white);
+      overflow: hidden; box-shadow: var(--shadow-card);
+      opacity: 0; animation: fadeInUp 0.7s 0.4s ease forwards;
+    }
+    .stat-item { padding: 1.25rem 2rem; text-align: center; border-right: 1px solid var(--border-soft); }
+    .stat-item:last-child { border-right: none; }
+    .stat-value {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 800;
+      color: var(--text-primary); line-height: 1; letter-spacing: -0.03em;
+    }
+    .stat-value.purple { color: var(--accent-primary); }
+    .stat-value.blue   { color: var(--vip-accent); }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+    .section { padding: var(--section-padding) 1.5rem; }
+    .section-bg-soft  { background: var(--bg-soft); }
+    .section-bg-white { background: var(--bg-white); }
+    .section-header { max-width: 900px; margin: 0 auto 2.5rem; }
+    .section-title {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 800;
+      color: var(--text-primary); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 0.5rem;
+    }
+    .section-sub { font-size: clamp(0.95rem, 1.5vw, 1rem); color: var(--text-muted); line-height: 1.6; }
+
+    .stats-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .stat-card {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); padding: var(--card-padding);
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: var(--border-hover); }
+    .stat-card-value {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.35rem; color: var(--text-primary);
+    }
+    .stat-card-value.purple { color: var(--accent-primary); }
+    .stat-card-value.blue   { color: var(--vip-accent); }
+    .stat-card-value.green  { color: #16a34a; }
+    .stat-card-label { font-size: clamp(0.85rem, 1.2vw, 0.9rem); color: var(--text-muted); line-height: 1.4; }
+
+    .salles-grid { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+    .salle-card {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); padding: var(--card-padding-large);
+      position: relative; overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease, border-color 0.25s ease;
+    }
+    .salle-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: var(--border-hover); }
+    .salle-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 4px 0 0 4px;
+    }
+    .salle-card.indices::before  { background: var(--accent-primary); }
+    .salle-card.europe::before   { background: #3b82f6; }
+    .salle-card.us::before       { background: #16a34a; }
+    .salle-card.crypto::before   { background: var(--logo-gold); }
+    .salle-card.forex::before    { background: var(--vip-accent); }
+    .salle-card.matieres::before { background: var(--logo-gold); }
+    .salle-card.global::before   { background: var(--accent-primary); }
+
+    .salle-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .salle-meta { display: flex; align-items: center; gap: 0.85rem; }
+    .salle-icon {
+      width: 44px; height: 44px; border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+      background: var(--bg-soft); border: 1px solid var(--border-soft); flex-shrink: 0;
+    }
+    .salle-name { font-family: "Montserrat", Arial, sans-serif; font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.1rem; }
+    .salle-coach { font-size: 0.82rem; color: var(--text-light); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;
+      padding: 0.3rem 0.75rem; border-radius: var(--radius-full); white-space: nowrap;
+    }
+    .badge-purple { background: rgba(111,79,242,0.08); color: var(--accent-primary); border: 1px solid var(--border-soft); }
+    .badge-green  { background: rgba(22,163,74,0.08);  color: #16a34a; border: 1px solid rgba(22,163,74,0.2); }
+    .badge-gold   { background: rgba(244,180,84,0.1);  color: #b45309; border: 1px solid rgba(244,180,84,0.3); }
+    .badge-blue   { background: var(--vip-accent-light); color: var(--vip-accent); border: 1px solid rgba(36,157,223,0.25); }
+
+    .salle-body { font-size: clamp(0.95rem, 1.5vw, 1rem); color: var(--text-muted); line-height: 1.75; }
+    .salle-body p + p { margin-top: 0.75rem; }
+    .salle-body strong { color: var(--text-primary); font-weight: 600; }
+
+    .trade-box {
+      margin-top: 1rem; background: var(--bg-soft); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg); padding: 1rem 1.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem;
+    }
+    .trade-box-item { font-size: 0.82rem; color: var(--text-muted); }
+    .trade-box-item span { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: var(--text-primary); margin-left: 0.3rem; }
+    .trade-box-item span.green { color: #16a34a; }
+    .trade-box-item span.red   { color: #dc2626; }
+
+    .quote-block {
+      margin-top: 1rem; border-left: 3px solid var(--accent-primary);
+      padding: 0.75rem 1.25rem; background: var(--bg-soft);
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      font-size: 0.92rem; color: var(--text-muted); font-style: italic; line-height: 1.7;
+    }
+    .quote-block strong { font-style: normal; color: var(--text-primary); font-weight: 600; }
+
+    .polarites-grid { margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .polarite-group {
+      background: var(--bg-soft); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg); padding: 0.9rem 1.1rem;
+    }
+    .polarite-group-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: 0.65rem; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-light); margin-bottom: 0.6rem;
+    }
+    .polarite-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .polarite-item:last-child { margin-bottom: 0; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot.green { background: #16a34a; }
+    .dot.red   { background: #dc2626; }
+    .dot.blue  { background: var(--vip-accent); }
+    .polarite-val { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: var(--text-primary); margin-left: auto; }
+
+    .vip-section { background: var(--bg-dark); color: var(--text-white); padding: var(--section-padding) 1.5rem; }
+    .vip-kicker {
+      display: inline-block; font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--vip-accent); margin-bottom: 1.25rem;
+    }
+    .vip-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--text-white); margin-bottom: 2.5rem;
+    }
+    .vip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .vip-card {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-3xl); padding: 1.75rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+      transition: background 0.25s ease, border-color 0.25s ease;
+    }
+    .vip-card:hover { background: rgba(36,157,223,0.08); border-color: rgba(36,157,223,0.25); }
+    .vip-card-icon {
+      width: 40px; height: 40px; border-radius: var(--radius-lg);
+      background: var(--vip-accent-light); border: 1px solid rgba(36,157,223,0.25);
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .vip-card-title { font-family: "Montserrat", Arial, sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--text-white); margin-bottom: 0.35rem; }
+    .vip-card-text { font-size: 0.88rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+    .honesty-wrap { max-width: 900px; margin: 0 auto; }
+    .honesty-block {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-left: 3px solid var(--accent-primary);
+      border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+      padding: 2rem 2rem 2rem 2.25rem;
+    }
+    .honesty-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: clamp(1.1rem, 2vw, 1.4rem);
+      font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem; letter-spacing: -0.01em;
+    }
+    .honesty-body { font-size: clamp(0.95rem, 1.5vw, 1rem); color: var(--text-muted); line-height: 1.75; }
+    .honesty-body p + p { margin-top: 0.75rem; }
+    .honesty-body strong { color: var(--text-primary); font-weight: 600; }
+
+    .table-wrap {
+      max-width: 900px; margin: 0 auto; border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); overflow: hidden; box-shadow: var(--shadow-card);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    thead tr { background: var(--bg-soft); }
+    th {
+      font-family: "Montserrat", Arial, sans-serif; font-size: 0.65rem; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-primary);
+      padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border-soft);
+    }
+    td { padding: 1rem 1.5rem; color: var(--text-muted); border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--bg-soft); }
+    .coach-cell { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: var(--text-primary); font-size: 0.88rem; }
+    .market-pill {
+      display: inline-block; font-size: 0.7rem; font-weight: 600;
+      padding: 0.2rem 0.6rem; border-radius: var(--radius-full);
+      background: rgba(111,79,242,0.07); border: 1px solid var(--border-soft);
+      color: var(--accent-primary); white-space: nowrap;
+    }
+    .g { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: #16a34a; }
+
+    .cta-section { background: var(--bg-soft); padding: var(--section-padding) 1.5rem; text-align: center; }
+    .cta-inner { max-width: 620px; margin: 0 auto; }
+    .cta-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 1rem;
+    }
+    .cta-text { font-size: clamp(0.95rem, 1.5vw, 1.05rem); color: var(--text-muted); line-height: 1.6; margin-bottom: 2.25rem; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent-primary); color: var(--text-white);
+      font-family: "Montserrat", Arial, sans-serif; font-size: 0.85rem; font-weight: 700;
+      padding: 0.9rem 1.75rem; border-radius: var(--radius-md);
+      text-decoration: none; border: none; cursor: pointer;
+      box-shadow: var(--shadow-button); transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: var(--shadow-button-hover); }
+    .cta-recap { margin-top: 1.5rem; font-size: 0.82rem; color: var(--text-light); line-height: 1.6; }
+
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .vip-grid { grid-template-columns: 1fr; }
+      .hero-stats { flex-direction: column; width: fit-content; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border-soft); }
+      .stat-item:last-child { border-bottom: none; }
+      th, td { padding: 0.75rem 1rem; }
+      .polarites-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .salle-header { flex-direction: column; gap: 0.75rem; }
+    }
+  </style>
+    <script defer src="https://analytics.parentsdejumeaux.fr/script.js" data-website-id="3b10c5e0-1aea-4ae4-935f-64b27cf0caf9" data-domains="xavierfenaux.com,www.xavierfenaux.com"></script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="logo">Interactiv<em>Trading</em></div>
+    <span class="header-badge">Rapport de journée · 23 fév. 2026</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="kicker">Rapport de journée · Lundi 23 février 2026</div>
+      <h1 class="hero-title">Ce que les abonnés IVT<br />ont vécu le <mark>23 février</mark></h1>
+      <p class="hero-lead">
+        Iran, tarifs douaniers à 15%, Or à 5 000$, NVIDIA mercredi. Les coachs étaient sur le pont dès 5h du matin pour cadrer une semaine sous haute tension. 20 notifications, de 05h06 à 18h39.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-value purple">20</div>
+          <div class="stat-label">Notifications</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">6</div>
+          <div class="stat-label">Coachs actifs</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value blue">13h+</div>
+          <div class="stat-label">Couverture</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">7</div>
+          <div class="stat-label">Salles</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-white reveal">
+    <div class="section-header container">
+      <div class="kicker">La journée en chiffres</div>
+      <h2 class="section-title">6 coachs. 7 salles. Une rentrée explosive.</h2>
+      <p class="section-sub">Indices en mode défensif, actions US sous tension, Gold au-dessus de 5 000$, Bitcoin en recul. Le genre de lundi où il fallait être accompagné.</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-value purple">20</div>
+        <div class="stat-card-label">Notifications envoyées</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value">6</div>
+        <div class="stat-card-label">Coachs actifs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value blue">7</div>
+        <div class="stat-card-label">Salles couvertes<br /><span style="font-size:0.78rem;color:var(--text-light);font-weight:400">Indices · Actions EU · Actions US · Crypto · Forex · Mat. Premières</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value">13h+</div>
+        <div class="stat-card-label">05h06 à 18h39</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value green">16</div>
+        <div class="stat-card-label">Trades partagés</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value">2</div>
+        <div class="stat-card-label">Renforts exécutés<br /><span style="font-size:0.78rem;color:var(--text-light);font-weight:400">$VST · $BNAI</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-soft reveal">
+    <div class="section-header container">
+      <div class="kicker">Les temps forts</div>
+      <h2 class="section-title">Ce qui s'est passé dans chaque salle</h2>
+      <p class="section-sub">Briefings dès l'aube, plans swing, renforts exécutés, analyses macro ultra complètes. Le détail, salle par salle.</p>
+    </div>
+    <div class="salles-grid">
+
+      <div class="salle-card global">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">☕</div>
+            <div>
+              <div class="salle-name">Brief Mood · Analyse globale</div>
+              <div class="salle-coach">Xavier (cofondateur)</div>
+            </div>
+          </div>
+          <span class="badge badge-purple">06h39</span>
+        </div>
+        <div class="salle-body">
+          <p>Xavier posait le cadre pour toute la semaine dès 6h39. Un brief ultra complet couvrant les trois dossiers majeurs : <strong>l'ultimatum iranien</strong> (15 jours pour un accord ou option militaire, Détroit d'Ormuz menacé, Brent à +6% la semaine passée), <strong>NVIDIA mercredi soir</strong> (le marché attend 65-66 Mds$ de CA, moins et c'est la correction généralisée), et les <strong>tarifs douaniers à 15%</strong> effectifs dès mardi après le blocage de la Cour Suprême vendredi.</p>
+          <p>En parallèle, l'Or a franchi les 5 000$ l'once ce week-end, et Trump a réaffirmé sur son réseau social son pouvoir exécutif unilatéral sur les tarifs, menaçant d'aller encore plus loin. Xavier a aussi partagé les polarités actualisées :</p>
+          <div class="polarites-grid">
+            <div class="polarite-group">
+              <div class="polarite-group-title">Europe</div>
+              <div class="polarite-item"><span class="dot green"></span> DAX <span class="polarite-val">25 000</span></div>
+              <div class="polarite-item"><span class="dot green"></span> CAC 40 <span class="polarite-val">8 350</span></div>
+              <div class="polarite-item"><span class="dot green"></span> STOXX 50 <span class="polarite-val">5 970</span></div>
+              <div class="polarite-item"><span class="dot green"></span> FTSE <span class="polarite-val">10 500</span></div>
+            </div>
+            <div class="polarite-group">
+              <div class="polarite-group-title">États-Unis</div>
+              <div class="polarite-item"><span class="dot red"></span> S&amp;P 500 <span class="polarite-val">6 880</span></div>
+              <div class="polarite-item"><span class="dot red"></span> Nasdaq <span class="polarite-val">25 000</span></div>
+              <div class="polarite-item"><span class="dot red"></span> Dow Jones <span class="polarite-val">49 800</span></div>
+              <div class="polarite-item"><span class="dot blue"></span> Russell <span class="polarite-val">2 630</span></div>
+            </div>
+            <div class="polarite-group">
+              <div class="polarite-group-title">Autres actifs</div>
+              <div class="polarite-item"><span class="dot green"></span> NIKKEI <span class="polarite-val">56 000</span></div>
+              <div class="polarite-item"><span class="dot green"></span> Gold <span class="polarite-val">5 005</span></div>
+              <div class="polarite-item"><span class="dot green"></span> Brent <span class="polarite-val">68,50</span></div>
+              <div class="polarite-item"><span class="dot red"></span> EURUSD <span class="polarite-val">1,1830</span></div>
+            </div>
+            <div class="polarite-group">
+              <div class="polarite-group-title">Crypto</div>
+              <div class="polarite-item"><span class="dot red"></span> Bitcoin <span class="polarite-val">72 000</span></div>
+              <div class="polarite-item"><span class="dot red"></span> Ethereum <span class="polarite-val">2 150</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="salle-card indices">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">📈</div>
+            <div>
+              <div class="salle-name">Indices · DAX, Dow Jones &amp; SP500</div>
+              <div class="salle-coach">Rodolphe (cofondateur) · Benj · Ludovick</div>
+            </div>
+          </div>
+          <span class="badge badge-green">TP Swing DAX ✓</span>
+        </div>
+        <div class="salle-body">
+          <p><strong>Rodolphe</strong> a ouvert le bal dès 5h06. Briefing complet, suivi de 3 analyses swing sur le Dow, le DAX et le SP500. Son approche depuis début 2026 : vendre chaque rebond, avec des TP1 swing ciblés autour des <strong>MM200 Cash Jour</strong>. Sur le Dow, plan sell actif avec un objectif à 48 665 points pour couper la moitié de ses renforts (pris à 50 500 puis 49 837).</p>
+          <div class="quote-block">
+            <strong>"Je verrais qui me fait confiance depuis 2 mois voire plus sur vendre chaque rebond."</strong>
+          </div>
+          <p style="margin-top:0.75rem">Aucun allégement effectué sur le SP500 ni le DAX. L'exposition swing globale principale reste intacte.</p>
+          <p><strong>Benj</strong> a repris un TP swing sur le DAX à <span class="g">24 960</span> suite à sa notification de vendredi, puis a ouvert la salle live à 8h46 pour un brief rapide avant l'open européen.</p>
+          <p><strong>Ludovick</strong> a partagé un replay complet avec plans intraday, hebdomadaire et swing. Niveaux clés, entrées manuelles, ordres conditionnels (OC), stops et TP bien définis. Le tout accessible en replay pour ceux qui n'ont pas pu suivre le live.</p>
+        </div>
+      </div>
+
+      <div class="salle-card us">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">🇺🇸</div>
+            <div>
+              <div class="salle-name">Actions US · Portefeuilles Trading &amp; Investisseur</div>
+              <div class="salle-coach">Sylvain</div>
+            </div>
+          </div>
+          <span class="badge badge-green">2 renforts exécutés</span>
+        </div>
+        <div class="salle-body">
+          <p>Sylvain a commencé par la synthèse de la séance asiatique : volumes réduits (jours fériés Chine/Japon), ambiance plombée par l'annonce des tarifs douaniers passant de 10% à 15%. Puis le premarket US avec les mouvements clés : <span class="g">Vanda Pharma +33%</span> (feu vert FDA) et <strong>Novo Nordisk -10%</strong> (revers clinique face à Eli Lilly).</p>
+          <p>Côté portefeuille investisseur, renfort exécuté sur <strong>$VST</strong> :</p>
+          <div class="trade-box">
+            <div class="trade-box-item">Titre <span>$VST</span></div>
+            <div class="trade-box-item">Ordre <span>BUY (renfort)</span></div>
+            <div class="trade-box-item">Entrée <span>165,50 $</span></div>
+            <div class="trade-box-item">Total <span>41 titres</span></div>
+            <div class="trade-box-item">PRU <span class="green">162,63 $</span></div>
+          </div>
+          <p style="margin-top:0.75rem">Et côté portefeuille trading, nouvelle position sur <strong>$BNAI</strong> :</p>
+          <div class="trade-box">
+            <div class="trade-box-item">Titre <span>$BNAI</span></div>
+            <div class="trade-box-item">Ordre <span>BUY 47 titres</span></div>
+            <div class="trade-box-item">Entrée <span>21,33 $</span></div>
+            <div class="trade-box-item">Stop <span class="red">15,90 $</span></div>
+            <div class="trade-box-item">TP1 <span class="green">36,80 $</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="salle-card europe">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">🇪🇺</div>
+            <div>
+              <div class="salle-name">Actions Europe · Preopen &amp; Fernanda</div>
+              <div class="salle-coach">Sylvain · Inchi (3VG)</div>
+            </div>
+          </div>
+          <span class="badge badge-gold">Impact validé à 3.23</span>
+        </div>
+        <div class="salle-body">
+          <p><strong>Sylvain</strong> a envoyé le preopen CAC40 (8 497, -0,13%) avec les news du matin : Dassault Systèmes (P. Daloz aux commandes), Medincell (dossier FDA accepté), Vinci (nouvelle concession autoroutière), Europlasma (contrat majeur ferroviaire).</p>
+          <p><strong>Inchi (3VG)</strong> a détaillé sa stratégie "Impact" avec un signal validé ce matin. La question qui revient souvent : "C'est quoi Impact ?" Sa réponse :</p>
+          <div class="quote-block">
+            <strong>"C'est ça, tu payes la zone et tu reviens vendredi soir pour voir si ta Fernanda a fait le taf. Niveau TP c'est selon ton profil."</strong>
+          </div>
+          <p style="margin-top:0.75rem">Signal validé sur <span class="g">3,23</span> (voir notif MOIS de la veille). Fernanda hebdo envoyée avec les analyses Advic et Abionyx. Un style de trading clair, reproductible, et documenté chaque semaine.</p>
+        </div>
+      </div>
+
+      <div class="salle-card crypto">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">₿</div>
+            <div>
+              <div class="salle-name">Crypto · Bitcoin</div>
+              <div class="salle-coach">Xavier (cofondateur)</div>
+            </div>
+          </div>
+          <span class="badge badge-gold">Analyse pédagogique</span>
+        </div>
+        <div class="salle-body">
+          <p>Xavier a partagé une analyse pédagogique sur le narratif <strong>"Bitcoin is dead"</strong> qui revient cycliquement à chaque correction. Le BTC affiche une polarité baissière sous 72 000$, l'ETH sous 2 150$. Un rappel utile pour garder la tête froide quand le sentiment de marché bascule.</p>
+        </div>
+      </div>
+
+      <div class="salle-card forex">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">💱</div>
+            <div>
+              <div class="salle-name">Forex · EURUSD</div>
+              <div class="salle-coach">Xavier (cofondateur)</div>
+            </div>
+          </div>
+          <span class="badge badge-blue">Renforcement swing</span>
+        </div>
+        <div class="salle-body">
+          <p>Xavier renforce son exposition swing <strong>SELL sur EURUSD</strong> sous 1,1750, en cohérence avec tous les éléments partagés dans le brief du matin. Pour ceux qui préfèrent rester tranquillement à 1/3 swing, ça fonctionne aussi. Chacun adapte selon son historique sur cette paire.</p>
+          <div class="quote-block">
+            <strong>"Mettre une alerte vers 1.1750 pour appuyer un peu plus. Ça risque de bouger cette semaine."</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="salle-card matieres">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">🥇</div>
+            <div>
+              <div class="salle-name">Matières Premières · Gold</div>
+              <div class="salle-coach">Xavier (cofondateur)</div>
+            </div>
+          </div>
+          <span class="badge badge-green">Gold > 5 000$ ✓</span>
+        </div>
+        <div class="salle-body">
+          <p>Parfois, il suffit juste d'être prêt. Un membre s'est réveillé avec une bonne surprise ce matin : l'Or a franchi les <span class="g">5 000$ l'once</span> ce week-end. Xavier félicitait Théo pour le résultat, preuve qu'un bon positionnement en amont permet de démarrer la semaine avec un avantage sans y passer des heures.</p>
+          <p>Polarité haussière au-dessus de 5 005. Quand le Gold s'envole comme ça, c'est que les institutionnels achètent de l'assurance.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="vip-section reveal">
+    <div class="container">
+      <div class="vip-kicker">Membres VIP · Inclus dans l'abonnement</div>
+      <h2 class="vip-title">En plus des trades,<br />les membres ont aussi reçu…</h2>
+      <div class="vip-grid">
+        <div class="vip-card">
+          <div class="vip-card-icon">📊</div>
+          <div>
+            <div class="vip-card-title">Briefings dès 5h du matin</div>
+            <div class="vip-card-text">Rodolphe à 5h06 sur les indices, Xavier à 6h39 avec le topo macro complet. Avant même l'ouverture, tu sais exactement où regarder et pourquoi.</div>
+          </div>
+        </div>
+        <div class="vip-card">
+          <div class="vip-card-icon">🎥</div>
+          <div>
+            <div class="vip-card-title">Live trading + replay Ludovick</div>
+            <div class="vip-card-text">Plans intraday, hebdomadaire et swing avec entrées, OC, SL et TP. Disponible en replay pour ceux qui ne peuvent pas suivre en direct.</div>
+          </div>
+        </div>
+        <div class="vip-card">
+          <div class="vip-card-icon">🌍</div>
+          <div>
+            <div class="vip-card-title">Macro et géopolitique décryptées</div>
+            <div class="vip-card-text">Iran, tarifs douaniers, Cour Suprême, State of the Union. Chaque événement traduit en impact concret sur tes positions, pas en bruit médiatique.</div>
+          </div>
+        </div>
+        <div class="vip-card">
+          <div class="vip-card-icon">💬</div>
+          <div>
+            <div class="vip-card-title">Une communauté qui avance ensemble</div>
+            <div class="vip-card-text">Les membres échangent, les coachs répondent. Quand le marché est sous tension, personne n'est seul face à son écran.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-white reveal">
+    <div class="honesty-wrap">
+      <div class="honesty-block">
+        <div class="honesty-title">Le point d'honnêteté</div>
+        <div class="honesty-body">
+          <p>Les marchés US sont sous pression. Le Nasdaq, le SP500 et le Dow Jones affichent tous des polarités baissières. Le Bitcoin recule sous 72 000$. Ce n'est pas une semaine pour jouer au héros.</p>
+          <p>Rodolphe le dit depuis début 2026 : <strong>vendre chaque rebond.</strong> Xavier a été clair dans son brief : "Restez froids, gardez du cash, et surtout ne subissez pas le flux, accompagnez-le." Quand l'Or passe les 5 000$, c'est un avertissement, pas une décoration.</p>
+          <p>La transparence, c'est aussi ça. Quand c'est tendu, on le dit. Et les coachs adaptent leur gestion en conséquence, pas leur discours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-soft reveal">
+    <div class="section-header container">
+      <div class="kicker">Résumé des performances</div>
+      <h2 class="section-title">La journée du 23 février, en un coup d'oeil</h2>
+      <p class="section-sub">6 coachs, 7 salles, une semaine sous haute tension cadrée dès le premier brief.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Coach</th>
+            <th>Salle</th>
+            <th>Fait marquant</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="coach-cell">Xavier</span></td>
+            <td><span class="market-pill">Macro · Multi</span></td>
+            <td>Brief complet à 6h39. Polarités, tarifs, Iran, NVIDIA. Plans EURUSD sell + Gold.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Rodolphe</span></td>
+            <td><span class="market-pill">Indices</span></td>
+            <td>4 notifs swing dès 5h06. Plans SELL Dow / DAX / SP500, TP1 vers MM200.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Sylvain</span></td>
+            <td><span class="market-pill">Actions US &amp; EU</span></td>
+            <td>Synthèse Asie, premarket US. Renforts <span class="g">$VST</span> et <span class="g">$BNAI</span>. Preopen CAC.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Benj</span></td>
+            <td><span class="market-pill">Indices</span></td>
+            <td>TP swing DAX à <span class="g">24 960</span>. Live matinal avant open.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Inchi (3VG)</span></td>
+            <td><span class="market-pill">Actions Europe</span></td>
+            <td>Stratégie Impact validée à <span class="g">3,23</span>. Fernanda hebdo Advic + Abionyx.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Ludovick</span></td>
+            <td><span class="market-pill">Indices</span></td>
+            <td>Replay complet avec plans intraday, hebdo et swing.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="cta-section reveal">
+    <div class="cta-inner">
+      <div class="kicker">Rejoindre IVT</div>
+      <h2 class="cta-title">Tu veux vivre ça<br />de l'intérieur ?</h2>
+      <p class="cta-text">
+        Chaque jour, nos coachs partagent leurs analyses, leurs trades et leur pédagogie en temps réel. Pas de promesses en l'air, pas de résultats embellis. Juste une équipe de passionnés qui trade avec toi, t'explique chaque décision, et construit une communauté où progresser ensemble est la priorité.
+      </p>
+      <a href="https://interactivtrading.com/vip?aff=xf-actus" class="btn-primary">
+        Découvrir l'abonnement VIP
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <p class="cta-recap">
+        23 fév. 2026 · 20 notifications · 6 coachs · DAX TP swing ✓ · $VST et $BNAI renforcés · Gold > 5 000$ · Et demain, ça recommence.
+      </p>
+    </div>
+  </section>
+
+  <script>
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.07 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

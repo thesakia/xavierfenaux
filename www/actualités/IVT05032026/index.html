@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ce que les abonnés IVT ont vécu le 5 mars 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent-primary: #6F4FF2;
+      --accent-hover:   #5a3fd4;
+      --vip-accent:     #249DDF;
+      --vip-accent-light: rgba(36, 157, 223, 0.14);
+      --logo-gold:      #F4B454;
+      --bg-white:     #FFFFFF;
+      --bg-soft:      #F5F4FF;
+      --bg-dark:      #0f0f0f;
+      --text-primary: #1a1a1a;
+      --text-muted:   #555;
+      --text-light:   #888;
+      --text-white:   #ffffff;
+      --border-soft:  #e6e3ff;
+      --border-light: rgba(26, 26, 26, 0.08);
+      --border-hover: rgba(111, 79, 242, 0.3);
+      --shadow-card:         0 12px 40px rgba(111, 79, 242, 0.08);
+      --shadow-card-hover:   0 18px 55px rgba(15, 15, 15, 0.09);
+      --shadow-button:       0 6px 20px rgba(111, 79, 242, 0.25);
+      --shadow-button-hover: 0 10px 28px rgba(111, 79, 242, 0.32);
+      --section-padding: clamp(3.5rem, 7vw, 5.5rem);
+      --card-padding: 1.75rem;
+      --card-padding-large: 2.25rem;
+      --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px;
+      --radius-xl: 16px; --radius-3xl: 20px; --radius-full: 999px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", Arial, sans-serif;
+      background: var(--bg-white); color: var(--text-primary);
+      line-height: 1.6; overflow-x: hidden;
+    }
+
+    /* HEADER */
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.94); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-soft);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 1.5rem;
+    }
+    .logo { font-family: "Montserrat", Arial, sans-serif; font-size: 1rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; }
+    .logo em { font-style: normal; color: var(--accent-primary); }
+    .header-badge { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; color: var(--text-light); }
+
+    /* HERO */
+    .hero {
+      background: var(--bg-soft);
+      padding: clamp(3rem, 8vw, 5.5rem) 1.25rem clamp(2.5rem, 7vw, 4.5rem);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+      width: 700px; height: 400px;
+      background: radial-gradient(ellipse, rgba(111,79,242,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; max-width: 760px; margin: 0 auto; }
+
+    .kicker {
+      display: inline-block; font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.68rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent-primary); margin-bottom: 1.1rem;
+    }
+    .hero-title {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(2.2rem, 5.5vw, 3.8rem); font-weight: 800;
+      color: var(--text-primary); line-height: 1.05; letter-spacing: -0.03em;
+      margin-bottom: 1.1rem; opacity: 0; animation: fadeInUp 0.7s 0.1s ease forwards;
+    }
+    .hero-title mark { background: none; color: var(--accent-primary); }
+    .hero-lead {
+      font-size: clamp(0.95rem, 2vw, 1.1rem); color: var(--text-muted);
+      max-width: 580px; margin: 0 auto 2.25rem; line-height: 1.65;
+      opacity: 0; animation: fadeInUp 0.7s 0.25s ease forwards;
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    .hero-stats-wrap {
+      opacity: 0; animation: fadeInUp 0.7s 0.4s ease forwards;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      display: flex; justify-content: center; padding-bottom: 4px;
+    }
+    .hero-stats {
+      display: inline-flex; border: 1px solid var(--border-soft);
+      border-radius: var(--radius-xl); background: var(--bg-white);
+      overflow: hidden; box-shadow: var(--shadow-card); flex-shrink: 0;
+    }
+    .stat-item { padding: 1rem 1.5rem; text-align: center; border-right: 1px solid var(--border-soft); }
+    .stat-item:last-child { border-right: none; }
+    .stat-value {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(1.5rem, 3.5vw, 2.2rem); font-weight: 800;
+      color: var(--text-primary); line-height: 1; letter-spacing: -0.03em;
+    }
+    .stat-value.purple { color: var(--accent-primary); }
+    .stat-value.blue   { color: var(--vip-accent); }
+    .stat-value.green  { color: #16a34a; }
+    .stat-value.gold   { color: #b45309; }
+    .stat-label { font-size: 0.7rem; color: var(--text-light); margin-top: 0.3rem; font-family: "Inter", Arial, sans-serif; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* LAYOUT */
+    .container { max-width: 900px; margin: 0 auto; padding: 0 1.25rem; }
+    .section { padding: var(--section-padding) 1.25rem; }
+    .section-bg-soft  { background: var(--bg-soft); }
+    .section-bg-white { background: var(--bg-white); }
+    .section-header { max-width: 900px; margin: 0 auto 2.25rem; }
+    .section-title {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(1.55rem, 3.5vw, 2.2rem); font-weight: 800;
+      color: var(--text-primary); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 0.5rem;
+    }
+    .section-sub { font-size: clamp(0.9rem, 1.5vw, 0.98rem); color: var(--text-muted); line-height: 1.6; font-family: "Inter", Arial, sans-serif; }
+
+    /* STATS GRID */
+    .stats-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+    .stat-card {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); padding: var(--card-padding);
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: var(--border-hover); }
+    .stat-card-value {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.35rem; color: var(--text-primary);
+    }
+    .stat-card-value.purple { color: var(--accent-primary); }
+    .stat-card-value.blue   { color: var(--vip-accent); }
+    .stat-card-value.green  { color: #16a34a; }
+    .stat-card-value.gold   { color: #b45309; }
+    .stat-card-label { font-size: clamp(0.82rem, 1.2vw, 0.88rem); color: var(--text-muted); line-height: 1.4; font-family: "Inter", Arial, sans-serif; }
+
+    /* SALLES */
+    .salles-grid { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.9rem; }
+    .salle-card {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); padding: var(--card-padding-large);
+      position: relative; overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease, border-color 0.25s ease;
+    }
+    .salle-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: var(--border-hover); }
+    .salle-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 4px 0 0 4px;
+    }
+    .salle-card.indices::before  { background: var(--accent-primary); }
+    .salle-card.europe::before   { background: #16a34a; }
+    .salle-card.us::before       { background: #16a34a; }
+    .salle-card.crypto::before   { background: var(--logo-gold); }
+    .salle-card.forex::before    { background: var(--vip-accent); }
+    .salle-card.global::before   { background: var(--accent-primary); }
+    .salle-card.mp::before       { background: var(--logo-gold); }
+
+    .salle-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.85rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .salle-meta { display: flex; align-items: center; gap: 0.75rem; }
+    .salle-icon {
+      width: 42px; height: 42px; border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+      background: var(--bg-soft); border: 1px solid var(--border-soft); flex-shrink: 0;
+    }
+    .salle-name { font-family: "Montserrat", Arial, sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.1rem; }
+    .salle-coach { font-size: 0.8rem; color: var(--text-light); font-family: "Inter", Arial, sans-serif; }
+
+    /* BADGES */
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em;
+      padding: 0.28rem 0.7rem; border-radius: var(--radius-full); white-space: nowrap;
+    }
+    .badge-purple { background: rgba(111,79,242,0.08); color: var(--accent-primary); border: 1px solid var(--border-soft); }
+    .badge-green  { background: rgba(22,163,74,0.08);  color: #16a34a; border: 1px solid rgba(22,163,74,0.2); }
+    .badge-gold   { background: rgba(244,180,84,0.1);  color: #b45309; border: 1px solid rgba(244,180,84,0.3); }
+    .badge-blue   { background: var(--vip-accent-light); color: var(--vip-accent); border: 1px solid rgba(36,157,223,0.25); }
+
+    /* BODY */
+    .salle-body { font-size: clamp(0.9rem, 1.5vw, 0.97rem); color: var(--text-muted); line-height: 1.75; font-family: "Inter", Arial, sans-serif; }
+    .salle-body p + p { margin-top: 0.7rem; }
+    .salle-body strong { color: var(--text-primary); font-weight: 600; }
+
+    /* TRADE BOX */
+    .trade-box {
+      margin-top: 0.9rem; background: var(--bg-soft); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg); padding: 0.9rem 1.1rem;
+      display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem;
+    }
+    .trade-box-item { font-size: 0.8rem; color: var(--text-muted); font-family: "Inter", Arial, sans-serif; }
+    .trade-box-item span { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: var(--text-primary); margin-left: 0.3rem; }
+    .trade-box-item span.green { color: #16a34a; }
+    .trade-box-item span.red   { color: #dc2626; }
+    .trade-box-item span.blue  { color: var(--vip-accent); }
+    .trade-box-item span.gold  { color: #b45309; }
+
+    /* QUOTE */
+    .quote-block {
+      margin-top: 0.9rem; border-left: 3px solid var(--accent-primary);
+      padding: 0.7rem 1.1rem; background: var(--bg-soft);
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      font-size: 0.9rem; color: var(--text-muted); font-style: italic; line-height: 1.7;
+      font-family: "Inter", Arial, sans-serif;
+    }
+    .quote-block strong { font-style: normal; color: var(--text-primary); font-weight: 600; }
+
+    /* POLARITES */
+    .polarites-grid { margin-top: 1rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+    .pol-group {
+      background: var(--bg-soft); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg); padding: 0.9rem 1rem;
+    }
+    .pol-group-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: 0.68rem; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-light);
+      margin-bottom: 0.6rem;
+    }
+    .pol-item { display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.3rem; font-family: "Inter", Arial, sans-serif; }
+    .pol-item:last-child { margin-bottom: 0; }
+    .pol-name { color: var(--text-primary); font-weight: 600; }
+    .pol-val { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; font-size: 0.8rem; }
+    .pol-val.red { color: #dc2626; }
+    .pol-val.blue { color: var(--vip-accent); }
+    .pol-val.green { color: #16a34a; }
+
+    /* VIP */
+    .vip-section { background: var(--bg-dark); color: var(--text-white); padding: var(--section-padding) 1.25rem; }
+    .vip-kicker {
+      display: inline-block; font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.68rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--vip-accent); margin-bottom: 1.1rem;
+    }
+    .vip-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: clamp(1.55rem, 3.5vw, 2.2rem);
+      font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--text-white); margin-bottom: 2.25rem;
+    }
+    .vip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem; }
+    .vip-card {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-3xl); padding: 1.5rem;
+      display: flex; gap: 0.9rem; align-items: flex-start;
+      transition: background 0.25s ease, border-color 0.25s ease;
+    }
+    .vip-card:hover { background: rgba(36,157,223,0.08); border-color: rgba(36,157,223,0.25); }
+    .vip-card-icon {
+      width: 38px; height: 38px; border-radius: var(--radius-lg);
+      background: var(--vip-accent-light); border: 1px solid rgba(36,157,223,0.25);
+      display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;
+    }
+    .vip-card-title { font-family: "Montserrat", Arial, sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--text-white); margin-bottom: 0.3rem; }
+    .vip-card-text { font-size: 0.84rem; color: rgba(255,255,255,0.55); line-height: 1.6; font-family: "Inter", Arial, sans-serif; }
+
+    /* PERF */
+    .perf-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+    .perf-card {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); padding: var(--card-padding);
+      position: relative; overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .perf-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: var(--border-hover); }
+    .perf-card.featured { border-color: rgba(22,163,74,0.3); background: linear-gradient(135deg, #fff 60%, rgba(22,163,74,0.04) 100%); }
+    .perf-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
+    }
+    .perf-card.green-top::after  { background: #16a34a; }
+    .perf-card.purple-top::after { background: var(--accent-primary); }
+    .perf-card.blue-top::after   { background: var(--vip-accent); }
+    .perf-card.gold-top::after   { background: var(--logo-gold); }
+    .perf-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.9rem; }
+    .perf-card-icon {
+      width: 34px; height: 34px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center; font-size: 0.95rem;
+      background: var(--bg-soft); border: 1px solid var(--border-soft); flex-shrink: 0;
+    }
+    .perf-badge-tag {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.6rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.18rem 0.55rem; border-radius: var(--radius-full);
+    }
+    .perf-badge-tag.green  { background: rgba(22,163,74,0.08); color: #16a34a; border: 1px solid rgba(22,163,74,0.2); }
+    .perf-badge-tag.purple { background: rgba(111,79,242,0.08); color: var(--accent-primary); border: 1px solid var(--border-soft); }
+    .perf-badge-tag.blue   { background: var(--vip-accent-light); color: var(--vip-accent); border: 1px solid rgba(36,157,223,0.25); }
+    .perf-badge-tag.gold   { background: rgba(244,180,84,0.1); color: #b45309; border: 1px solid rgba(244,180,84,0.3); }
+    .perf-value {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.3rem;
+    }
+    .perf-value.green  { color: #16a34a; }
+    .perf-value.purple { color: var(--accent-primary); }
+    .perf-value.blue   { color: var(--vip-accent); }
+    .perf-value.gold   { color: #b45309; }
+    .perf-title { font-family: "Montserrat", Arial, sans-serif; font-size: 0.8rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.22rem; }
+    .perf-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; font-family: "Inter", Arial, sans-serif; }
+    .perf-detail {
+      margin-top: 0.8rem; background: var(--bg-soft); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md); padding: 0.6rem 0.85rem;
+      display: flex; flex-wrap: wrap; gap: 0.25rem 0.9rem;
+    }
+    .perf-detail-item { font-size: 0.72rem; color: var(--text-muted); font-family: "Inter", Arial, sans-serif; }
+    .perf-detail-item span { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: var(--text-primary); margin-left: 0.25rem; }
+    .perf-detail-item span.g { color: #16a34a; }
+    .perf-detail-item span.b { color: var(--vip-accent); }
+    .perf-detail-item span.r { color: #dc2626; }
+    .perf-detail-item span.o { color: #b45309; }
+
+    /* HONESTY */
+    .honesty-wrap { max-width: 900px; margin: 0 auto; }
+    .honesty-block {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-left: 3px solid var(--accent-primary);
+      border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+      padding: 1.75rem 1.75rem 1.75rem 2rem;
+    }
+    .honesty-title { font-family: "Montserrat", Arial, sans-serif; font-size: clamp(1rem, 2vw, 1.3rem); font-weight: 700; color: var(--text-primary); margin-bottom: 0.7rem; letter-spacing: -0.01em; }
+    .honesty-body { font-size: clamp(0.9rem, 1.5vw, 0.97rem); color: var(--text-muted); line-height: 1.75; font-family: "Inter", Arial, sans-serif; }
+    .honesty-body p + p { margin-top: 0.7rem; }
+    .honesty-body strong { color: var(--text-primary); font-weight: 600; }
+
+    /* TABLE */
+    .table-wrap {
+      max-width: 900px; margin: 0 auto; border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); overflow: hidden; box-shadow: var(--shadow-card);
+      overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 560px; }
+    thead tr { background: var(--bg-soft); }
+    th {
+      font-family: "Montserrat", Arial, sans-serif; font-size: 0.63rem; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-primary);
+      padding: 0.9rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border-soft); white-space: nowrap;
+    }
+    td { padding: 0.9rem 1.25rem; color: var(--text-muted); border-bottom: 1px solid var(--border-light); vertical-align: middle; font-family: "Inter", Arial, sans-serif; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--bg-soft); }
+    .coach-cell { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: var(--text-primary); font-size: 0.85rem; }
+    .market-pill {
+      display: inline-block; font-size: 0.68rem; font-weight: 600;
+      padding: 0.18rem 0.55rem; border-radius: var(--radius-full);
+      background: rgba(111,79,242,0.07); border: 1px solid var(--border-soft);
+      color: var(--accent-primary); white-space: nowrap; font-family: "Montserrat", Arial, sans-serif;
+    }
+    .g { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: #16a34a; }
+    .r { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: #dc2626; }
+
+    /* CTA */
+    .cta-section { background: var(--bg-soft); padding: var(--section-padding) 1.25rem; text-align: center; }
+    .cta-inner { max-width: 580px; margin: 0 auto; }
+    .cta-title { font-family: "Montserrat", Arial, sans-serif; font-size: clamp(1.55rem, 3.5vw, 2.2rem); font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 0.9rem; }
+    .cta-text { font-size: clamp(0.9rem, 1.5vw, 0.98rem); color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem; font-family: "Inter", Arial, sans-serif; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent-primary); color: var(--text-white);
+      font-family: "Montserrat", Arial, sans-serif; font-size: 0.82rem; font-weight: 700;
+      padding: 0.85rem 1.6rem; border-radius: var(--radius-md);
+      text-decoration: none; border: none; cursor: pointer;
+      box-shadow: var(--shadow-button); transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: var(--shadow-button-hover); }
+    .cta-recap { margin-top: 1.4rem; font-size: 0.8rem; color: var(--text-light); line-height: 1.6; font-family: "Inter", Arial, sans-serif; }
+
+    /* REVEAL */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .vip-grid { grid-template-columns: 1fr; }
+      .perf-grid { grid-template-columns: 1fr; }
+      .polarites-grid { grid-template-columns: 1fr; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border-soft); }
+      .stat-item:last-child { border-bottom: none; }
+      .hero-stats { flex-direction: column; width: fit-content; }
+      th, td { padding: 0.65rem 0.85rem; }
+      .honesty-block { padding: 1.25rem 1.25rem 1.25rem 1.5rem; }
+    }
+    @media (max-width: 900px) {
+      .salle-header { flex-direction: column; gap: 0.65rem; }
+      .perf-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+    <script defer src="https://analytics.parentsdejumeaux.fr/script.js" data-website-id="3b10c5e0-1aea-4ae4-935f-64b27cf0caf9" data-domains="xavierfenaux.com,www.xavierfenaux.com"></script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="logo">Interactiv<em>Trading</em></div>
+    <span class="header-badge">Rapport · 5 mars 2026</span>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="kicker">Rapport de journée · Jeudi 5 mars 2026</div>
+      <h1 class="hero-title">Iran Jour 6. Rebond en Asie.<br /><mark>FERNANDA encore dans le vert.</mark></h1>
+      <p class="hero-lead">
+        Cyber-attaque iranienne à 1h30 du matin, câbles sous-marins endommagés en Mer Rouge, Brent qui casse les 85$. Malgré ça, la Corée rebondit de 11%, le Nikkei reprend 2,24%. Xavier brief dès 5h54. Rodolphe ouvre son live à 4h07. 3VG continue sa série : DBT, ADVIC, SENSORION, KLEA. 28 notifications, 6 coachs.
+      </p>
+      <div class="hero-stats-wrap">
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-value purple">28</div>
+            <div class="stat-label">Notifications</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">6</div>
+            <div class="stat-label">Coachs actifs</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value green">DAX TP1</div>
+            <div class="stat-label">Swing Rodolphe -600 pts</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value blue">EURUSD</div>
+            <div class="stat-label">Position swing tenue</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHIFFRES -->
+  <section class="section section-bg-white reveal">
+    <div class="section-header container">
+      <div class="kicker">La journée en chiffres</div>
+      <h2 class="section-title">6 coachs. Cyber-guerre. Rebond asiatique. Séance chargée.</h2>
+      <p class="section-sub">Escalade électronique dans la nuit, Brent au-dessus de 85$, KOSPI qui rebondit de 11% après trois jours de déroute, Nikkei +2,24%, minutes BCE à 13h30, NFP demain. Les coachs avaient les clés pour naviguer.</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-value purple">28</div>
+        <div class="stat-card-label">Notifications envoyées<br /><span style="font-size:0.76rem;color:var(--text-light);font-weight:400">De 4h07 à 21h07</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value">6</div>
+        <div class="stat-card-label">Coachs actifs<br /><span style="font-size:0.76rem;color:var(--text-light);font-weight:400">Xavier · Rodolphe · Benj · Sylvain · 3VG · Ludovick</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value green">TP1 ✓</div>
+        <div class="stat-card-label">DAX swing Rodolphe<br /><span style="font-size:0.76rem;color:var(--text-light);font-weight:400">30% fermé, soit -600 pts depuis entrée</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value blue">Tenu</div>
+        <div class="stat-card-label">EURUSD position swing<br /><span style="font-size:0.76rem;color:var(--text-light);font-weight:400">Xavier : "Il fallait juste être patient"</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value gold">+800%</div>
+        <div class="stat-card-label">NANO Fernanda Trend UT Mois<br /><span style="font-size:0.76rem;color:var(--text-light);font-weight:400">Exemple pédago partagé par 3VG</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value">NFP</div>
+        <div class="stat-card-label">Demain vendredi<br /><span style="font-size:0.76rem;color:var(--text-light);font-weight:400">+60K emplois attendus · chômage 4,4%</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SALLES -->
+  <section class="section section-bg-soft reveal">
+    <div class="section-header container">
+      <div class="kicker">Les temps forts</div>
+      <h2 class="section-title">Ce qui s'est passé dans chaque salle</h2>
+      <p class="section-sub">Cyber-attaque à 1h30, Brent au-dessus de 85$, câbles sous-marins endommagés, rebond violent en Asie. Xavier brief à 5h54, Rodolphe en live dès 4h07. Salle par salle, voici ce qui s'est joué le 5 mars.</p>
+    </div>
+    <div class="salles-grid">
+
+      <!-- BRIEF MOOD -->
+      <div class="salle-card global">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">☕</div>
+            <div>
+              <div class="salle-name">Brief Mood · Analyse globale</div>
+              <div class="salle-coach">Xavier (cofondateur) · Rodolphe</div>
+            </div>
+          </div>
+          <span class="badge badge-purple">Iran Jour 6 · 5h54</span>
+        </div>
+        <div class="salle-body">
+          <p><strong>Rodolphe</strong> a ouvert son live à 4h07, comme chaque matin. <strong>Xavier</strong> a publié son brief à 5h54 avec un constat direct : la nuit n'a pas été de tout repos et on entre dans "une autre dimension de risque". Pendant la nuit, une cyber-attaque d'une ampleur inédite a visé les infrastructures d'eau et d'électricité en Iran, et par rebond certains terminaux portuaires aux Émirats. Autre escalade à 3h00 : des câbles sous-marins de fibre optique en Mer Rouge endommagés. La connectivité Europe-Asie dégradée de 20%, ce qui va stresser le secteur Tech à l'ouverture. Le Brent a breaké les 85$ en Asie à 4h00.</p>
+          <p>Xavier a actualisé les polarités du jeudi. Principale évolution par rapport à mercredi : <strong>les cryptos repassent en vert</strong> (Bitcoin et ETH à 69 000$ et 2 100$), le Russell également. Le Nasdaq repasse vert à 24 900. L'Europe reste entièrement rouge.</p>
+          <div class="polarites-grid">
+            <div class="pol-group">
+              <div class="pol-group-title">Europe</div>
+              <div class="pol-item"><span class="pol-name">DAX</span><span class="pol-val red">24 300 🔴</span></div>
+              <div class="pol-item"><span class="pol-name">CAC40</span><span class="pol-val red">8 270 🔴</span></div>
+              <div class="pol-item"><span class="pol-name">STOXX50</span><span class="pol-val red">5 860 🔴</span></div>
+              <div class="pol-item"><span class="pol-name">FTSE</span><span class="pol-val red">10 600 🔴</span></div>
+            </div>
+            <div class="pol-group">
+              <div class="pol-group-title">États-Unis</div>
+              <div class="pol-item"><span class="pol-name">SP500</span><span class="pol-val red">6 870 🔴</span></div>
+              <div class="pol-item"><span class="pol-name">Nasdaq</span><span class="pol-val green">24 900 🟢</span></div>
+              <div class="pol-item"><span class="pol-name">Dow Jones</span><span class="pol-val red">48 800 🔴</span></div>
+              <div class="pol-item"><span class="pol-name">Russell</span><span class="pol-val blue">2 630 🔵</span></div>
+            </div>
+            <div class="pol-group">
+              <div class="pol-group-title">Actifs refuge</div>
+              <div class="pol-item"><span class="pol-name">Or</span><span class="pol-val blue">5 200 🔵</span></div>
+              <div class="pol-item"><span class="pol-name">Brent</span><span class="pol-val green">78 🟢</span></div>
+              <div class="pol-item"><span class="pol-name">Nikkei</span><span class="pol-val red">56 000 🔴</span></div>
+              <div class="pol-item"><span class="pol-name">EURUSD</span><span class="pol-val red">1.1660 🔴</span></div>
+            </div>
+            <div class="pol-group">
+              <div class="pol-group-title">Crypto — Repassent verts</div>
+              <div class="pol-item"><span class="pol-name">Bitcoin</span><span class="pol-val green">69 000 🟢</span></div>
+              <div class="pol-item"><span class="pol-name">ETH</span><span class="pol-val green">2 100 🟢</span></div>
+            </div>
+          </div>
+          <div class="quote-block" style="margin-top:1rem;">
+            <strong>"Le danger, ce n'est pas la volatilité. Le danger, c'est votre réaction à la volatilité."</strong> — Xavier
+          </div>
+          <p style="margin-top:0.8rem">À 15h32, Xavier a également partagé une note sur les <strong>polarités SP500, Dow Jones et DAX en H4</strong>, rappelant l'utilité de les garder sur ses graphiques comme ligne directrice intraday et intraswing. À 20h42, <strong>Rodolphe</strong> a validé la plateforme Ouinex après l'avoir testée en journée.</p>
+        </div>
+      </div>
+
+      <!-- INDICES -->
+      <div class="salle-card indices">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">📈</div>
+            <div>
+              <div class="salle-name">Indices · DAX · Dow Jones · SP500</div>
+              <div class="salle-coach">Rodolphe (cofondateur) · Benj · Ludovick</div>
+            </div>
+          </div>
+          <span class="badge badge-green">DAX TP1 swing · -600 pts ✓</span>
+        </div>
+        <div class="salle-body">
+          <p><strong>Rodolphe</strong> a publié à 12h03 une mise à jour importante sur son plan DAX swing. Il a fermé <strong>30% de sa position à TP1</strong>, soit 600 points plus bas que son entrée. Il précise qu'il devrait normalement reprendre des positions au plus proche des 24 300 à 24 600 points, en surveillant la MM200 UT4H Cash DAX. "J'ai la psycho un peu fatiguée." Un aveu sincère après plusieurs jours de marché bipolaire. À 19h29, il rappelle le tableau d'ensemble swing : TP1 pris sur le DAX uniquement. Sur Dow Jones et SP500, TP1 pas encore touché, objectif grosso modo les MM200 Cash Journalières.</p>
+          <div class="trade-box">
+            <div class="trade-box-item">DAX swing <span>SELL</span></div>
+            <div class="trade-box-item">TP1 (30%) <span class="green">Pris à -600 pts ✓</span></div>
+            <div class="trade-box-item">Reprise zone <span>24 300 / 24 600</span></div>
+            <div class="trade-box-item">Dow Jones / SP500 <span>TP1 pas encore atteint</span></div>
+            <div class="trade-box-item">Objectif final <span class="blue">MM200 Cash Daily</span></div>
+          </div>
+          <p style="margin-top:0.8rem"><strong>Benj</strong> a ouvert le live à 8h02 avec briefing à 8h30 et live trading à 9h00. À 11h37, il a publié un point global intraday : premier cycle haussier validé le matin (tenue des 50% de retracement de la veille, combo UT15m cash actif). Les acheteurs gardaient la main à cet instant. À surveiller : un potentiel combo horaire au-dessus pour un nouveau plus haut (24 500 à 24 600), qui serait l'occasion de vendre à nouveau. Conseil de Benj face au marché news-driven : baisser le levier pour absorber les bougies de 100 à 200 points sans prévenir.</p>
+          <div class="quote-block">
+            <strong>"On voit bien que nous sommes dans un marché qui ne bouge qu'au gré des news qui tombent."</strong> — Benj
+          </div>
+          <p><strong>Ludovick</strong> a publié son replay à 14h43 avec deux actifs et plans détaillés (intraday, hebdo et swing), en cassant sa routine habituelle. Live quasiment en continu toute la journée.</p>
+        </div>
+      </div>
+
+      <!-- FOREX -->
+      <div class="salle-card forex">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">💱</div>
+            <div>
+              <div class="salle-name">Forex · EURUSD</div>
+              <div class="salle-coach">Xavier</div>
+            </div>
+          </div>
+          <span class="badge badge-blue">Position swing maintenue</span>
+        </div>
+        <div class="salle-body">
+          <p>À 7h12, <strong>Xavier</strong> envoie un message court et net : "Il fallait juste être patient. Tant pis pour mon nouveau renfort d'hier, trop lent et j'en ai d'autres. ON TIENT LE REST !" La polarité rouge à 1.1660 joue son rôle. Le Dollar Index remonte, porté par la géopolitique et des taux US qui résistent. À 16h52, il confirme : "Bravo à ceux qui ont tenu le dernier renfort. Plus qu'à laisser filer." La position swing longue terme reste ouverte, orientée vers 1.1200.</p>
+          <div class="trade-box">
+            <div class="trade-box-item">Paire <span>EURUSD</span></div>
+            <div class="trade-box-item">Sens <span>SELL swing long terme</span></div>
+            <div class="trade-box-item">Polarité <span class="red">1.1660 🔴</span></div>
+            <div class="trade-box-item">TP1 swing <span class="blue">1.1200</span></div>
+            <div class="trade-box-item">Statut <span>Position tenue ✓</span></div>
+          </div>
+          <div class="quote-block">
+            <strong>"Comme quoi cette foutue polarité. Bravo à ceux qui ont tenu le dernier renfort. Plus qu'à laisser filer."</strong> — Xavier
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIONS EUROPE -->
+      <div class="salle-card europe">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">🇪🇺</div>
+            <div>
+              <div class="salle-name">Actions Europe · FERNANDA · Smallcaps</div>
+              <div class="salle-coach">3VG (Inchi) · Sylvain</div>
+            </div>
+          </div>
+          <span class="badge badge-green">DBT · ADVIC · SENSORION · KLEA</span>
+        </div>
+        <div class="salle-body">
+          <p><strong>3VG (Inchi)</strong> a été particulièrement actif toute la journée. Dès 9h13, il rappelle DBT : "Tas le bonjour de Stromboli. Si tu en veux un autre, va jeter un oeil à ALDBT." À 9h36, il invite ceux qui l'ont suivi depuis 48h à prendre un TP1 de <span class="g">+20%</span> sur DBT, et laisse courir vers l'objectif 0.093 à 0.098. La régularité de ses impacts Stromboli devient une signature.</p>
+          <p>À 10h28, il pointe <strong>SENSORION</strong> : Fernanda Hebdo Naissance à venir dès le lendemain soir. Le prudent attendra le retour sur zone. À 10h46, <strong>ADVIC</strong> : test de sa Kijun Mois correspondant à la Fernanda Hebdo à 1.94 en live. Deux profils de risque documentés, le prudent et le téméraire, avec les niveaux correspondants. À 13h11, un exemple pédagogique fort sur <strong>NANO</strong> en Fernanda Trend UT Mois : <span class="g">+800% en 12 mois</span> en suivant la tendance. "Impossible n'est pas FERNANDA."</p>
+          <div class="trade-box">
+            <div class="trade-box-item">DBT TP1 <span class="green">+20% pris ✓</span></div>
+            <div class="trade-box-item">DBT objectif suite <span>0.093 / 0.098</span></div>
+            <div class="trade-box-item">ADVIC <span>Kijun Mois = Fernanda Hebdo 1.94</span></div>
+            <div class="trade-box-item">SENSORION <span>Fernanda Hebdo naissance vendredi</span></div>
+            <div class="trade-box-item">KLEA <span>M100 Hebdo 0.199 à sauver vendredi</span></div>
+          </div>
+          <p style="margin-top:0.8rem">À 9h53, il souligne sur <strong>KLEA Holding</strong> que le PDG profite de la chute du titre depuis lundi pour racheter massivement : "Vous en connaissez beaucoup des PDG qui profitent de la chute de leur boite depuis lundi pour acheter fort ?" Niveau clé à surveiller vendredi : M100 Hebdo à 0.199. À 12h16, il prévient : ne pas acheter comme un bourrin si on voit la notif maintenant, le mieux c'est la zone du PDG sur le support M100.</p>
+          <p><strong>Sylvain</strong> a envoyé le Preopen CAC40 à 8h06 : 8 141 points, avec les dossiers TotalEnergies, Alstom, Eramet, Eurazeo et les mouvements d'analystes du matin (Engie et TotalEnergies relevés par UBS).</p>
+        </div>
+      </div>
+
+      <!-- ACTIONS US -->
+      <div class="salle-card us">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">🇺🇸</div>
+            <div>
+              <div class="salle-name">Actions US · RGTI · SES · Broadcom · NFP demain</div>
+              <div class="salle-coach">Sylvain</div>
+            </div>
+          </div>
+          <span class="badge badge-purple">Sorties RGTI et SES · NFP demain</span>
+        </div>
+        <div class="salle-body">
+          <p><strong>Sylvain</strong> a couvert la séance asiatique dès 7h28 : rebond spectaculaire en Corée du Sud (KOSPI +11%), Nikkei +2,24% à 56 500 points, Shanghai +0,80%, Inde +0,65%. Bitcoin au-dessus de 72 000$. Or à 5 170$. À 7h43, il analyse les earnings publiés en after-market : RGTI (déficit GAAP de 216 millions$, marges brutes en forte compression de 53% à 29%) et SES (croissance forte attendue en 2026 à +43%/+67%, mais structurellement déficitaire). Sa décision : <strong>sortir des deux dossiers</strong>.</p>
+          <div class="trade-box">
+            <div class="trade-box-item">RGTI <span class="red">Sortie décidée</span></div>
+            <div class="trade-box-item">SES <span class="red">Sortie décidée</span></div>
+            <div class="trade-box-item">Raison RGTI <span>Marges brutes 29% (vs 53%)</span></div>
+            <div class="trade-box-item">Raison SES <span>Structurellement déficitaire</span></div>
+          </div>
+          <p style="margin-top:0.8rem">À 14h23, le premarket US : SP500 -0,5%, Nasdaq -0,20%, Dow -0,2%, WTI +2,55%. Point chaud de la matinée : Nvidia stoppe la production de ses puces H200 pour la Chine et réalloue la capacité vers Vera Rubin. Broadcom en hausse de +7,35% après résultats, le PDG Hock Tan visant 100 milliards de dollars de revenus IA d'ici 2027. Trade Desk +22,37% sur des perspectives publicitaires solides. À 21h07, <strong>Sylvain</strong> prépare la journée du lendemain : NFP attendu à +60K emplois (contre +130K en janvier), taux de chômage à 4,4%.</p>
+        </div>
+      </div>
+
+      <!-- CRYPTO -->
+      <div class="salle-card crypto">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">₿</div>
+            <div>
+              <div class="salle-name">Crypto · Bitcoin · ETH · Gold</div>
+              <div class="salle-coach">Xavier</div>
+            </div>
+          </div>
+          <span class="badge badge-gold">BTC 72k · Cryptos repassent verts</span>
+        </div>
+        <div class="salle-body">
+          <p><strong>Xavier</strong> a publié un flash crypto à 13h37 en vidéo 5 minutes. La principale information de la journée côté crypto : les polarités Bitcoin et ETH repassent <strong>en vert</strong> dans son tableau du jeudi. BTC se maintient au-dessus de 72 000$, ETH à 2 100$. Xavier souligne dans son brief matinal la résilience remarquable des cryptos dans ce contexte géopolitique : "Bitcoin ne suit pas ou peu Wall Street. Je trouve son comportement avec ETH plutôt résilient ces derniers jours."</p>
+          <p>Sur l'<strong>or</strong>, Xavier publie à 13h12 une analyse de congestion intéressante en horaire au-dessus de 5 190 à 5 200$. Les éléments positifs : polarité à 5 200 tenue, plus bas de plus en plus hauts en Daily et H4, triangle ascendant horaire en formation. Si la paire récupère les MM H4 et franchit les 50% de la dernière impulsion baissière, la configuration est favorable pour la suite.</p>
+          <div class="trade-box">
+            <div class="trade-box-item">BTC <span>72 000$ · Polarité 69 000 🟢</span></div>
+            <div class="trade-box-item">ETH <span>2 100$ · Polarité 2 100 🟢</span></div>
+            <div class="trade-box-item">Or <span>Congestion H1 à surveiller</span></div>
+            <div class="trade-box-item">Or zone clé <span class="blue">5 190 / 5 200</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- VIP SECTION -->
+  <section class="vip-section">
+    <div class="container">
+      <div class="vip-kicker">Membres VIP · Inclus dans l'abonnement</div>
+      <h2 class="vip-title">Pendant la cyber-guerre, les membres VIP<br />avaient leurs polarités à jour.</h2>
+      <div class="vip-grid">
+        <div class="vip-card">
+          <div class="vip-card-icon">🛡️</div>
+          <div>
+            <div class="vip-card-title">Polarités actualisées chaque matin</div>
+            <div class="vip-card-text">16 actifs couverts par Xavier dès 5h54. Crypto repassée verte ce jeudi pendant que l'Europe reste rouge. Une ligne directrice claire avant l'ouverture des marchés.</div>
+          </div>
+        </div>
+        <div class="vip-card">
+          <div class="vip-card-icon">📐</div>
+          <div>
+            <div class="vip-card-title">Gestion swing documentée en live</div>
+            <div class="vip-card-text">Rodolphe prend 30% de son DAX swing à TP1. Il précise les niveaux de reprise, partage le graphique, et documente sa psychologie. Transparence totale sur chaque arbitrage.</div>
+          </div>
+        </div>
+        <div class="vip-card">
+          <div class="vip-card-icon">🌱</div>
+          <div>
+            <div class="vip-card-title">FERNANDA : une méthode, pas une chance</div>
+            <div class="vip-card-text">DBT TP1 +20% pris, ADVIC sur Kijun Mois, SENSORION à surveiller vendredi, KLEA avec le PDG qui rachète. 3VG donne les zones le dimanche et les résultats arrivent en semaine.</div>
+          </div>
+        </div>
+        <div class="vip-card">
+          <div class="vip-card-icon">📅</div>
+          <div>
+            <div class="vip-card-title">NFP préparé la veille</div>
+            <div class="vip-card-text">Sylvain publie à 21h07 le contexte du NFP de vendredi : attentes, historique, indicateurs avancés de la Chicago Fed. Les membres VIP arrivent préparés, pas surpris.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PERF DU JOUR -->
+  <section class="section section-bg-white reveal">
+    <div class="section-header container">
+      <div class="kicker">La perf du 5 mars</div>
+      <h2 class="section-title">Les trades qui ont marqué la journée.</h2>
+      <p class="section-sub">DAX swing TP1 à -600 points, DBT TP1 +20% tenu depuis 48h, EURUSD maintenu malgré les turbulences, NANO en pédagogie à +800% sur Fernanda Trend UT Mois. Et Sylvain qui nettoie son portefeuille avant le NFP.</p>
+    </div>
+    <div class="perf-grid">
+
+      <!-- DAX swing TP1 -->
+      <div class="perf-card featured green-top">
+        <div class="perf-card-header">
+          <div class="perf-card-icon">🏔️</div>
+          <span class="perf-badge-tag green">Swing SELL</span>
+        </div>
+        <div class="perf-value green">-600 pts</div>
+        <div class="perf-title">DAX — TP1 swing Rodolphe</div>
+        <div class="perf-desc">30% de la position fermée à TP1. Reprise prévue à 24 300 / 24 600 en surveillant la MM200 UT4H Cash. Dow Jones et SP500 encore en cours, objectif MM200 Cash Daily.</div>
+        <div class="perf-detail">
+          <div class="perf-detail-item">TP1 (30%) <span class="g">Pris ✓</span></div>
+          <div class="perf-detail-item">Gain <span class="g">-600 pts</span></div>
+          <div class="perf-detail-item">Reprise <span>24 300 / 24 600</span></div>
+          <div class="perf-detail-item">Coach <span>Rodolphe</span></div>
+        </div>
+      </div>
+
+      <!-- DBT TP1 +20% -->
+      <div class="perf-card gold-top">
+        <div class="perf-card-header">
+          <div class="perf-card-icon">⚡</div>
+          <span class="perf-badge-tag gold">Depuis 48h</span>
+        </div>
+        <div class="perf-value gold">+20%</div>
+        <div class="perf-title">DBT — TP1 pris, objectif 0.093</div>
+        <div class="perf-desc">Signal Stromboli posé mardi par 3VG. TP1 +20% à prendre pour ceux qui l'ont suivi depuis 48h. Stop remonté, objectif suite entre 0.093 et 0.098 avec le solde.</div>
+        <div class="perf-detail">
+          <div class="perf-detail-item">TP1 <span class="g">+20% pris ✓</span></div>
+          <div class="perf-detail-item">Objectif suite <span>0.093 / 0.098</span></div>
+          <div class="perf-detail-item">Signal initial <span>Mardi (Stromboli)</span></div>
+          <div class="perf-detail-item">Coach <span>3VG (Inchi)</span></div>
+        </div>
+      </div>
+
+      <!-- EURUSD tenu -->
+      <div class="perf-card blue-top">
+        <div class="perf-card-header">
+          <div class="perf-card-icon">💱</div>
+          <span class="perf-badge-tag blue">Patience</span>
+        </div>
+        <div class="perf-value blue">Tenu</div>
+        <div class="perf-title">EURUSD — Position swing Xavier</div>
+        <div class="perf-desc">"Il fallait juste être patient." Après avoir coupé son renfort hier à BE, Xavier tient le reste de la position swing vers 1.1200. La polarité rouge à 1.1660 continue de jouer son rôle.</div>
+        <div class="perf-detail">
+          <div class="perf-detail-item">Polarité <span class="r">1.1660 🔴</span></div>
+          <div class="perf-detail-item">TP1 swing <span class="b">1.1200</span></div>
+          <div class="perf-detail-item">Statut <span>Ouvert · en cours</span></div>
+          <div class="perf-detail-item">Coach <span>Xavier</span></div>
+        </div>
+      </div>
+
+      <!-- NANO +800% pédago -->
+      <div class="perf-card purple-top">
+        <div class="perf-card-header">
+          <div class="perf-card-icon">📚</div>
+          <span class="perf-badge-tag purple">Pédagogie</span>
+        </div>
+        <div class="perf-value purple">+800%</div>
+        <div class="perf-title">NANO — Fernanda Trend UT Mois</div>
+        <div class="perf-desc">Exemple partagé par 3VG : +800% en 12 mois en suivant un trend sur l'UT Mois avec la méthode FERNANDA. "Impossible n'est pas FERNANDA." Une illustration pour ceux qui doutent de la méthode.</div>
+        <div class="perf-detail">
+          <div class="perf-detail-item">Signal <span>Fernanda Trend UT Mois</span></div>
+          <div class="perf-detail-item">Durée <span>12 mois</span></div>
+          <div class="perf-detail-item">Gain <span class="g">+800%</span></div>
+          <div class="perf-detail-item">Coach <span>3VG (Inchi)</span></div>
+        </div>
+      </div>
+
+      <!-- SENSORION à surveiller -->
+      <div class="perf-card green-top">
+        <div class="perf-card-header">
+          <div class="perf-card-icon">🔭</div>
+          <span class="perf-badge-tag green">À surveiller vendredi</span>
+        </div>
+        <div class="perf-value green">Naissance</div>
+        <div class="perf-title">SENSORION — Fernanda Hebdo</div>
+        <div class="perf-desc">Signal Fernanda Hebdo Naissance à venir dès vendredi soir. 3VG conseille d'attendre le retour sur zone pour le prudent, ou de se placer en anticipation pour le téméraire.</div>
+        <div class="perf-detail">
+          <div class="perf-detail-item">Signal <span>Fernanda Hebdo</span></div>
+          <div class="perf-detail-item">Timing <span>Vendredi soir</span></div>
+          <div class="perf-detail-item">Approche <span>Zone ou anticipation</span></div>
+          <div class="perf-detail-item">Coach <span>3VG (Inchi)</span></div>
+        </div>
+      </div>
+
+      <!-- KLEA PDG rachète -->
+      <div class="perf-card gold-top">
+        <div class="perf-card-header">
+          <div class="perf-card-icon">🏢</div>
+          <span class="perf-badge-tag gold">Signal PDG</span>
+        </div>
+        <div class="perf-value gold">KLEA</div>
+        <div class="perf-title">KLEA Holding — Signal PDG</div>
+        <div class="perf-desc">Le PDG rachète massivement depuis lundi malgré la chute. Niveau clé : M100 Hebdo à 0.199 à sauver vendredi. 3VG conseille d'attendre le support M100 plutôt que de courir après le papier.</div>
+        <div class="perf-detail">
+          <div class="perf-detail-item">Signal <span>PDG rachète</span></div>
+          <div class="perf-detail-item">Niveau clé <span>M100 Hebdo 0.199</span></div>
+          <div class="perf-detail-item">Timing <span>Vendredi</span></div>
+          <div class="perf-detail-item">Coach <span>3VG (Inchi)</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- HONESTY -->
+  <section class="section section-bg-soft reveal">
+    <div class="honesty-wrap">
+      <div class="honesty-block">
+        <div class="honesty-title">Le point d'honnêteté</div>
+        <div class="honesty-body">
+          <p><strong>Rodolphe</strong> a dit exactement ce qu'il ressentait à 12h03 : "J'ai la psycho un peu fatiguée." Plusieurs jours de marché bipolaire, des positions stoppées à BE, des rebonds qui effacent les plans. La transparence sur l'état psychologique d'un trader en gestion active, c'est rare dans ce milieu. Et ça donne une valeur réelle aux victoires qui suivent.</p>
+          <p>Il a également été clair sur la gestion swing globale à 19h29 : le TP1 DAX est pris, mais le Dow Jones et le SP500 n'ont pas encore atteint leurs objectifs. "Rien n'est fait." Pas de faux triomphe, pas de communication optimiste détachée de la réalité des positions encore ouvertes.</p>
+          <p>Côté <strong>Xavier</strong> sur l'EURUSD : son renfort de la veille coupé à BE, son nouveau OC trop lent pour s'exécuter. Il l'assume sans s'appesantir. "Tant pis pour mon nouveau renfort d'hier, trop lent et j'en ai d'autres." Ce qui compte, c'est que la position de fond reste intacte et continue de travailler.</p>
+          <p>Sur les <strong>Actions US</strong>, <strong>Sylvain</strong> sort de RGTI et SES après analyse des earnings. Les deux dossiers présentaient une détérioration fondamentale (marges brutes RGTI divisées par deux, SES structurellement déficitaire). La décision de sortie, documentée avec les chiffres, est un exemple de gestion de portefeuille sans complaisance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECAP TABLE -->
+  <section class="section section-bg-soft reveal">
+    <div class="section-header container">
+      <div class="kicker">Résumé des performances</div>
+      <h2 class="section-title">Le 5 mars, en un coup d'oeil.</h2>
+      <p class="section-sub">6 coachs, 6 salles couvertes, DAX TP1 swing, DBT TP1 +20%, EURUSD tenu, NANO +800% pédagogie, SENSORION et KLEA à surveiller vendredi, sortie RGTI et SES.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Coach</th>
+            <th>Salle</th>
+            <th>Fait marquant</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="coach-cell">Rodolphe</span></td>
+            <td><span class="market-pill">Indices</span></td>
+            <td>DAX swing SELL : <span class="g">TP1 (30%) pris à -600 pts</span>. Dow Jones / SP500 TP1 pas encore atteint, objectif MM200 Cash Daily. Live 4h07. Ouinex validé en soirée.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Xavier</span></td>
+            <td><span class="market-pill">ALL · Forex · Crypto · MP</span></td>
+            <td>Brief Iran Jour 6 à 5h54. Cryptos repassées vertes. EURUSD : <span class="g">position swing maintenue</span> ("Il fallait juste être patient"). Or : congestion H1 à surveiller au-dessus de 5 200$.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Sylvain</span></td>
+            <td><span class="market-pill">Actions US · Europe</span></td>
+            <td>Rebond asiatique documenté (KOSPI +11%, Nikkei +2,24%). <span class="r">Sortie RGTI et SES</span> (détérioration fondamentale). Premarket US. Brief NFP à 21h07 (+60K emplois attendus vendredi).</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">3VG (Inchi)</span></td>
+            <td><span class="market-pill">Actions Europe</span></td>
+            <td>DBT : <span class="g">TP1 +20% pris</span>, objectif 0.093/0.098. ADVIC Kijun Mois. SENSORION Fernanda Hebdo naissance vendredi. KLEA PDG rachète, M100 Hebdo 0.199. NANO +800% pédagogie Fernanda Trend.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Benj</span></td>
+            <td><span class="market-pill">Indices · DAX</span></td>
+            <td>Live 8h02. Point intraday 11h37 : premier cycle haussier validé, acheteurs gardent la main. Surveillance combo horaire pour setup SELL. Conseil : baisser le levier sur marché news-driven.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Ludovick</span></td>
+            <td><span class="market-pill">Indices</span></td>
+            <td>Replay 14h43 : 2 actifs et plans détaillés (intraday, hebdo, swing). Live quasi continu toute la journée.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section reveal">
+    <div class="cta-inner">
+      <div class="kicker">Rejoindre IVT</div>
+      <h2 class="cta-title">Demain c'est le NFP.<br />Tu veux être prêt ?</h2>
+      <p class="cta-text">
+        Sylvain a déjà publié le contexte ce soir. Xavier actualisera les polarités demain à l'aube. Rodolphe surveillera ses objectifs sur Dow Jones et SP500. 3VG a deux setups à surveiller à l'ouverture. Les membres VIP n'arrivent pas surpris le vendredi matin.
+      </p>
+      <a href="https://interactivtrading.com/vip?aff=xf-actus" class="btn-primary">
+        Découvrir l'abonnement VIP
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <p class="cta-recap">
+        5 mars 2026 · 28 notifications · 6 coachs · DAX TP1 swing · DBT +20% · EURUSD tenu · NFP vendredi · Et demain, ça recommence.
+      </p>
+    </div>
+  </section>
+
+  <script>
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.06 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

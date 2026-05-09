@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IVT — Semaine du 16 au 21 mars 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #7A5C10;
+    --gold-light: #C9A84C;
+    --gold-dim: rgba(122,92,16,0.08);
+    --red: #B92D1A;
+    --green: #1A7A3F;
+    --purple: #6F4FF2;
+    --bg: #FAFAF8;
+    --bg2: #F3F2EE;
+    --bg3: #E9E7E0;
+    --border: rgba(122,92,16,0.14);
+    --text: #0F0E0C;
+    --muted: #6A6860;
+    --mono: 'DM Mono', monospace;
+    --display: 'Playfair Display', serif;
+    --serif: 'Lora', serif;
+    --sans: 'Lora', serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: #E8E6DF;
+    color: var(--text);
+    font-family: var(--sans);
+    overflow-x: hidden;
+  }
+
+  .page-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--bg);
+    box-shadow: 0 0 80px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+  .page-wrap::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.02;
+    pointer-events: none;
+    z-index: 9997;
+  }
+
+  /* TICKER TAPE */
+  .ticker-wrap {
+    position: sticky;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(250,250,248,0.93);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    height: 36px;
+    backdrop-filter: blur(10px);
+  }
+  .ticker {
+    display: flex;
+    animation: ticker 30s linear infinite;
+    white-space: nowrap;
+    height: 100%;
+    align-items: center;
+  }
+  .ticker-item {
+    font-family: var(--sans);
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    padding: 0 32px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ticker-item .up { color: var(--green); }
+  .ticker-item .dn { color: var(--red); }
+  .ticker-item .label { color: var(--gold); font-weight: 500; }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 36px 60px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 50% at 80% 50%, rgba(122,92,16,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(111,79,242,0.03) 0%, transparent 60%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(122,92,16,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(122,92,16,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+  }
+
+  .hero-eyebrow {
+    font-family: var(--sans);
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-title {
+    font-family: var(--display);
+    font-size: clamp(64px, 10vw, 140px);
+    line-height: 0.9;
+    letter-spacing: 0.01em;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 1s 0.5s forwards;
+  }
+  .hero-title .line2 {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(122,92,16,0.35);
+  }
+  .hero-title .accent { color: var(--gold); }
+
+  .hero-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(18px, 2vw, 26px);
+    color: var(--muted);
+    max-width: 580px;
+    line-height: 1.5;
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeUp 1s 0.7s forwards;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 0;
+    opacity: 0;
+    animation: fadeUp 1s 0.9s forwards;
+  }
+  .hero-stat {
+    padding: 24px 40px 24px 0;
+    border-right: 1px solid var(--border);
+    margin-right: 40px;
+  }
+  .hero-stat:last-child { border-right: none; }
+  .hero-stat-num {
+    font-family: var(--display);
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--gold);
+  }
+  .hero-stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 60px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 1s 1.4s forwards;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollLine 2s ease-in-out infinite;
+  }
+  @keyframes scrollLine {
+    0%, 100% { transform: scaleY(1); opacity: 1; }
+    50% { transform: scaleY(0.5); opacity: 0.4; }
+  }
+
+  /* SECTION BASE */
+  section {
+    padding: 120px 60px;
+    position: relative;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 200px;
+  }
+
+  .section-title {
+    font-family: var(--display);
+    font-size: clamp(44px, 6vw, 80px);
+    line-height: 0.95;
+    margin-bottom: 80px;
+  }
+
+  /* CHAOS SECTION */
+  .chaos {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chaos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 2px;
+  }
+  .chaos-card {
+    background: var(--bg);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .chaos-card:hover { background: var(--bg3); }
+  .chaos-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+  }
+  .chaos-card.gold::before { background: var(--gold); }
+  .chaos-card.green::before { background: var(--green); }
+  .chaos-card.red::before { background: var(--red); }
+  .chaos-card.purple::before { background: var(--purple); }
+
+  .chaos-num {
+    font-family: var(--display);
+    font-size: 72px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .chaos-num.gold { color: var(--gold); }
+  .chaos-num.green { color: var(--green); }
+  .chaos-num.red { color: var(--red); }
+  .chaos-num.white { color: var(--text); }
+
+  .chaos-title {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .chaos-desc {
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .chaos-full {
+    background: var(--bg);
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  .chaos-full-text {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(22px, 3vw, 36px);
+    color: var(--muted);
+    max-width: 700px;
+    line-height: 1.4;
+  }
+  .chaos-full-text strong { color: var(--text); font-style: normal; }
+  .chaos-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--border);
+    padding: 8px 20px;
+    white-space: nowrap;
+  }
+
+  /* PERFORMANCES */
+  .perf {
+    background: var(--bg);
+  }
+
+  .perf-list { display: flex; flex-direction: column; gap: 2px; }
+
+  .perf-item {
+    display: grid;
+    grid-template-columns: 200px 1fr auto;
+    align-items: center;
+    gap: 40px;
+    padding: 32px 40px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  .perf-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.6s ease, transform 0.6s ease, background 0.3s, border 0.3s;
+  }
+  .perf-item:hover {
+    background: var(--bg3);
+    border-color: var(--border);
+  }
+  .perf-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .perf-item:hover::after { transform: scaleX(1); }
+
+  .perf-coach {
+    font-family: var(--display);
+    font-size: 28px;
+    color: var(--gold);
+    letter-spacing: 0.01em;
+  }
+  .perf-market {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .perf-desc {
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--muted);
+  }
+  .perf-desc strong { color: var(--text); }
+  .perf-desc .highlight { color: var(--green); font-weight: 700; font-family: var(--mono); }
+  .perf-desc .loss { color: var(--red); font-weight: 700; font-family: var(--mono); }
+
+  .perf-number {
+    font-family: var(--display);
+    font-size: 48px;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .perf-number.green { color: var(--green); }
+  .perf-number.gold { color: var(--gold); }
+  .perf-number.muted { color: var(--muted); font-size: 24px; }
+
+  /* MACRO SECTION */
+  .macro {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+  }
+
+  .macro-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .macro-card {
+    background: var(--bg);
+    padding: 40px 32px;
+    transition: background 0.3s;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .macro-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease, transform 0.6s ease, background 0.3s;
+  }
+  .macro-card:hover { background: var(--bg3); }
+
+  .macro-icon {
+    font-family: var(--display);
+    font-size: 56px;
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+  .macro-icon.gold { color: var(--gold); }
+  .macro-icon.red { color: var(--red); }
+  .macro-icon.green { color: var(--green); }
+
+  .macro-card-title {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .macro-card-text {
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .macro-card-text .val { color: var(--gold); }
+  .macro-card-text .up { color: var(--green); }
+  .macro-card-text .dn { color: var(--red); }
+
+  /* HONNETETE */
+  .honesty {
+    background: var(--bg);
+    padding: 120px 60px;
+  }
+
+  .honesty-inner {
+    border: 1px solid rgba(185,45,26,0.2);
+    padding: 60px;
+    position: relative;
+    max-width: 900px;
+  }
+  .honesty-inner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--red);
+  }
+  .honesty-title {
+    font-family: var(--display);
+    font-size: 52px;
+    margin-bottom: 8px;
+    color: var(--red);
+  }
+  .honesty-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 20px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+  .honesty-item {
+    border-top: 1px solid rgba(232,65,42,0.15);
+    padding: 24px 0;
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 32px;
+  }
+  .honesty-coach {
+    font-family: var(--display);
+    font-size: 24px;
+    color: var(--text);
+    padding-top: 2px;
+  }
+  .honesty-text {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+  .honesty-text strong { color: var(--text); }
+
+  /* TABLEAU RECAP */
+  .recap {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .recap-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .recap-table th {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .recap-table td {
+    padding: 20px;
+    border-bottom: 1px solid rgba(122,92,16,0.06);
+    vertical-align: top;
+    font-size: 13px;
+    transition: background 0.2s;
+  }
+  .recap-table tr:hover td { background: rgba(122,92,16,0.03); }
+  .recap-table .coach-name {
+    font-family: var(--display);
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: 0.01em;
+  }
+  .recap-table .market-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .recap-table .perf-tag {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--green);
+    margin-right: 8px;
+    margin-bottom: 4px;
+  }
+  .recap-table .perf-tag.gold { color: var(--gold); }
+  .recap-table .desc-text {
+    color: var(--muted);
+    line-height: 1.6;
+    font-family: var(--sans);
+    font-size: 14px;
+  }
+
+  /* CTA */
+  .cta-section {
+    background: var(--bg);
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(122,92,16,0.08) 0%, transparent 70%);
+  }
+  .cta-inner { position: relative; z-index: 1; }
+  .cta-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+  }
+  .cta-title {
+    font-family: var(--display);
+    font-size: clamp(52px, 8vw, 110px);
+    line-height: 0.9;
+    margin-bottom: 40px;
+  }
+  .cta-title .outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(122,92,16,0.5);
+  }
+  .cta-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 20px;
+    color: var(--muted);
+    margin-bottom: 48px;
+  }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--gold);
+    color: #080808;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 20px 48px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #080808;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .cta-btn:hover::before { transform: translateX(0); }
+  .cta-btn:hover { color: var(--gold); }
+  .cta-btn span { position: relative; z-index: 1; }
+  .cta-promo {
+    margin-top: 24px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  .cta-promo strong { color: var(--gold); }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 32px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-logo {
+    font-family: var(--display);
+    font-size: 24px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+  .footer-text {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-align: right;
+    line-height: 1.7;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .count-up { display: inline-block; }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  #particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin: 60px 0;
+    opacity: 0.4;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .divider-icon {
+    color: var(--gold);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+  }
+
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--red);
+    border: 1px solid rgba(185,45,26,0.3);
+    padding: 4px 12px;
+    margin-left: 16px;
+  }
+  .live-dot {
+    width: 5px; height: 5px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    section { padding: 80px 24px; }
+    .hero { padding: 36px 24px 80px; }
+    .chaos-grid { grid-template-columns: 1fr; }
+    .macro-grid { grid-template-columns: 1fr; }
+    .perf-item { grid-template-columns: 1fr; gap: 16px; }
+    .perf-number { text-align: left; }
+    .hero-stats { flex-wrap: wrap; gap: 24px; }
+    .honesty-inner { padding: 32px 24px; }
+    .honesty-item { grid-template-columns: 1fr; gap: 8px; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+    .footer-text { text-align: center; }
+    .recap-table { font-size: 12px; }
+  }
+</style>
+    <script defer src="https://analytics.parentsdejumeaux.fr/script.js" data-website-id="3b10c5e0-1aea-4ae4-935f-64b27cf0caf9" data-domains="xavierfenaux.com,www.xavierfenaux.com"></script>
+</head>
+<body>
+<div class="page-wrap">
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker" id="ticker"></div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas id="particles"></canvas>
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div style="position:relative;z-index:2;">
+    <p class="hero-eyebrow">
+      InteractivTrading &nbsp;·&nbsp; Semaine du 16 au 21 mars 2026
+      <span class="live-badge"><span class="live-dot"></span> Rapport hebdo</span>
+    </p>
+
+    <h1 class="hero-title">
+      La Fed<br>
+      <span class="line2">a bégayé.</span><br>
+      <span class="accent">Pas nous.</span>
+    </h1>
+
+    <p class="hero-sub">
+      Semaine 3 du conflit. Pétrole au-dessus de 100$. La Fed gèle les taux. Le Gold perd 6%. Et l'équipe continue d'encaisser.
+    </p>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="171">0</div>
+        <div class="hero-stat-label">Notifs envoyées</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="8">0</div>
+        <div class="hero-stat-label">Coachs actifs</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="7">0</div>
+        <div class="hero-stat-label">Marchés couverts</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">S3</div>
+        <div class="hero-stat-label">De conflit tradée</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- CHAOS MACRO -->
+<section class="chaos">
+  <p class="section-label reveal">Contexte macro</p>
+  <h2 class="section-title reveal">Powell<br>a figé<br><em style="font-family:var(--serif);font-style:italic;color:var(--gold);">tout le monde.</em></h2>
+
+  <div class="chaos-grid reveal">
+    <div class="chaos-card red">
+      <div class="chaos-num red">3.5%</div>
+      <div class="chaos-title">Fed : taux inchangés</div>
+      <div class="chaos-desc">La Fed maintient ses taux entre 3,5% et 3,75%. Powell détendu en façade, mais sous le capot : pétrole incontrôlable, inflation qui revient, et zéro marge de manoeuvre. Xavier résume : "Le marché nous endort, c'est normal."</div>
+    </div>
+    <div class="chaos-card gold">
+      <div class="chaos-num gold">108$</div>
+      <div class="chaos-title">Pétrole en surchauffe</div>
+      <div class="chaos-desc">Le Brent dépasse les 108$ jeudi matin. L'extension des frappes sur l'île de Kharg en Iran a provoqué une onde de choc sur les prix de l'énergie. Le gaz suit. L'inflation n'est plus contrôlable.</div>
+    </div>
+    <div class="chaos-card green">
+      <div class="chaos-num green" data-count-pct="-6">0%</div>
+      <div class="chaos-title">Gold : correction brutale</div>
+      <div class="chaos-desc">Le Gold chute de 6% dans la semaine, le Silver de 13%. La remontée du dollar écrase les matières premières. Xavier sort à temps. Il repositionne un plan achat sur la MM50 Daily à 5 024$.</div>
+    </div>
+    <div class="chaos-card purple">
+      <div class="chaos-num white">74K$</div>
+      <div class="chaos-title">Bitcoin tient la ligne</div>
+      <div class="chaos-desc">BTC au-dessus de 74 000$, ETH à 2 300$. Les MM50 H4 tiennent et relancent. FX59 prend un achat à 71 500$ sur convergence MM50 H4 / EMA200 H4 / MM50 D. Le Fear & Greed est à 23.</div>
+    </div>
+  </div>
+
+  <div class="chaos-full reveal" style="margin-top:2px;">
+    <p class="chaos-full-text">
+      <strong>"Le marché nous endort ? C'est normal.<br>Le signal clair que tout le monde attend ne viendra pas."</strong>
+    </p>
+    <span class="chaos-badge">Xavier · Semi Débrief Hebdo</span>
+  </div>
+</section>
+
+<!-- PERFORMANCES -->
+<section class="perf">
+  <p class="section-label reveal">Résultats concrets</p>
+  <h2 class="section-title reveal">Ce qui a été<br>encaissé.</h2>
+
+  <div class="perf-list">
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">Xavier</div>
+        <div class="perf-market">Indices · Forex · Gold</div>
+      </div>
+      <div class="perf-desc">
+        <span class="highlight">TP1 SP500 à 6 600</span> mercredi + <span class="highlight">TP2 SP500 à 6 550</span> vendredi sous polarité 6 720 🔴 tenue toute la semaine. Vente EURUSD à 1.1489 (SL touché, 1/3 swing conservé objectif 1.12). <span class="highlight">Gold : achat 5 024$ sur MM50 Daily</span> avec TP1 5 130$, TP2 5 230$. Passage sur BFM Business pour Bitcoin. Vidéo Carry Trade + vidéo Fed publiées. Brief Moods quotidiens.
+      </div>
+      <div class="perf-number green">TP1+TP2</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">Rodolphe</div>
+        <div class="perf-market">Indices · Actions</div>
+      </div>
+      <div class="perf-desc">
+        <strong>Swing DAX terminé</strong> : 30% restant coupé à 23 135. <span class="highlight">TP2 Indices US</span> déplacé sur BB Basses Magiques Journalières Cash. BABA réduit de 7,5% à 4% d'expo avec vidéo explicative. <span class="highlight">Renfort KGX à 45,49€</span> pour passer à 3% d'expo. UFUNDED : 164/165 payouts validés. Plans de nuit quotidiens sur indices, crypto et matières premières.
+      </div>
+      <div class="perf-number gold">Swing clos</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">FX59</div>
+        <div class="perf-market">Forex · Crypto</div>
+      </div>
+      <div class="perf-desc">
+        <span class="highlight">USDJPY : TP1 + TP2 + TP3 complet</span> (159,50 > 157,60). Chaque allègement partagé en direct. <span class="highlight">GBPJPY : TP1 212,00 (+50 pips) + TP2 210,90</span>, coupé flat vendredi avant le week-end. <span class="highlight">BTC achat 71 500$</span> sur convergence triple. $AUCTION ouvert à 4,88$ (TP3 : 12$). Combos Moods mis à jour.
+      </div>
+      <div class="perf-number green">TP1+2+3</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">3VG</div>
+        <div class="perf-market">Actions Europe · Fernanda</div>
+      </div>
+      <div class="perf-desc">
+        Nouveau concept : <strong>"Intraday Trade du Printemps"</strong> lancé cette semaine. <span class="highlight">+14% en une journée mercredi</span>. TRACTIAL alerté dimanche soir, news AMF le lundi matin. <span class="highlight">Charwood +20% en 48h</span> sur zone Fernanda Mois. Tonner Drones +15% sur Fernanda Hebdo. Sensorion impact 0.59 Fernanda Jour. Hopium intraday +11% en séance. Treasury EU mis à jour.
+      </div>
+      <div class="perf-number green">+14%/J</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">Benj</div>
+        <div class="perf-market">DAX · Actions</div>
+      </div>
+      <div class="perf-desc">
+        <span class="highlight">TP1 DAX à 22 920 touché</span> vendredi sur achat 22 736. Plans d'achat structurés toute la semaine sur la zone 22 700/22 800 + bas du porte-voix. Combo UT15m cash expliqué en détail. Essilor repéré sur convergence MM50 mensuelle + trend support + fibo 50%. Patience prêchée toute la semaine en attendant les BB H4 cash.
+      </div>
+      <div class="perf-number gold">TP1 DAX</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">Sylvain</div>
+        <div class="perf-market">Actions US · EU</div>
+      </div>
+      <div class="perf-desc">
+        Synthèses Asie + préopen CAC40 chaque matin. <strong>Portefeuille 100K$ nettoyé</strong> : sortie $CSIQ, $QFIN, $FSLR, $VST, $CCL. Cash remonté à 34%. <span class="highlight">$MU renforcé à 430,50$</span> avant des résultats stratosphériques (+25%). Achat Accor à 39,10€ sur EMA 200W, STMPA à 28,17€. $AI vendu à +7%. Agenda semaine prochaine publié. Lancement de la boutique IVT.
+      </div>
+      <div class="perf-number muted">Daily</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">Ludovick</div>
+        <div class="perf-market">Nasdaq · DAX</div>
+      </div>
+      <div class="perf-desc">
+        <strong>Module 3 de formation diffusé mardi soir</strong> : le dernier module qui boucle le cycle. Live abonné avec Théo aux commandes jeudi matin. Briefs pre-market quotidiens avec plans intraday, hebdo et swing. Live quasi-continu toute la semaine.
+      </div>
+      <div class="perf-number muted">6J Live</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">Hark</div>
+        <div class="perf-market">Crypto</div>
+      </div>
+      <div class="perf-desc">
+        Brief Bitcoin dimanche matin avec analyse Fear & Greed à 23 (Extreme Fear). Synthèse macroéconomique complète mercredi : arbitrage inflation, Fed et risques géopolitiques. Couverture de la divergence entre indicateurs de prix et rhétorique des banques centrales.
+      </div>
+      <div class="perf-number muted">Macro</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- HONNETETÉ -->
+<section class="honesty">
+  <div class="honesty-inner reveal">
+    <div class="honesty-title">Transparence.</div>
+    <div class="honesty-sub">Chez IVT, on ne cache rien. Même quand le marché ne donne pas raison tout de suite.</div>
+
+    <div class="honesty-item">
+      <div class="honesty-coach">L'équipe</div>
+      <div class="honesty-text">
+        Certaines positions ont été coupées à flat ou en léger gain cette semaine, notamment sur le Forex et les indices. <strong>Aucun regret : c'est exactement ce qui sépare un trader discipliné d'un joueur.</strong> Quand le contexte est incertain, on protège le capital d'abord, on cherche la performance ensuite. C'est cette rigueur, semaine après semaine, qui construit les résultats sur le long terme.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECAP TABLE -->
+<section class="recap">
+  <p class="section-label reveal">Résumé de l'équipe</p>
+  <h2 class="section-title reveal">La semaine<br>en un coup d'oeil.</h2>
+
+  <div class="reveal">
+    <table class="recap-table">
+      <thead>
+        <tr>
+          <th>Coach</th>
+          <th>Marché</th>
+          <th>Fait marquant</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="coach-name">Xavier</div><div class="market-tag">Indices · Forex · Gold</div></td>
+          <td><span class="perf-tag">TP1 SP500 (6 600)</span><span class="perf-tag">TP2 SP500 (6 550)</span><span class="perf-tag gold">Gold achat 5 024$</span></td>
+          <td class="desc-text">Polarité 6 720 🔴 tenue toute la semaine. BFM Business crypto. Vidéo Carry Trade + Fed. Brief Moods quotidiens.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">Rodolphe</div><div class="market-tag">Indices · Actions</div></td>
+          <td><span class="perf-tag">Swing DAX clos (23 135)</span><span class="perf-tag">TP2 US</span><span class="perf-tag gold">KGX renfort</span></td>
+          <td class="desc-text">BABA réduit de 7,5% à 4%. UFUNDED 164/165 payouts. Plans de nuit quotidiens.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">FX59</div><div class="market-tag">Forex · Crypto</div></td>
+          <td><span class="perf-tag">USDJPY TP1+2+3</span><span class="perf-tag">GBPJPY TP1+2</span><span class="perf-tag gold">BTC 71 500$</span></td>
+          <td class="desc-text">USDJPY complet 159,50 > 157,60. $AUCTION ouvert. Combos Moods mis à jour.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">3VG</div><div class="market-tag">Actions EU · Fernanda</div></td>
+          <td><span class="perf-tag">+14% en 1 jour</span><span class="perf-tag">Charwood +20%</span><span class="perf-tag gold">Tonner +15%</span></td>
+          <td class="desc-text">Lancement "Intraday Trade du Printemps". TRACTIAL alerté dimanche, news AMF lundi. Sensorion impact 0.59.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">Benj</div><div class="market-tag">DAX · Actions</div></td>
+          <td><span class="perf-tag">TP1 DAX (22 920)</span><span class="perf-tag gold">Essilor repéré</span></td>
+          <td class="desc-text">Achat 22 736 sur zone 22 700/22 800 + porte-voix. Combo UT15m cash. Patience exemplaire.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">Sylvain</div><div class="market-tag">Actions US · EU</div></td>
+          <td><span class="perf-tag gold">$MU renforcé (+25%)</span><span class="perf-tag gold">Cash 34%</span></td>
+          <td class="desc-text">Synth. quotidiennes. 5 lignes nettoyées. Accor + STMPA achetés. Boutique IVT lancée.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">Ludovick</div><div class="market-tag">Nasdaq · DAX</div></td>
+          <td><span class="perf-tag gold">6J Live</span><span class="perf-tag gold">Module 3 Formation</span></td>
+          <td class="desc-text">Dernier module diffusé. Live abonné avec Théo. Briefs pre-market quotidiens.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">Hark</div><div class="market-tag">Crypto</div></td>
+          <td><span class="perf-tag gold">Synthèse macro</span><span class="perf-tag gold">Brief BTC</span></td>
+          <td class="desc-text">Fear & Greed à 23. Analyse Fed/inflation/géopolitique. Couverture divergence indicateurs.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="cta-inner reveal">
+    <p class="cta-eyebrow">Rejoindre l'équipe</p>
+    <h2 class="cta-title">
+      La semaine 4<br>
+      <span class="outline">arrive lundi.</span>
+    </h2>
+    <p class="cta-sub">8 coachs. 7 marchés. 171 notifs cette semaine. Imagine ce que tu rates.</p>
+    <a href="http://interactivtrading.com/vip?aff=sg-notifs2103&coupon=bienvenue" class="cta-btn">
+      <span>Rejoindre IVT avec -20%</span>
+      <span>→</span>
+    </a>
+    <p class="cta-promo">Code : <strong>BIENVENUE</strong> &nbsp;·&nbsp; -20% sur l'abonnement</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">IVT</div>
+  <div class="footer-text">
+    Semaine du 16 au 21 mars 2026 &nbsp;·&nbsp; 171 notifications &nbsp;·&nbsp; 8 coachs experts<br>
+    Les performances passées ne préjugent pas des performances futures. Le trading comporte des risques.
+  </div>
+</footer>
+
+<script>
+
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => { if(typeof ring !== 'undefined') { ring.style.transform = 'scale(2)'; ring.style.borderColor = 'var(--gold)'; } });
+  el.addEventListener('mouseleave', () => { if(typeof ring !== 'undefined') { ring.style.transform = 'scale(1)'; ring.style.borderColor = 'rgba(122,92,16,0.5)'; } });
+});
+
+// TICKER
+const items = [
+  { label: 'SP500', val: 'TP1 6600 + TP2 6550', dir: 'up' },
+  { label: 'USDJPY', val: 'TP1+2+3 complet', dir: 'up' },
+  { label: 'GBPJPY', val: 'TP1+2 (+150 pips)', dir: 'up' },
+  { label: 'DAX', val: 'TP1 @ 22920', dir: 'up' },
+  { label: 'CHARWOOD', val: '+20% / 48H', dir: 'up' },
+  { label: 'TONNER', val: '+15% / 7J', dir: 'up' },
+  { label: 'GOLD', val: '-6% correction', dir: 'dn' },
+  { label: 'WTI', val: '108$', dir: 'up' },
+  { label: 'BTC', val: '74 000$', dir: 'up' },
+  { label: '$MU', val: '+25% résultats', dir: 'up' },
+  { label: 'FED', val: 'Taux inchangés', dir: 'dn' },
+  { label: 'IRAN', val: 'Semaine 3', dir: 'dn' },
+  { label: '$AUCTION', val: 'Achat 4.88$', dir: 'up' },
+  { label: 'SENSORION', val: 'Impact 0.59', dir: 'up' },
+  { label: 'TRACTIAL', val: 'News AMF', dir: 'up' },
+  { label: 'IVT', val: '171 NOTIFS', dir: 'up' },
+];
+const ticker = document.getElementById('ticker');
+const html = items.map(i => `<span class="ticker-item"><span class="label">${i.label}</span> <span class="${i.dir === 'up' ? 'up' : 'dn'}">${i.dir === 'up' ? '▲' : '▼'} ${i.val}</span></span>`).join('');
+ticker.innerHTML = html + html;
+
+// COUNTER ANIMATION
+function animateCount(el, target, duration = 1800) {
+  const start = performance.now();
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(eased * target);
+    el.textContent = current;
+    if (progress < 1) requestAnimationFrame(update);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(update);
+}
+
+// PARTICLES
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let particles = [];
+function resizeCanvas() {
+  canvas.width = canvas.parentElement.offsetWidth;
+  canvas.height = canvas.parentElement.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 1.5 + 0.3;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.4 + 0.05;
+    this.life = 0;
+    this.maxLife = Math.random() * 300 + 150;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.life++;
+    if (this.life > this.maxLife) this.reset();
+  }
+  draw() {
+    const alpha = this.opacity * Math.sin((this.life / this.maxLife) * Math.PI);
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(122,92,16,${alpha})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+function animParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 80) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(122,92,16,${0.06 * (1 - dist / 80)})`;
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// INTERSECTION OBSERVER
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      io.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+document.querySelectorAll('.perf-item').forEach((el, i) => {
+  el.style.transitionDelay = (i * 80) + 'ms';
+  io.observe(el);
+});
+document.querySelectorAll('.macro-card').forEach((el, i) => {
+  el.style.transitionDelay = (i * 100) + 'ms';
+  io.observe(el);
+});
+
+// COUNTER HERO
+const heroIO = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('[data-count]').forEach(el => {
+        animateCount(el, parseInt(el.dataset.count));
+      });
+      heroIO.disconnect();
+    }
+  });
+}, { threshold: 0.5 });
+const heroStats = document.querySelector('.hero-stats');
+if (heroStats) heroIO.observe(heroStats);
+
+// CHAOS CARD PERCENT COUNTER
+const chaosIO = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('[data-count-pct]').forEach(el => {
+        const target = parseInt(el.dataset.countPct);
+        const start = performance.now();
+        const dur = 1600;
+        function up(now) {
+          const p = Math.min((now - start) / dur, 1);
+          const e = 1 - Math.pow(1 - p, 3);
+          el.textContent = (target < 0 ? '' : '+') + Math.round(e * target) + '%';
+          if (p < 1) requestAnimationFrame(up);
+        }
+        requestAnimationFrame(up);
+      });
+      chaosIO.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+const chaosGrid = document.querySelector('.chaos-grid');
+if (chaosGrid) chaosIO.observe(chaosGrid);
+</script>
+</div>
+</body>
+</html>

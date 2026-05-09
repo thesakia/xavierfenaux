@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xavier Fenaux | Trading & Performance</title>
+    <link rel="icon" type="image/png" href="images/SignatureXav.png">
+    <link rel="apple-touch-icon" href="images/SignatureXav.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        document.documentElement.dataset.theme = localStorage.getItem('theme') || 'light';
+    </script>
+    <script defer src="https://analytics.parentsdejumeaux.fr/script.js" data-website-id="3b10c5e0-1aea-4ae4-935f-64b27cf0caf9" data-domains="xavierfenaux.com,www.xavierfenaux.com"></script>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+			<img src="images/SignatureXav.png" alt="Xavier Fenaux" class="logo-signature">
+			</div>
+            <div class="nav-links">
+			<a href="#who">Profil</a>
+            <a href="#ivt">IVT</a>
+            <a href="#contact">Contact</a>
+			<a href="/actualités">Actualités</a>
+            </div>
+            <div class="mobile-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section id="hero" class="hero-section">
+            <canvas id="hero-chart" class="hero-chart"></canvas>
+            <div class="hero-content">
+                <div class="hero-intro">
+                    <h1 class="hero-title">Comprendre les marchés. Garder la tête froide.</h1>
+                    <p class="hero-subtitle">20 ans d'analyse, de pédagogie et de discipline.</p>
+                </div>
+                <div class="hero-description">
+                    <p class="hero-text">J'aide les investisseurs et traders particuliers à structurer leur lecture des marchés, loin du bruit et des promesses faciles.</p>
+                    <p class="hero-text accent-text">Macro, risque, psychologie, plan d'action : l'objectif est de décider avec méthode.</p>
+                </div>
+                <div class="hero-proof-strip" aria-label="Références">
+                    <span>Certifié AMF</span>
+                    <span>ARPP 2026</span>
+                    <span>BFM Business</span>
+                    <span>Talents du Trading</span>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <!-- Dynamic chart canvas or SVG here -->
+                <div class="circle-glow"></div>
+                <img src="images/profile.jpg" alt="Xavier Fenaux" class="profile-cutout">
+            </div>
+            <div class="color-picker-container">
+                <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Changer de thème" title="Changer de thème">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <label for="accent-color-picker" class="color-picker-label">
+                    <i class="fas fa-palette"></i>
+                    <span>Accent</span>
+                </label>
+                <input type="color" id="accent-color-picker" class="color-picker" value="#997733" title="Choisir la couleur d'accent">
+            </div>
+            <div class="hero-socials">
+                <a href="https://twitter.com/XFenaux" target="_blank" class="hero-social-btn" title="Twitter">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                </a>
+                <a href="https://www.youtube.com/c/InteractivTrading" target="_blank" class="hero-social-btn" title="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="https://interactivtrading.com?aff=XavSite" target="_blank" class="hero-social-btn" title="Ma Formation">
+                    <i class="fas fa-chart-line"></i>
+                </a>
+                <a href="https://open.spotify.com/show/4Kka5gOG1cnplAmHB0vGXD" target="_blank" class="hero-social-btn" title="Spotify">
+                    <i class="fab fa-spotify"></i>
+                </a>
+                <a href="https://www.twitch.tv/xavierfenaux" target="_blank" class="hero-social-btn" title="Twitch">
+                    <i class="fab fa-twitch"></i>
+                </a>
+            </div>
+        </section>
+
+        <div class="ticker-wrap">
+            <div class="ticker">
+                <div class="ticker__item">FOREX</div>
+                <div class="ticker__item">INDICES</div>
+                <div class="ticker__item">ACTIONS</div>
+                <div class="ticker__item">CRYPTO</div>
+                <div class="ticker__item">MACRO</div>
+                <div class="ticker__item">STRATEGIE</div>
+                <div class="ticker__item">MINDSET</div>
+                <div class="ticker__item">PLAN DE TRADING</div>
+				<div class="ticker__item">ANALYSES</div>
+                <!-- Duplicate for infinite scroll -->
+                <div class="ticker__item">FOREX</div>
+                <div class="ticker__item">INDICES</div>
+                <div class="ticker__item">ACTIONS</div>
+                <div class="ticker__item">CRYPTO</div>
+                <div class="ticker__item">MACRO</div>
+                <div class="ticker__item">STRATEGIE</div>
+                <div class="ticker__item">MINDSET</div>
+                <div class="ticker__item">PLAN DE TRADING</div>
+                <div class="ticker__item">ANALYSES</div>
+            </div>
+        </div>
+
+        <section id="certifications" class="section certifications-section">
+            <div class="certifications-header">
+                <h2 class="section-title">DES REPÈRES <span class="accent">VÉRIFIABLES</span></h2>
+            </div>
+            <div class="certifications-grid">
+                <article class="certification-card card">
+                    <div class="certification-mark"><i class="fas fa-shield-alt"></i></div>
+                    <div>
+                        <h3>Certifié de l'Autorité des Marchés Financiers (AMF)</h3>
+                    </div>
+                </article>
+                <article class="certification-card card">
+                    <div class="certification-mark"><i class="fas fa-certificate"></i></div>
+                    <div>
+                        <h3>Certification ARPP Influence Commerciale Responsable</h3>
+                    </div>
+                </article>
+            </div>
+            <div class="reference-strip" aria-label="Références professionnelles">
+                <div class="reference-logo-card">
+                    <img src="images/bfm-business.png" alt="BFM Business" class="reference-logo">
+                    <span>Interventions médias</span>
+                </div>
+                <div class="reference-logo-card">
+                    <img src="images/talents.png" alt="Talents du Trading" class="reference-logo reference-logo-light">
+                    <span>Finaliste saisons 2 & 3</span>
+                </div>
+                <div class="reference-logo-card">
+                    <img src="images/daily.png" alt="DailyFX" class="reference-logo">
+                    <span>Chef analyste 2011-2014</span>
+                </div>
+                <div class="reference-logo-card">
+                    <img src="images/zonebourse.jpg" alt="Zonebourse" class="reference-logo">
+                    <span>Responsable analyse 2006-2011</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="who" class="section">
+            <h2 class="section-title">QUI <span class="accent">SUIS-JE</span> ?</h2>
+            <div class="who-content">
+                <div class="who-text card">
+                    <p>Je suis <strong>Investisseur et entrepreneur</strong>.</p>
+                    <p>Depuis 20 ans, j'interviens sur les marchés.</p>
+                    <p>Depuis 15 ans, j'aide ceux qui veulent arrêter les paris… et commencer à mieux investir.</p>
+                </div>
+                <div class="who-activities">
+                    <div class="activity-item card">
+                        <h3><i class="fas fa-microphone"></i> Morning Mood</h3>
+                        <p>Chaque matin, j'allume le micro du Morning Mood pour remettre de l'ordre : macro, cryptos, psychologie, discipline, gestion du risque, sans filtre et sans excuses.</p>
+                    </div>
+                    <div class="activity-item card">
+                        <h3><i class="fas fa-chart-bar"></i> Débrief Hebdo</h3>
+                        <p>Chaque semaine, je publie le Débrief Hebdo, mes plans, mes stratégies crypto, et des dizaines de points pédagogiques pour que tu arrêtes de naviguer à vue.</p>
+                    </div>
+                </div>
+                <div class="who-dna card">
+                    <h3>Mon ADN :</h3>
+                    <p class="dna-values"><strong>Clarté. Action. Constance. Aucune complaisance.</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="expertise" class="section expertise-section">
+            <div class="expertise-layout">
+                <div class="expertise-copy">
+                    <h2 class="section-title">CE QUE <span class="accent">J'APPORTE</span></h2>
+                    <p>Une lecture structurée des marchés pour avancer avec moins d'impulsion et plus de méthode. Le travail n'est pas de prédire chaque mouvement, mais de savoir quoi regarder, quoi ignorer, et comment réagir.</p>
+                </div>
+                <div class="expertise-grid">
+                    <div class="expertise-item card">
+                        <i class="fas fa-globe-europe card-icon"></i>
+                        <h3>Macro & contexte</h3>
+                        <p>Identifier le climat de marché, les catalyseurs et les zones où le bruit peut faire perdre le plan.</p>
+                    </div>
+                    <div class="expertise-item card">
+                        <i class="fas fa-route card-icon"></i>
+                        <h3>Plan de marché</h3>
+                        <p>Construire des scénarios, définir des niveaux, gérer les invalidations et éviter les décisions à chaud.</p>
+                    </div>
+                    <div class="expertise-item card">
+                        <i class="fas fa-scale-balanced card-icon"></i>
+                        <h3>Gestion du risque</h3>
+                        <p>Raisonner en exposition, paliers, temporalité et taille de position plutôt qu'en conviction.</p>
+                    </div>
+                    <div class="expertise-item card">
+                        <i class="fas fa-brain card-icon"></i>
+                        <h3>Discipline</h3>
+                        <p>Tenir un cadre quand les marchés accélèrent, corrigent, ou donnent envie de tout remettre en cause.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="content" class="section ctas-section content-section">
+            <div class="section-heading-row">
+                <div>
+                    <h2 class="section-title">SUIVRE <span class="accent">MON TRAVAIL</span></h2>
+                </div>
+                <p>Podcast quotidien, vidéos, lives et accompagnement IVT : plusieurs formats, un même fil conducteur.</p>
+            </div>
+            <div class="cta-grid">
+                <div class="cta-card card">
+                    <div class="platform-logo spotify-logo"><i class="fab fa-spotify"></i><span>Spotify</span></div>
+                    <h3>Morning Mood en Podcast</h3>
+                    <p>Le podcast qui te remet la tête droite avant d'ouvrir les marchés. On parle macro, crypto, gestion, discipline… et de comment ne PAS faire n'importe quoi.</p>
+                    <a href="#podcast" class="cta-button"><i class="fas fa-arrow-right"></i> Écouter maintenant</a>
+                </div>
+                <div class="cta-card card">
+                    <div class="platform-logo youtube-logo"><i class="fab fa-youtube"></i><span>YouTube</span></div>
+                    <h3>Ma chaîne YouTube</h3>
+                    <p>Les marchés expliqués simplement, sans drama, sans bullshit. FED, inflation, cryptos, opportunités, volatilité : je décortique, tu avances.</p>
+                    <a href="https://www.youtube.com/c/InteractivTrading" target="_blank" rel="noopener noreferrer" class="cta-button"><i class="fas fa-arrow-right"></i> Voir les vidéos</a>
+                </div>
+                <div class="cta-card card">
+                    <div class="cta-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Rejoindre IVT</h3>
+                    <p>Indices, Cryptos, polarités, notifications, PDF pédagogiques (Carnet de Bord, Crypto Board), Vidéos, Audios, mes positions en temps réel. Une communauté soudée, exigeante, bienveillante. Tu veux progresser ? Tu veux un plan ? Bienvenue.</p>
+                    <a href="https://interactivtrading.com/?aff=xf-site" target="_blank" rel="noopener noreferrer" class="cta-button"><i class="fas fa-arrow-right"></i> Découvrir IVT</a>
+                </div>
+                <div class="cta-card card">
+                    <div class="cta-icon"><i class="fab fa-twitch"></i></div>
+                    <h3>Live Twitch</h3>
+                    <p>Des sessions live, sans script, sans filet. On analyse les marchés en direct, on discute stratégie, compréhension, mindset. La transparence totale, en temps réel.</p>
+                    <a href="https://www.twitch.tv/xavierfenaux" target="_blank" rel="noopener noreferrer" class="cta-button"><i class="fas fa-arrow-right"></i> Rejoindre les Lives</a>
+                </div>
+            </div>
+        </section>
+
+<section id="podcast" class="section">
+    <h2 class="section-title podcast-title"><i class="fas fa-headphones"></i> MORNING MOOD <span class="accent">PODCAST</span></h2>
+
+    <div class="spotify-embed-container">
+        <iframe 
+            style="border-radius: 12px" 
+            src="https://open.spotify.com/embed/show/4Kka5gOG1cnplAmHB0vGXD?utm_source=generator&theme=0" 
+            width="100%" 
+            height="352" 
+            frameBorder="0" 
+            allowfullscreen="" 
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+            loading="lazy">
+        </iframe>
+
+        <!-- Texte dans le même cadre -->
+
+            <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.7; margin-top: 1.5rem;">
+    Je publie chaque matin le Morning Mood, un podcast où je partage mon état d’esprit face aux marchés, 
+    ce que je surveille, ce qui m’intrigue et comment j’aborde la journée. 
+    Je décrypte l’actualité économique, les zones techniques importantes, les mouvements des indices et des cryptos, 
+    sans jamais tomber dans les promesses faciles ni les scénarios miracles.
+</p>
+
+<p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.7; margin-top: 1.2rem;">
+    Mon objectif est simple. Aider ceux qui veulent progresser à comprendre ce qui compte vraiment, 
+    à structurer leur réflexion, à développer de la discipline et à apprendre à réagir avec méthode 
+    plutôt qu’à l’instinct. 
+    Je parle de mes propres questionnements, de mes doutes, de ce que je fais quand les marchés accélèrent 
+    ou quand ils se figent, et surtout de la manière dont j’essaie de rester lucide au milieu du bruit.
+</p>
+
+<p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.7; margin-top: 1.2rem;">
+    Si vous écoutez ce podcast, vous repartirez avec une vision claire du climat du marché du jour, 
+    des éléments à suivre, et d’une façon de penser qui vous évite les excès. 
+    Mon but n’est pas de vous dire quoi faire, mais de vous montrer comment je fais pour avancer, 
+    jour après jour, avec la tête froide et un plan solide.
+</p>
+
+    </div>
+</section>
+
+        <section id="youtube" class="section">
+            <h2 class="section-title"><i class="fab fa-youtube"></i> MA CHAÎNE <span class="accent">YOUTUBE</span></h2>
+            <div class="youtube-content card">
+                <p>Les marchés expliqués simplement, sans drama, sans bullshit.</p>
+                <p>FED, inflation, cryptos, opportunités, volatilité : je décortique, tu avances.</p>
+                <a href="https://www.youtube.com/c/InteractivTrading" target="_blank" rel="noopener noreferrer" class="cta-button"><i class="fas fa-arrow-right"></i> Voir les vidéos</a>
+            </div>
+        </section>
+
+        <section id="ivt" class="section">
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> <span class="accent">IVT</span> - INTERACTIV TRADING</h2>
+            <div class="ivt-content">
+                <div class="ivt-description card">
+                    <p><strong>Indices, Cryptos, polarités, notifications, PDF pédagogiques</strong> (Carnet de Bord, Crypto Board), <strong>Vidéos, Audios, mes positions en temps réel.</strong></p>
+                    <p>Une communauté soudée, exigeante, bienveillante.</p>
+                    <p class="ivt-cta-text">Tu veux progresser ? Tu veux un plan ? Bienvenue.</p>
+                    <a href="https://interactivtrading.com/?aff=xf-site" target="_blank" rel="noopener noreferrer" class="cta-button"><i class="fas fa-arrow-right"></i> Découvrir IVT</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="latest" class="section">
+            <h2 class="section-title"><i class="fas fa-fire"></i> DERNIÈRES <span class="accent">PUBLICATIONS</span></h2>
+            <div class="latest-grid">
+                <div class="latest-item card">
+                    <div class="platform-logo spotify-logo compact-logo"><i class="fab fa-spotify"></i><span>Spotify</span></div>
+                    <h3>Derniers Morning Mood</h3>
+                    <p>Écoute les derniers épisodes du podcast quotidien</p>
+                    <a href="#podcast" class="cta-button-small">Écouter</a>
+                </div>
+                <div class="latest-item card">
+                    <div class="platform-logo youtube-logo compact-logo"><i class="fab fa-youtube"></i><span>YouTube</span></div>
+                    <h3>Dernières vidéos YouTube</h3>
+                    <p>Découvre les dernières analyses et explications</p>
+                    <a href="https://www.youtube.com/c/InteractivTrading" target="_blank" rel="noopener noreferrer" class="cta-button-small">Voir</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="community" class="section">
+            <h2 class="section-title">AVIS & <span class="accent">RETOURS</span></h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card card">
+                    <h3><i class="fas fa-star"></i> Trustpilot</h3>
+                    <p class="testimonial-text">"Excellente formation, très pédagogique et concrète. Xavier explique clairement les concepts complexes."</p>
+                    <p class="testimonial-author">— Membre IVT</p>
+                </div>
+                <div class="testimonial-card card">
+                    <h3><i class="fas fa-headphones"></i> Podcast Reviews</h3>
+                    <p class="testimonial-text">"Le Morning Mood est devenu mon rituel matinal. Ça me remet les idées en place avant d'ouvrir les marchés."</p>
+                    <p class="testimonial-author">— Auditeur Apple Podcasts</p>
+                </div>
+                <div class="testimonial-card card">
+                    <h3><i class="fas fa-chart-line"></i> Communauté IVT</h3>
+                    <p class="testimonial-text">"Enfin quelqu'un qui parle vrai, sans promesses miraculeuses. La méthode et la discipline avant tout."</p>
+                    <p class="testimonial-author">— Membre IVT</p>
+                </div>
+            </div>
+            <div class="podcast-link card">
+                <p>Écoute le podcast sur <a href="https://podcasts.apple.com/fr/podcast/lhumeur-des-march%C3%A9s-financiers-d%C3%A9complex%C3%A9e/id1547729818" target="_blank" rel="noopener noreferrer" class="accent-link">Apple Podcasts</a> et découvre tous les avis de la communauté.</p>
+            </div>
+        </section>
+
+		<section id="about" class="section" style="display: none;">
+            <h2 class="section-title">PARCOURS <span class="accent">PROFESSIONNEL</span></h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">2014 - PRESENT</div>
+                    <div class="timeline-content card">
+                        <h3>Associé @ InteractivTrading</h3>
+                        <p>Analyses Forex, Indices, Actions. Création de contenu vidéo & formations. Développement de communauté.</p>
+                        <div class="tech-stack">
+                            <span>Trading</span>
+                            <span>Coaching</span>
+                            <span>Media</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2013 - 2014</div>
+                    <div class="timeline-content card">
+                        <h3>Talents du Trading</h3>
+                        <p>Saison 2 (2ème place) & Saison 3 (7ème place). Compétition de trading réel reconnue.</p>
+                        <img src="images/talents.png" class="company-logo" alt="Talents du Trading" style="background:white; padding:5px; border-radius:4px;">
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2011 - 2014</div>
+                    <div class="timeline-content card">
+                        <h3>Chef Analyste @ DailyFX</h3>
+                        <p>Rédaction d'analyses marchés. Gestion de portefeuilles Actions et Forex. Daily-bourse.fr</p>
+                        <img src="images/daily.png" class="company-logo" alt="DailyFX">
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2006 - 2011</div>
+                    <div class="timeline-content card">
+                        <h3>Responsable Analyse @ Zonebourse</h3>
+                        <p>Gestion du pôle analyse. Co-gestion portefeuilles. Organisation Zonebourse Golf Masters.</p>
+                        <img src="images/zonebourse.jpg" class="company-logo" alt="Zonebourse">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="golf" class="section golf-section">
+            <div class="golf-content">
+                <h2 class="section-title"><span class="accent">GOLF</span></h2>
+                <div class="card golf-card">
+                    <div class="golf-stats">
+                        <div class="stat-big">12</div>
+                        <div class="stat-desc">HANDICAP</div>
+                    </div>
+                    <p>Le Trading et le Golf partagent la même ADN : <strong>Discipline, Psychologie, Gestion du Risque.</strong></p>
+                    <ul class="achievements">
+                        <li><i class="fas fa-trophy"></i> Compétitions Corpo Régionales & Nationales</li>
+                        <li><i class="fas fa-trophy"></i> 8ème Finale Nationale International Pairs</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="golf-image">
+                <img src="images/golf.jpg" alt="Golf Swing">
+            </div>
+        </section>       
+		
+<section id="running" class="section running-section">
+    <div class="running-content">
+        <h2 class="section-title"><span class="accent">RUNNING</span></h2>
+        <div class="card running-card">
+            <div class="running-stats">
+                <div class="stat-big">10KM</div>
+                <div class="stat-desc">QUOTIDIEN</div>
+            </div>
+            <p>
+                Le trading et le running partagent là aussi une identité commune faite de discipline, de constance et de lucidité. 
+                Quand je cours, je retrouve les mêmes mécanismes que face aux marchés : garder le rythme, rester calme dans l’effort, accepter les variations d’intensité et avancer avec méthode plutôt qu’à l’instinct. 
+                Le running m’aide à clarifier mes idées, à prendre du recul sur le bruit permanent et à renforcer l’endurance mentale indispensable pour performer durablement.
+            </p>
+            <ul class="achievements">
+                <li><i class="fas fa-trophy"></i> Sorties quotidiennes ou quasi quotidiennes</li>
+                <li><i class="fas fa-trophy"></i> Gestion de l’effort et de la constance dans le temps</li>
+            </ul>
+        </div>
+    </div>
+    <div class="running-image">
+        <img src="images/running.jpg" alt="Running" />
+    </div>
+</section>
+
+
+        <section id="contact" class="section footer-section">
+            <h2 class="section-title">CONTACT</h2>
+            <div class="contact-content">
+                <div class="contact-grid">
+                    <div class="contact-item card">
+                        <h3><i class="fas fa-envelope"></i> Contact Pro</h3>
+                        <p>Pour interviews, invitations, contact professionnel</p>
+                        <a href="mailto:xavier.fenaux.pro@gmail.com" class="contact-link">xavier.fenaux.pro@gmail.com</a>
+                    </div>
+                    <div class="contact-item card">
+                        <h3><i class="fas fa-question-circle"></i> Questions</h3>
+                        <p>Pour toute question</p>
+                        <a href="mailto:morningmood@xavierfenaux.com" class="contact-link"><i class="fas fa-envelope"></i> morningmood@xavierfenaux.com</a>
+                    </div>
+                    <div class="contact-item card">
+                        <h3><i class="fas fa-chart-line"></i> Découvrir IVT</h3>
+                        <p>Pour rejoindre la communauté</p>
+                        <a href="https://interactivtrading.com/?aff=xf-site" target="_blank" rel="noopener noreferrer" class="contact-link"><i class="fas fa-external-link-alt"></i> interactivtrading.com</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="connect" class="section footer-section">
+            <h2 class="section-title">RESTEZ <span class="accent">CONNECTÉ</span></h2>
+            <div class="social-grid">
+                <a href="https://twitter.com/XFenaux" target="_blank" class="social-card twitter">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="40" height="40">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    <span>X</span>
+                </a>
+                <a href="https://www.facebook.com/fenauxxavier/" target="_blank" class="social-card facebook">
+                    <i class="fab fa-facebook"></i>
+                    <span>Facebook</span>
+                </a>
+                <a href="https://www.youtube.com/c/InteractivTrading" target="_blank" class="social-card youtube">
+                    <i class="fab fa-youtube"></i>
+                    <span>YouTube</span>
+                </a>
+                <a href="https://interactivtrading.com?aff=XavSite" target="_blank" class="social-card ivt">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Ma Formation</span>
+                </a>
+                <a href="https://open.spotify.com/show/4Kka5gOG1cnplAmHB0vGXD" target="_blank" class="social-card spotify">
+                    <i class="fab fa-spotify"></i>
+                    <span>Spotify</span>
+                </a>
+            </div>
+            <footer>
+                <p>&copy; 2026 Xavier Fenaux. Conçu pour la Performance.</p>
+            </footer>
+        </section>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
+

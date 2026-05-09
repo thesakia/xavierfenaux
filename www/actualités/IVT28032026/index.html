@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IVT — Semaine du 23 au 28 mars 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #7A5C10;
+    --gold-light: #C9A84C;
+    --gold-dim: rgba(122,92,16,0.08);
+    --red: #B92D1A;
+    --green: #1A7A3F;
+    --purple: #6F4FF2;
+    --bg: #FAFAF8;
+    --bg2: #F3F2EE;
+    --bg3: #E9E7E0;
+    --border: rgba(122,92,16,0.14);
+    --text: #0F0E0C;
+    --muted: #6A6860;
+    --mono: 'DM Mono', monospace;
+    --display: 'Playfair Display', serif;
+    --serif: 'Lora', serif;
+    --sans: 'Lora', serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: #E8E6DF;
+    color: var(--text);
+    font-family: var(--sans);
+    overflow-x: hidden;
+  }
+
+  .page-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--bg);
+    box-shadow: 0 0 80px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+  .page-wrap::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.02;
+    pointer-events: none;
+    z-index: 9997;
+  }
+
+  /* TICKER TAPE */
+  .ticker-wrap {
+    position: sticky;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(250,250,248,0.93);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    height: 36px;
+    backdrop-filter: blur(10px);
+  }
+  .ticker {
+    display: flex;
+    animation: ticker 30s linear infinite;
+    white-space: nowrap;
+    height: 100%;
+    align-items: center;
+  }
+  .ticker-item {
+    font-family: var(--sans);
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    padding: 0 32px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ticker-item .up { color: var(--green); }
+  .ticker-item .dn { color: var(--red); }
+  .ticker-item .label { color: var(--gold); font-weight: 500; }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 36px 60px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 50% at 80% 50%, rgba(122,92,16,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(111,79,242,0.03) 0%, transparent 60%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(122,92,16,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(122,92,16,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+  }
+
+  .hero-eyebrow {
+    font-family: var(--sans);
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-title {
+    font-family: var(--display);
+    font-size: clamp(64px, 10vw, 140px);
+    line-height: 0.9;
+    letter-spacing: 0.01em;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 1s 0.5s forwards;
+  }
+  .hero-title .line2 {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(122,92,16,0.35);
+  }
+  .hero-title .accent { color: var(--gold); }
+
+  .hero-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(18px, 2vw, 26px);
+    color: var(--muted);
+    max-width: 580px;
+    line-height: 1.5;
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeUp 1s 0.7s forwards;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 0;
+    opacity: 0;
+    animation: fadeUp 1s 0.9s forwards;
+  }
+  .hero-stat {
+    padding: 24px 40px 24px 0;
+    border-right: 1px solid var(--border);
+    margin-right: 40px;
+  }
+  .hero-stat:last-child { border-right: none; }
+  .hero-stat-num {
+    font-family: var(--display);
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--gold);
+  }
+  .hero-stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 60px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 1s 1.4s forwards;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollLine 2s ease-in-out infinite;
+  }
+  @keyframes scrollLine {
+    0%, 100% { transform: scaleY(1); opacity: 1; }
+    50% { transform: scaleY(0.5); opacity: 0.4; }
+  }
+
+  /* SECTION BASE */
+  section {
+    padding: 120px 60px;
+    position: relative;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 200px;
+  }
+
+  .section-title {
+    font-family: var(--display);
+    font-size: clamp(44px, 6vw, 80px);
+    line-height: 0.95;
+    margin-bottom: 80px;
+  }
+
+  /* CHAOS SECTION */
+  .chaos {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chaos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 2px;
+  }
+  .chaos-card {
+    background: var(--bg);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .chaos-card:hover { background: var(--bg3); }
+  .chaos-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+  }
+  .chaos-card.gold::before { background: var(--gold); }
+  .chaos-card.green::before { background: var(--green); }
+  .chaos-card.red::before { background: var(--red); }
+  .chaos-card.purple::before { background: var(--purple); }
+
+  .chaos-num {
+    font-family: var(--display);
+    font-size: 72px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .chaos-num.gold { color: var(--gold); }
+  .chaos-num.green { color: var(--green); }
+  .chaos-num.red { color: var(--red); }
+  .chaos-num.white { color: var(--text); }
+
+  .chaos-title {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .chaos-desc {
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .chaos-full {
+    background: var(--bg);
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  .chaos-full-text {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(22px, 3vw, 36px);
+    color: var(--muted);
+    max-width: 700px;
+    line-height: 1.4;
+  }
+  .chaos-full-text strong { color: var(--text); font-style: normal; }
+  .chaos-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--border);
+    padding: 8px 20px;
+    white-space: nowrap;
+  }
+
+  /* PERFORMANCES */
+  .perf {
+    background: var(--bg);
+  }
+
+  .perf-list { display: flex; flex-direction: column; gap: 2px; }
+
+  .perf-item {
+    display: grid;
+    grid-template-columns: 200px 1fr auto;
+    align-items: center;
+    gap: 40px;
+    padding: 32px 40px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  .perf-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.6s ease, transform 0.6s ease, background 0.3s, border 0.3s;
+  }
+  .perf-item:hover {
+    background: var(--bg3);
+    border-color: var(--border);
+  }
+  .perf-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .perf-item:hover::after { transform: scaleX(1); }
+
+  .perf-coach {
+    font-family: var(--display);
+    font-size: 28px;
+    color: var(--gold);
+    letter-spacing: 0.01em;
+  }
+  .perf-market {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .perf-desc {
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--muted);
+  }
+  .perf-desc strong { color: var(--text); }
+  .perf-desc .highlight { color: var(--green); font-weight: 700; font-family: var(--mono); }
+  .perf-desc .loss { color: var(--red); font-weight: 700; font-family: var(--mono); }
+
+  .perf-number {
+    font-family: var(--display);
+    font-size: 48px;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .perf-number.green { color: var(--green); }
+  .perf-number.gold { color: var(--gold); }
+  .perf-number.muted { color: var(--muted); font-size: 24px; }
+
+  /* MACRO SECTION */
+  .macro {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+  }
+
+  .macro-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .macro-card {
+    background: var(--bg);
+    padding: 40px 32px;
+    transition: background 0.3s;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .macro-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease, transform 0.6s ease, background 0.3s;
+  }
+  .macro-card:hover { background: var(--bg3); }
+
+  .macro-icon {
+    font-family: var(--display);
+    font-size: 56px;
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+  .macro-icon.gold { color: var(--gold); }
+  .macro-icon.red { color: var(--red); }
+  .macro-icon.green { color: var(--green); }
+
+  .macro-card-title {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .macro-card-text {
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .macro-card-text .val { color: var(--gold); }
+  .macro-card-text .up { color: var(--green); }
+  .macro-card-text .dn { color: var(--red); }
+
+  /* HONNETETE */
+  .honesty {
+    background: var(--bg);
+    padding: 120px 60px;
+  }
+
+  .honesty-inner {
+    border: 1px solid rgba(185,45,26,0.2);
+    padding: 60px;
+    position: relative;
+    max-width: 900px;
+  }
+  .honesty-inner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--red);
+  }
+  .honesty-title {
+    font-family: var(--display);
+    font-size: 52px;
+    margin-bottom: 8px;
+    color: var(--red);
+  }
+  .honesty-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 20px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+  .honesty-item {
+    border-top: 1px solid rgba(232,65,42,0.15);
+    padding: 24px 0;
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 32px;
+  }
+  .honesty-coach {
+    font-family: var(--display);
+    font-size: 24px;
+    color: var(--text);
+    padding-top: 2px;
+  }
+  .honesty-text {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+  .honesty-text strong { color: var(--text); }
+
+  /* TABLEAU RECAP */
+  .recap {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .recap-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .recap-table th {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .recap-table td {
+    padding: 20px;
+    border-bottom: 1px solid rgba(122,92,16,0.06);
+    vertical-align: top;
+    font-size: 13px;
+    transition: background 0.2s;
+  }
+  .recap-table tr:hover td { background: rgba(122,92,16,0.03); }
+  .recap-table .coach-name {
+    font-family: var(--display);
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: 0.01em;
+  }
+  .recap-table .market-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .recap-table .perf-tag {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--green);
+    margin-right: 8px;
+    margin-bottom: 4px;
+  }
+  .recap-table .perf-tag.gold { color: var(--gold); }
+  .recap-table .desc-text {
+    color: var(--muted);
+    line-height: 1.6;
+    font-family: var(--sans);
+    font-size: 14px;
+  }
+
+  /* CTA */
+  .cta-section {
+    background: var(--bg);
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(122,92,16,0.08) 0%, transparent 70%);
+  }
+  .cta-inner { position: relative; z-index: 1; }
+  .cta-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+  }
+  .cta-title {
+    font-family: var(--display);
+    font-size: clamp(52px, 8vw, 110px);
+    line-height: 0.9;
+    margin-bottom: 40px;
+  }
+  .cta-title .outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(122,92,16,0.5);
+  }
+  .cta-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 20px;
+    color: var(--muted);
+    margin-bottom: 48px;
+  }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--gold);
+    color: #080808;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 20px 48px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #080808;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .cta-btn:hover::before { transform: translateX(0); }
+  .cta-btn:hover { color: var(--gold); }
+  .cta-btn span { position: relative; z-index: 1; }
+  .cta-promo {
+    margin-top: 24px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+  .cta-promo strong { color: var(--gold); }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 32px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-logo {
+    font-family: var(--display);
+    font-size: 24px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+  .footer-text {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-align: right;
+    line-height: 1.7;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .count-up { display: inline-block; }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  #particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin: 60px 0;
+    opacity: 0.4;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .divider-icon {
+    color: var(--gold);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+  }
+
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--red);
+    border: 1px solid rgba(185,45,26,0.3);
+    padding: 4px 12px;
+    margin-left: 16px;
+  }
+  .live-dot {
+    width: 5px; height: 5px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    section { padding: 80px 24px; }
+    .hero { padding: 36px 24px 80px; }
+    .chaos-grid { grid-template-columns: 1fr; }
+    .macro-grid { grid-template-columns: 1fr; }
+    .perf-item { grid-template-columns: 1fr; gap: 16px; }
+    .perf-number { text-align: left; }
+    .hero-stats { flex-wrap: wrap; gap: 24px; }
+    .honesty-inner { padding: 32px 24px; }
+    .honesty-item { grid-template-columns: 1fr; gap: 8px; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+    .footer-text { text-align: center; }
+    .recap-table { font-size: 12px; }
+  }
+</style>
+    <script defer src="https://analytics.parentsdejumeaux.fr/script.js" data-website-id="3b10c5e0-1aea-4ae4-935f-64b27cf0caf9" data-domains="xavierfenaux.com,www.xavierfenaux.com"></script>
+</head>
+<body>
+<div class="page-wrap">
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker" id="ticker"></div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas id="particles"></canvas>
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div style="position:relative;z-index:2;">
+    <p class="hero-eyebrow">
+      InteractivTrading &nbsp;·&nbsp; Semaine du 23 au 28 mars 2026
+      <span class="live-badge"><span class="live-dot"></span> Rapport hebdo</span>
+    </p>
+
+    <h1 class="hero-title">
+      Ormuz<br>
+      <span class="line2">a tremblé.</span><br>
+      <span class="accent">On a tenu.</span>
+    </h1>
+
+    <p class="hero-sub">
+      Détroit bloqué, pétrole au-dessus de 100$, Tech en chute, banques centrales les mains liées. Une semaine de boucherie. L'équipe a gardé la tête froide.
+    </p>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="8">0</div>
+        <div class="hero-stat-label">Coachs actifs</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="7">0</div>
+        <div class="hero-stat-label">Marchés couverts</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="18">0</div>
+        <div class="hero-stat-label">Plans avec objectifs</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">6J</div>
+        <div class="hero-stat-label">De coverage continu</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- CHAOS MACRO -->
+<section class="chaos">
+  <p class="section-label reveal">Contexte macro</p>
+  <h2 class="section-title reveal">Ormuz.<br>Le pétrole.<br><em style="font-family:var(--serif);font-style:italic;color:var(--gold);">La tempête parfaite.</em></h2>
+
+  <div class="chaos-grid reveal">
+    <div class="chaos-card red">
+      <div class="chaos-num red">100$+</div>
+      <div class="chaos-title">Détroit d'Ormuz bloqué</div>
+      <div class="chaos-desc">Le Brent s'emballe au-dessus de 100$ dès lundi avec le pétrole à quasi 110$ le matin. Le blocage du détroit d'Ormuz par l'Iran provoque une onde de choc sur toute l'économie mondiale. L'inflation redevient incontrôlable. Les taux 10 ans US repassent au-dessus de 4,40%.</div>
+    </div>
+    <div class="chaos-card gold">
+      <div class="chaos-num gold">-5,5%</div>
+      <div class="chaos-title">Tech en déroute</div>
+      <div class="chaos-desc">Meta et les géants de la Tech lâchent dans la semaine. Le CAC40 perd 5,49% depuis le 1er janvier. Les futures US reculent de -0,5% mardi, -1% mercredi. Les banques centrales ont les mains liées : elles ne peuvent ni monter les taux (récession) ni les baisser (inflation).</div>
+    </div>
+    <div class="chaos-card green">
+      <div class="chaos-num green">BTC 70K$</div>
+      <div class="chaos-title">Crypto : la ligne tient</div>
+      <div class="chaos-desc">Bitcoin tient les 70 000$ malgré la tempête. FX59 entre sur un signal achat à 69 100$ puis renforce à 69 500$. Signal invalidé à 69 400$ et recoupé proprement. Nouveau signal achat en fin de semaine à 66 150$ sur break TDI. La discipline prime sur l'émotion.</div>
+    </div>
+    <div class="chaos-card purple">
+      <div class="chaos-num white">$SATL</div>
+      <div class="chaos-title">+77,69% en 7 semaines</div>
+      <div class="chaos-desc">Sylvain touche le TP sur $SATL pris le 1er février : +77,69% de gain. Preuve que la vraie performance se construit dans la durée, pas dans le bruit. Le portefeuille investisseur résiste bien avec -2,83% sur le PEA France contre -5,49% pour le CAC40 sur la même période.</div>
+    </div>
+  </div>
+
+  <div class="chaos-full reveal" style="margin-top:2px;">
+    <p class="chaos-full-text">
+      <strong>"C'est maintenant que se construisent les perfs de demain, à condition de rester objectif sur la situation."</strong>
+    </p>
+    <span class="chaos-badge">Xavier · Débrief Hebdo</span>
+  </div>
+</section>
+
+<!-- PERFORMANCES -->
+<section class="perf">
+  <p class="section-label reveal">Résultats concrets</p>
+  <h2 class="section-title reveal">Ce qui a été<br>encaissé.</h2>
+
+  <div class="perf-list">
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">Xavier</div>
+        <div class="perf-market">Indices · Crypto · Macro</div>
+      </div>
+      <div class="perf-desc">
+        Plan SP500 vente activé sous <span class="highlight">polarité 6 550</span> dès le mercredi : <span class="highlight">TP1 6 434 touché vendredi</span>, TP2 en cours à 6 300. Brief Moods quotidiens 5h-6h, plans du jour SP500 en vidéo 5 minutes chaque matin. Semi-débrief hebdo publié mercredi. <strong>Nouvelle série de vidéos avec Alexandre Baradez</strong> (macro) lancée. Point flash crypto, analyse réflexive sur EURUSD et les banques centrales, tour du secteur Défense en 3 minutes. 6 jours de présence sans interruption.
+      </div>
+      <div class="perf-number green">TP1 ✓</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">Rodolphe</div>
+        <div class="perf-market">Indices · Matières Premières</div>
+      </div>
+      <div class="perf-desc">
+        <span class="highlight">DAX : +500 points en une nuit</span> sur 3 positions acheteuses (zone 22 370 > 22 570, pris à 22 443). <span class="highlight">TP2 atteint à 22 910</span> mercredi soir. Fermeture totale du swing vendeur DAX en bas. Plans de nuit quotidiens sur indices, actions, matières premières et crypto. Suivi XAUUSD + XAGUSD, analyse ALSTI sur repli. <strong>Point global Interactiv Life</strong> partagé en fin de semaine. Briefings quotidiens à partir de 4h du matin.
+      </div>
+      <div class="perf-number gold">+500 pts</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">FX59</div>
+        <div class="perf-market">Forex · Crypto</div>
+      </div>
+      <div class="perf-desc">
+        <span class="highlight">USDJPY short 159,42 déclenché lundi</span> : TP1 158,50 pris à 100% dès le lundi matin. GBPJPY short 212,60 : <span class="highlight">TP1 212,00 + TP2 211,61</span> pris en scalp. Nouvelle entrée GBPJPY short 212,85 mercredi avec TP1 212,50 touché. <span class="highlight">BTC achat 69 100$ TP1 70 000$ / TP2 71 000$</span> suivi de près. Signal BTC invalidé et recoupé à 66 150$ en fin de semaine. Gestion transparente partagée en temps réel à chaque allègement.
+      </div>
+      <div class="perf-number green">TP ×4</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">3VG / Inchi</div>
+        <div class="perf-market">Actions Europe · Fernanda</div>
+      </div>
+      <div class="perf-desc">
+        <span class="highlight">EGIDE trade intraday jeudi</span> : entrée 0,99€ objectif 1,08€ (+9%) suite aux déclarations du Premier Ministre. DEEZER impact Fernanda Hebdo 1,23 lundi. ECOSLOPS impact 1,26/1,12. <strong>Sensorion Fernanda Hebdo</strong> en zone 0,45/0,49. VALNEVA suivi sur M100. <span class="highlight">Nouveau concept "Stromboli H4 de 13h"</span> lancé avec HOPIUM. ADVIC et ALMDT : impacts Fernanda Mois validés lundi matin. Rituel Fernanda Hebdo du jeudi : Groupe Okwind identifié.
+      </div>
+      <div class="perf-number gold">Intraday</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">Benj</div>
+        <div class="perf-market">DAX · Actions EU</div>
+      </div>
+      <div class="perf-desc">
+        <span class="highlight">DAX achat 22 248 : TP1 22 335 touché vendredi</span>. Deuxième entrée OC à 22 333 avec TP1 22 440. Suivi pédagogique total : explication du cheminement cycle par cycle, gestion SL à BE partagée en direct. <strong>ALSTOM renforcé sur la MM50 hebdomadaire</strong>. Air Liquide suivi en résistance sur 173,50€. Essilor : perte prise proprement vendredi. Lives à 8h30 lundi et mercredi.
+      </div>
+      <div class="perf-number green">TP1 DAX</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">Sylvain</div>
+        <div class="perf-market">Actions US · Actions EU</div>
+      </div>
+      <div class="perf-desc">
+        <span class="highlight">$SATL TP touché : +77,69%</span> depuis le 1er février. $DVLT perte prise proprement vendredi sur small cap. <span class="highlight">$OKLO achat 52,60$ TP1 77,20$</span>. $EOSE achat 4,67$ sur support hebdo (totalement survendu). $CCL repris 25,20$ sur espoir de cessez-le-feu. $SIRI achat anticipatoire sur BB fermées. <strong>6 opportunités d'investissement identifiées</strong> cette semaine : $VISA 286$, $LMT 590$, $NKE 45$, $META 450$, $NVDA zone combo hebdo, $MSFT 366/373$. Portefeuille PEA France à -2,83% vs CAC à -5,49%. Synthèses Asie + préopen quotidiens.
+      </div>
+      <div class="perf-number green">+77%</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">Ludovick</div>
+        <div class="perf-market">Indices · Formation</div>
+      </div>
+      <div class="perf-desc">
+        <strong>Module 4 de formation diffusé mardi soir à 18h15</strong>. Lives Ufunded à 8h30 chaque matin du lundi au vendredi. Briefs pre-market partagés en replay avec plans complets intraday, hebdomadaire et swing. Présence quasi-continue toute la semaine. Live aftermarket jeudi après-midi.
+      </div>
+      <div class="perf-number muted">6J Live</div>
+    </div>
+
+    <div class="perf-item">
+      <div>
+        <div class="perf-coach">Beman</div>
+        <div class="perf-market">Forex</div>
+      </div>
+      <div class="perf-desc">
+        <span class="highlight">GBPAUD achat 1,922</span> suivi tout au long de la semaine. TP intermédiaire à +57 pips mercredi, puis +100 pips jeudi. Gestion pédagogique partagée en temps réel : passage en SL à BE proposé pour les impatients, conviction maintenue sur la vision semaine. Zone MM20 hebdomadaire comme TP final.
+      </div>
+      <div class="perf-number gold">+100 pip</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- HONNETETÉ -->
+<section class="honesty">
+  <div class="honesty-inner reveal">
+    <div class="honesty-title">Transparence.</div>
+    <div class="honesty-sub">Chez IVT, on montre tout, y compris ce qui ne fonctionne pas.</div>
+
+    <div class="honesty-item">
+      <div class="honesty-coach">L'équipe</div>
+      <div class="honesty-text">
+        Cette semaine a été éprouvante. Certains SL à BE ont été déclenchés sur le SP500, des positions BTC ont été coupées proprement à l'invalidation, et des pertes ont été prises sans états d'âme sur Essilor et $DVLT. <strong>C'est exactement ça, trader correctement dans un contexte de crise.</strong> Protéger le capital en premier, chercher la performance ensuite. La discipline dans la tempête, c'est ce qui fait la différence sur le long terme.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECAP TABLE -->
+<section class="recap">
+  <p class="section-label reveal">Résumé de l'équipe</p>
+  <h2 class="section-title reveal">La semaine<br>en un coup d'oeil.</h2>
+
+  <div class="reveal">
+    <table class="recap-table">
+      <thead>
+        <tr>
+          <th>Coach</th>
+          <th>Marché</th>
+          <th>Fait marquant</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="coach-name">Xavier</div><div class="market-tag">Indices · Crypto · Macro</div></td>
+          <td><span class="perf-tag">Plan SP500 vente 6 550</span><span class="perf-tag">TP1 6 434</span><span class="perf-tag gold">Série Baradez</span></td>
+          <td class="desc-text">Brief Moods quotidiens. Semi-débrief hebdo. Point Défense + EURUSD. 6 jours de présence.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">Rodolphe</div><div class="market-tag">Indices · Matières Premières</div></td>
+          <td><span class="perf-tag">DAX +500 pts nuit</span><span class="perf-tag">TP2 22 910</span><span class="perf-tag gold">Swing DAX clos</span></td>
+          <td class="desc-text">3 positions DAX en une nuit. Briefings dès 4h. XAUUSD + XAGUSD suivis. Interactiv Life.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">FX59</div><div class="market-tag">Forex · Crypto</div></td>
+          <td><span class="perf-tag">USDJPY TP 100%</span><span class="perf-tag">GBPJPY TP1+2</span><span class="perf-tag gold">BTC 3 signaux</span></td>
+          <td class="desc-text">USDJPY 159,42 > 158,50 complet. Scalps GBPJPY. BTC géré en temps réel avec invalidation propre.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">3VG</div><div class="market-tag">Actions EU · Fernanda</div></td>
+          <td><span class="perf-tag">EGIDE intraday</span><span class="perf-tag">Impacts Fernanda x6</span><span class="perf-tag gold">Stromboli H4</span></td>
+          <td class="desc-text">DEEZER, ECOSLOPS, SENSORION, ADVIC, ALMDT, VALNEVA. Nouveau concept Stromboli lancé.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">Benj</div><div class="market-tag">DAX · Actions EU</div></td>
+          <td><span class="perf-tag">DAX TP1 (22 335)</span><span class="perf-tag gold">ALSTOM renforcé</span></td>
+          <td class="desc-text">2 entrées DAX gérées cycle par cycle. Air Liquide suivi. Essilor : perte prise sans hésiter.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">Sylvain</div><div class="market-tag">Actions US · PEA</div></td>
+          <td><span class="perf-tag">$SATL +77,69%</span><span class="perf-tag">$OKLO achat</span><span class="perf-tag gold">6 opportunités</span></td>
+          <td class="desc-text">PEA France -2,83% vs CAC -5,49%. $VISA, $LMT, $NKE, $META, $NVDA, $MSFT identifiés. Synthèses quotidiennes.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">Ludovick</div><div class="market-tag">Indices · Formation</div></td>
+          <td><span class="perf-tag gold">Module 4 Formation</span><span class="perf-tag gold">6J Live Ufunded</span></td>
+          <td class="desc-text">Live 8h30 chaque matin. Module 4 mardi soir. Briefs pre-market en replay avec plans complets.</td>
+        </tr>
+        <tr>
+          <td><div class="coach-name">Beman</div><div class="market-tag">Forex</div></td>
+          <td><span class="perf-tag">GBPAUD +100 pip</span><span class="perf-tag gold">Vision semaine tenue</span></td>
+          <td class="desc-text">Achat 1,922. TP progressifs 57 puis 100 pips. Gestion pédagogique partagée en temps réel.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="cta-inner reveal">
+    <p class="cta-eyebrow">Rejoindre l'équipe</p>
+    <h2 class="cta-title">
+      La semaine 2<br>
+      <span class="outline">d'avril arrive.</span>
+    </h2>
+    <p class="cta-sub">8 coachs. 7 marchés. 6 jours de coverage sans interruption. Imagine ce que tu rates.</p>
+    <a href="http://interactivtrading.com/vip?aff=sg-notifs2803&coupon=bienvenue" class="cta-btn">
+      <span>Rejoindre IVT avec -20%</span>
+      <span>→</span>
+    </a>
+    <p class="cta-promo">Code : <strong>BIENVENUE</strong> &nbsp;·&nbsp; -20% sur l'abonnement</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">IVT</div>
+  <div class="footer-text">
+    Semaine du 23 au 28 mars 2026 &nbsp;·&nbsp; 8 coachs experts &nbsp;·&nbsp; 7 marchés couverts<br>
+    Les performances passées ne préjugent pas des performances futures. Le trading comporte des risques.
+  </div>
+</footer>
+
+<script>
+// TICKER
+const items = [
+  { label: 'SP500', val: 'Vente 6550 · TP1 6434', dir: 'up' },
+  { label: 'USDJPY', val: 'TP complet 158.50', dir: 'up' },
+  { label: 'GBPJPY', val: 'TP1+TP2 scalp', dir: 'up' },
+  { label: 'DAX', val: '+500 pts en une nuit', dir: 'up' },
+  { label: '$SATL', val: '+77,69% en 7 semaines', dir: 'up' },
+  { label: 'BTC', val: '3 signaux gérés', dir: 'up' },
+  { label: 'GBPAUD', val: '+100 pips', dir: 'up' },
+  { label: '$OKLO', val: 'Achat 52,60$ TP1 77,20$', dir: 'up' },
+  { label: 'BRENT', val: '+100$ · Ormuz bloqué', dir: 'dn' },
+  { label: 'CAC40', val: '-5,49% YTD', dir: 'dn' },
+  { label: 'TAUX 10Y', val: '+4,40% US', dir: 'dn' },
+  { label: 'EGIDE', val: 'Intraday Fernanda', dir: 'up' },
+  { label: 'DEEZER', val: 'Impact Fernanda Hebdo', dir: 'up' },
+  { label: 'ALSTOM', val: 'Renfort MM50 hebdo', dir: 'up' },
+  { label: 'PEA', val: '-2,83% vs CAC -5,49%', dir: 'up' },
+  { label: 'IVT', val: '8 COACHS · 7 MARCHÉS', dir: 'up' },
+];
+const ticker = document.getElementById('ticker');
+const html = items.map(i => `<span class="ticker-item"><span class="label">${i.label}</span> <span class="${i.dir === 'up' ? 'up' : 'dn'}">${i.dir === 'up' ? '▲' : '▼'} ${i.val}</span></span>`).join('');
+ticker.innerHTML = html + html;
+
+// COUNTER ANIMATION
+function animateCount(el, target, duration = 1800) {
+  const start = performance.now();
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(eased * target);
+    el.textContent = current;
+    if (progress < 1) requestAnimationFrame(update);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(update);
+}
+
+// PARTICLES
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let particles = [];
+function resizeCanvas() {
+  canvas.width = canvas.parentElement.offsetWidth;
+  canvas.height = canvas.parentElement.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 1.5 + 0.3;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.4 + 0.05;
+    this.life = 0;
+    this.maxLife = Math.random() * 300 + 150;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.life++;
+    if (this.life > this.maxLife) this.reset();
+  }
+  draw() {
+    const alpha = this.opacity * Math.sin((this.life / this.maxLife) * Math.PI);
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(122,92,16,${alpha})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+function animParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 80) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(122,92,16,${0.06 * (1 - dist / 80)})`;
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// INTERSECTION OBSERVER
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      io.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+document.querySelectorAll('.perf-item').forEach((el, i) => {
+  el.style.transitionDelay = (i * 80) + 'ms';
+  io.observe(el);
+});
+document.querySelectorAll('.macro-card').forEach((el, i) => {
+  el.style.transitionDelay = (i * 100) + 'ms';
+  io.observe(el);
+});
+
+// COUNTER HERO
+const heroIO = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('[data-count]').forEach(el => {
+        animateCount(el, parseInt(el.dataset.count));
+      });
+      heroIO.disconnect();
+    }
+  });
+}, { threshold: 0.5 });
+const heroStats = document.querySelector('.hero-stats');
+if (heroStats) heroIO.observe(heroStats);
+</script>
+</div>
+</body>
+</html>

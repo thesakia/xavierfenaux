@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ce que les abonnés IVT ont vécu le 19 février 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent-primary: #6F4FF2;
+      --accent-hover:   #5a3fd4;
+      --vip-accent:     #249DDF;
+      --vip-accent-light: rgba(36, 157, 223, 0.14);
+      --logo-gold:      #F4B454;
+      --bg-white:     #FFFFFF;
+      --bg-soft:      #F5F4FF;
+      --bg-dark:      #0f0f0f;
+      --text-primary: #1a1a1a;
+      --text-muted:   #555;
+      --text-light:   #888;
+      --text-white:   #ffffff;
+      --border-soft:  #e6e3ff;
+      --border-light: rgba(26, 26, 26, 0.08);
+      --border-hover: rgba(111, 79, 242, 0.3);
+      --shadow-card:         0 12px 40px rgba(111, 79, 242, 0.08);
+      --shadow-card-hover:   0 18px 55px rgba(15, 15, 15, 0.09);
+      --shadow-button:       0 6px 20px rgba(111, 79, 242, 0.25);
+      --shadow-button-hover: 0 10px 28px rgba(111, 79, 242, 0.32);
+      --section-padding: clamp(4rem, 7vw, 6rem);
+      --card-padding: 1.75rem;
+      --card-padding-large: 2.5rem;
+      --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px;
+      --radius-xl: 16px; --radius-3xl: 20px; --radius-full: 999px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Inter", Arial, sans-serif;
+      background: var(--bg-white); color: var(--text-primary);
+      line-height: 1.6; overflow-x: hidden;
+    }
+
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-soft);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 2rem;
+    }
+    .logo { font-family: "Montserrat", Arial, sans-serif; font-size: 1rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; }
+    .logo em { font-style: normal; color: var(--accent-primary); }
+    .header-badge { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; color: var(--text-light); }
+
+    .hero {
+      background: var(--bg-soft);
+      padding: clamp(3.5rem, 8vw, 6rem) 1.5rem clamp(3rem, 7vw, 5rem);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+      width: 700px; height: 400px;
+      background: radial-gradient(ellipse, rgba(111,79,242,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; max-width: 760px; margin: 0 auto; }
+
+    .kicker {
+      display: inline-block; font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent-primary); margin-bottom: 1.25rem;
+    }
+    .hero-title {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(2.5rem, 5.5vw, 4.2rem); font-weight: 800;
+      color: var(--text-primary); line-height: 1.05; letter-spacing: -0.03em;
+      margin-bottom: 1.25rem; opacity: 0; animation: fadeInUp 0.7s 0.1s ease forwards;
+    }
+    .hero-title mark { background: none; color: var(--accent-primary); }
+    .hero-lead {
+      font-size: clamp(1.05rem, 2vw, 1.2rem); color: var(--text-muted);
+      max-width: 620px; margin: 0 auto 2.5rem; line-height: 1.6;
+      opacity: 0; animation: fadeInUp 0.7s 0.25s ease forwards;
+    }
+    .hero-stats {
+      display: inline-flex; border: 1px solid var(--border-soft);
+      border-radius: var(--radius-xl); background: var(--bg-white);
+      overflow: hidden; box-shadow: var(--shadow-card);
+      opacity: 0; animation: fadeInUp 0.7s 0.4s ease forwards;
+    }
+    .stat-item { padding: 1.25rem 2rem; text-align: center; border-right: 1px solid var(--border-soft); }
+    .stat-item:last-child { border-right: none; }
+    .stat-value {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 800;
+      color: var(--text-primary); line-height: 1; letter-spacing: -0.03em;
+    }
+    .stat-value.purple { color: var(--accent-primary); }
+    .stat-value.blue   { color: var(--vip-accent); }
+    .stat-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-light); margin-top: 0.25rem; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+    .section { padding: var(--section-padding) 1.5rem; }
+    .section-bg-soft  { background: var(--bg-soft); }
+    .section-bg-white { background: var(--bg-white); }
+    .section-header { max-width: 900px; margin: 0 auto 2.5rem; }
+    .section-title {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 800;
+      color: var(--text-primary); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 0.5rem;
+    }
+    .section-sub { font-size: clamp(0.95rem, 1.5vw, 1rem); color: var(--text-muted); line-height: 1.6; }
+
+    .stats-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .stat-card {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); padding: var(--card-padding);
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: var(--border-hover); }
+    .stat-card-value {
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.35rem; color: var(--text-primary);
+    }
+    .stat-card-value.purple { color: var(--accent-primary); }
+    .stat-card-value.blue   { color: var(--vip-accent); }
+    .stat-card-value.green  { color: #16a34a; }
+    .stat-card-label { font-size: clamp(0.85rem, 1.2vw, 0.9rem); color: var(--text-muted); line-height: 1.4; }
+
+    .salles-grid { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+    .salle-card {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); padding: var(--card-padding-large);
+      position: relative; overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease, border-color 0.25s ease;
+    }
+    .salle-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); border-color: var(--border-hover); }
+    .salle-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 4px 0 0 4px;
+    }
+    .salle-card.indices::before  { background: var(--accent-primary); }
+    .salle-card.europe::before   { background: #3b82f6; }
+    .salle-card.us::before       { background: #16a34a; }
+    .salle-card.crypto::before   { background: var(--logo-gold); }
+    .salle-card.forex::before    { background: var(--vip-accent); }
+    .salle-card.matieres::before { background: var(--logo-gold); }
+    .salle-card.global::before   { background: var(--accent-primary); }
+
+    .salle-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .salle-meta { display: flex; align-items: center; gap: 0.85rem; }
+    .salle-icon {
+      width: 44px; height: 44px; border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+      background: var(--bg-soft); border: 1px solid var(--border-soft); flex-shrink: 0;
+    }
+    .salle-name { font-family: "Montserrat", Arial, sans-serif; font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.1rem; }
+    .salle-coach { font-size: 0.82rem; color: var(--text-light); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;
+      padding: 0.3rem 0.75rem; border-radius: var(--radius-full); white-space: nowrap;
+    }
+    .badge-purple { background: rgba(111,79,242,0.08); color: var(--accent-primary); border: 1px solid var(--border-soft); }
+    .badge-green  { background: rgba(22,163,74,0.08);  color: #16a34a; border: 1px solid rgba(22,163,74,0.2); }
+    .badge-gold   { background: rgba(244,180,84,0.1);  color: #b45309; border: 1px solid rgba(244,180,84,0.3); }
+    .badge-blue   { background: var(--vip-accent-light); color: var(--vip-accent); border: 1px solid rgba(36,157,223,0.25); }
+
+    .salle-body { font-size: clamp(0.95rem, 1.5vw, 1rem); color: var(--text-muted); line-height: 1.75; }
+    .salle-body p + p { margin-top: 0.75rem; }
+    .salle-body strong { color: var(--text-primary); font-weight: 600; }
+
+    .trade-box {
+      margin-top: 1rem; background: var(--bg-soft); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg); padding: 1rem 1.25rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem;
+    }
+    .trade-box-item { font-size: 0.82rem; color: var(--text-muted); }
+    .trade-box-item span { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: var(--text-primary); margin-left: 0.3rem; }
+    .trade-box-item span.green { color: #16a34a; }
+    .trade-box-item span.red   { color: #dc2626; }
+
+    .quote-block {
+      margin-top: 1rem; border-left: 3px solid var(--accent-primary);
+      padding: 0.75rem 1.25rem; background: var(--bg-soft);
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      font-size: 0.92rem; color: var(--text-muted); font-style: italic; line-height: 1.7;
+    }
+    .quote-block strong { font-style: normal; color: var(--text-primary); font-weight: 600; }
+
+    .polarites-grid { margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .polarite-group {
+      background: var(--bg-soft); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg); padding: 0.9rem 1.1rem;
+    }
+    .polarite-group-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: 0.65rem; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-light); margin-bottom: 0.6rem;
+    }
+    .polarite-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .polarite-item:last-child { margin-bottom: 0; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot.green { background: #16a34a; }
+    .dot.red   { background: #dc2626; }
+    .dot.blue  { background: var(--vip-accent); }
+    .polarite-val { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: var(--text-primary); margin-left: auto; }
+
+    .vip-section { background: var(--bg-dark); color: var(--text-white); padding: var(--section-padding) 1.5rem; }
+    .vip-kicker {
+      display: inline-block; font-family: "Montserrat", Arial, sans-serif;
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--vip-accent); margin-bottom: 1.25rem;
+    }
+    .vip-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--text-white); margin-bottom: 2.5rem;
+    }
+    .vip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .vip-card {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-3xl); padding: 1.75rem;
+      display: flex; gap: 1rem; align-items: flex-start;
+      transition: background 0.25s ease, border-color 0.25s ease;
+    }
+    .vip-card:hover { background: rgba(36,157,223,0.08); border-color: rgba(36,157,223,0.25); }
+    .vip-card-icon {
+      width: 40px; height: 40px; border-radius: var(--radius-lg);
+      background: var(--vip-accent-light); border: 1px solid rgba(36,157,223,0.25);
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .vip-card-title { font-family: "Montserrat", Arial, sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--text-white); margin-bottom: 0.35rem; }
+    .vip-card-text { font-size: 0.88rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+    .honesty-wrap { max-width: 900px; margin: 0 auto; }
+    .honesty-block {
+      background: var(--bg-white); border: 1px solid var(--border-soft);
+      border-left: 3px solid var(--accent-primary);
+      border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+      padding: 2rem 2rem 2rem 2.25rem;
+    }
+    .honesty-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: clamp(1.1rem, 2vw, 1.4rem);
+      font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem; letter-spacing: -0.01em;
+    }
+    .honesty-body { font-size: clamp(0.95rem, 1.5vw, 1rem); color: var(--text-muted); line-height: 1.75; }
+    .honesty-body p + p { margin-top: 0.75rem; }
+    .honesty-body strong { color: var(--text-primary); font-weight: 600; }
+
+    .table-wrap {
+      max-width: 900px; margin: 0 auto; border: 1px solid var(--border-soft);
+      border-radius: var(--radius-3xl); overflow: hidden; box-shadow: var(--shadow-card);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    thead tr { background: var(--bg-soft); }
+    th {
+      font-family: "Montserrat", Arial, sans-serif; font-size: 0.65rem; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-primary);
+      padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border-soft);
+    }
+    td { padding: 1rem 1.5rem; color: var(--text-muted); border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--bg-soft); }
+    .coach-cell { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: var(--text-primary); font-size: 0.88rem; }
+    .market-pill {
+      display: inline-block; font-size: 0.7rem; font-weight: 600;
+      padding: 0.2rem 0.6rem; border-radius: var(--radius-full);
+      background: rgba(111,79,242,0.07); border: 1px solid var(--border-soft);
+      color: var(--accent-primary); white-space: nowrap;
+    }
+    .g { font-family: "Montserrat", Arial, sans-serif; font-weight: 700; color: #16a34a; }
+
+    .cta-section { background: var(--bg-soft); padding: var(--section-padding) 1.5rem; text-align: center; }
+    .cta-inner { max-width: 620px; margin: 0 auto; }
+    .cta-title {
+      font-family: "Montserrat", Arial, sans-serif; font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 1rem;
+    }
+    .cta-text { font-size: clamp(0.95rem, 1.5vw, 1.05rem); color: var(--text-muted); line-height: 1.6; margin-bottom: 2.25rem; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent-primary); color: var(--text-white);
+      font-family: "Montserrat", Arial, sans-serif; font-size: 0.85rem; font-weight: 700;
+      padding: 0.9rem 1.75rem; border-radius: var(--radius-md);
+      text-decoration: none; border: none; cursor: pointer;
+      box-shadow: var(--shadow-button); transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: var(--shadow-button-hover); }
+    .cta-recap { margin-top: 1.5rem; font-size: 0.82rem; color: var(--text-light); line-height: 1.6; }
+
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .vip-grid { grid-template-columns: 1fr; }
+      .hero-stats { flex-direction: column; width: fit-content; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border-soft); }
+      .stat-item:last-child { border-bottom: none; }
+      th, td { padding: 0.75rem 1rem; }
+      .polarites-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .salle-header { flex-direction: column; gap: 0.75rem; }
+    }
+  </style>
+    <script defer src="https://analytics.parentsdejumeaux.fr/script.js" data-website-id="3b10c5e0-1aea-4ae4-935f-64b27cf0caf9" data-domains="xavierfenaux.com,www.xavierfenaux.com"></script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="logo">Interactiv<em>Trading</em></div>
+    <span class="header-badge">Rapport de journée · 19 fév. 2026</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="kicker">Rapport de journée · Jeudi 19 février 2026</div>
+      <h1 class="hero-title">Ce que les abonnés IVT<br />ont vécu le <mark>19 février</mark></h1>
+      <p class="hero-lead">
+        Une matinée chargée sur le CAC, Renault, Airbus, Air France, Nexans en même temps. Les marchés asiatiques au vert, le pétrole qui repart, et le message le plus humain de la semaine signé Inchi. 28 notifications, de 07h40 à 20h46.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-value purple">28</div>
+          <div class="stat-label">Notifications</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">7</div>
+          <div class="stat-label">Coachs actifs</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value blue">13h+</div>
+          <div class="stat-label">Couverture</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Salles</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-white reveal">
+    <div class="section-header container">
+      <div class="kicker">La journée en chiffres</div>
+      <h2 class="section-title">7 coachs. 5 salles. Une avalanche de publications.</h2>
+      <p class="section-sub">Renault, Airbus, Air France, Nexans, Walmart, $FIG, DAX swing, Bitcoin, EUR/JPY. Une journée où il fallait savoir où regarder.</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-value purple">28</div>
+        <div class="stat-card-label">Notifications envoyées</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value">7</div>
+        <div class="stat-card-label">Coachs actifs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value blue">5</div>
+        <div class="stat-card-label">Salles couvertes<br /><span style="font-size:0.78rem;color:var(--text-light);font-weight:400">Indices · Actions EU · Actions US · Crypto · Forex</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value">13h+</div>
+        <div class="stat-card-label">07h40 à 20h46</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value green">3</div>
+        <div class="stat-card-label">TP atteints en séance</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value">2</div>
+        <div class="stat-card-label">Positions ouvertes<br /><span style="font-size:0.78rem;color:var(--text-light);font-weight:400">$FIG · EUR/JPY OC</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-soft reveal">
+    <div class="section-header container">
+      <div class="kicker">Les temps forts</div>
+      <h2 class="section-title">Ce qui s'est passé dans chaque salle</h2>
+      <p class="section-sub">Une journée où le marché ne laissait pas de place à l'approximation. Les coachs IVT ont répondu présents sur tous les fronts.</p>
+    </div>
+    <div class="salles-grid">
+
+      <div class="salle-card global">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">☕</div>
+            <div>
+              <div class="salle-name">Brief Mood · Analyse globale</div>
+              <div class="salle-coach">Xavier (cofondateur)</div>
+            </div>
+          </div>
+          <span class="badge badge-purple">07h40</span>
+        </div>
+        <div class="salle-body">
+          <p>Xavier posait le cadre avant tout le monde. <strong>"On rentre dans le dur"</strong>, sans détour. Renault, Airbus, Air France, DoorDash (+14% after-market), Palo Alto Networks (-6,6%), le rebond du pétrole à +4,5% vers 70$, les minutes de la Fed, le secteur Défense qui repartait avec Thales (+5%). Tout y était, avec le raisonnement derrière chaque mouvement.</p>
+          <p>Et pour finir, les polarités du jour actualisées, un outil concret que les membres utilisent pour savoir sur quoi se positionner :</p>
+          <div class="polarites-grid">
+            <div class="polarite-group">
+              <div class="polarite-group-title">Europe</div>
+              <div class="polarite-item"><span class="dot green"></span> DAX <span class="polarite-val">25 000</span></div>
+              <div class="polarite-item"><span class="dot green"></span> CAC 40 <span class="polarite-val">8 300</span></div>
+              <div class="polarite-item"><span class="dot green"></span> STOXX 50 <span class="polarite-val">5 970</span></div>
+              <div class="polarite-item"><span class="dot green"></span> FTSE <span class="polarite-val">10 500</span></div>
+            </div>
+            <div class="polarite-group">
+              <div class="polarite-group-title">États-Unis &amp; Autres</div>
+              <div class="polarite-item"><span class="dot blue"></span> S&amp;P 500 <span class="polarite-val">6 880</span></div>
+              <div class="polarite-item"><span class="dot blue"></span> Nasdaq <span class="polarite-val">25 000</span></div>
+              <div class="polarite-item"><span class="dot red"></span> Dow Jones <span class="polarite-val">49 800</span></div>
+              <div class="polarite-item"><span class="dot green"></span> Or <span class="polarite-val">4 900 $</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="salle-card indices">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">📈</div>
+            <div>
+              <div class="salle-name">Indices · DAX, CAC &amp; Dow Jones</div>
+              <div class="salle-coach">Benj · Rodolphe (cofondateur) · Ludovick</div>
+            </div>
+          </div>
+          <span class="badge badge-green">DAX swing TP1 ✓</span>
+        </div>
+        <div class="salle-body">
+          <p>Dès 8h17, Benj annonçait le live de 8h30. À 8h52, il publiait son plan swing vendeur sur le DAX avec trois TP et une invalidation nette :</p>
+          <div class="trade-box">
+            <div class="trade-box-item">Sens <span>SELL</span></div>
+            <div class="trade-box-item">Entrée <span>25 295</span></div>
+            <div class="trade-box-item">Stop <span class="red">25 620</span></div>
+            <div class="trade-box-item">BE <span>25 130</span></div>
+            <div class="trade-box-item">TP1 <span class="green">25 005 ✓ (14h25)</span></div>
+            <div class="trade-box-item">TP2 <span>24 710</span></div>
+            <div class="trade-box-item">TP3 <span>23 900</span></div>
+          </div>
+          <p style="margin-top:0.75rem">À 10h03, SL passé à BE, gestion propre. TP1 validé à 14h25. En parallèle, Benj surveillait le CAC avec une vente partielle à 8 376 et invalidation sur clôture journalière sous 8 396. À 14h34, point de vigilance précis : <strong>pas de nouvelle vente sur les plus hauts du début de semaine.</strong> Attendre un rebond vers 25 140/25 180 ou ne rien faire.</p>
+          <p>Rodolphe félicitait la communauté en soirée : <em>"D'une propreté absolue, vous l'avez magnifiquement tradé avec Benj."</em> Et pour son Dow Jones swing, il encaissait le TP de 50% du renfort, <strong>+1 300 + 500 = +1 800 points en cumulé</strong> sur cette position.</p>
+          <p>Ludovick clôturait le TP1 de sa vente Nasdaq de la veille (110 points) et annonçait un TP2 à 24 748. Replay brief pre-market disponible dès 13h35.</p>
+        </div>
+      </div>
+
+      <div class="salle-card europe">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">🇪🇺</div>
+            <div>
+              <div class="salle-name">Actions Europe · Publications &amp; Fernanda</div>
+              <div class="salle-coach">Inchi (3VG) · Xavier · Sylvain · Benj</div>
+            </div>
+          </div>
+          <span class="badge badge-gold">Matinée de publications</span>
+        </div>
+        <div class="salle-body">
+          <p>La salle la plus chargée de la journée. Sylvain ouvrait avec des topos détaillés sur <strong>Air France-KLM</strong> (redressement T4, plan Back on Track chez KLM, réaffirmation des objectifs de marge 2026-2028) et <strong>Nexans</strong> (EBITDA record +27,3%, génération de cash qui a presque doublé, guidance 2026 prudente) — deux valeurs de son portefeuille PEA France, avec la réaction initiale attendue décryptée avant même l'ouverture.</p>
+          <p>Xavier s'est chargé de <strong>Renault</strong> en profondeur : démêler la "perte record" de 10,9 Mds€ (dépréciation Nissan, purement comptable) de la réalité opérationnelle. CA en hausse à 57,9 Mds€, dividende maintenu à 2,20€. Alerte à placer à 35,50€ si l'action passe cette zone avec force.</p>
+          <p>Côté Fernanda, Inchi suivait <strong>ALMDT</strong> (impact en cours, à confirmer en clôture vendredi) et <strong>ADOCIA</strong> (entrée parfaite, résistance à surveiller vers 7,60€). La communauté était très réactive sur l'explication du setup.</p>
+        </div>
+      </div>
+
+      <div class="salle-card global">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">❤️</div>
+            <div>
+              <div class="salle-name">Message communauté</div>
+              <div class="salle-coach">Inchi (3VG)</div>
+            </div>
+          </div>
+          <span class="badge badge-purple">Le message du jour</span>
+        </div>
+        <div class="salle-body">
+          <p>Le message le plus fort de la journée n'était pas un trade. C'était Inchi qui parlait vrai, sur la passion, les jugements, et le sens de ce qu'il fait ici chaque jour.</p>
+          <div class="quote-block">
+            <strong>"J'ai 2 moteurs : la passion et ce genre de message. Tout ce que je fais ici c'est pour vous et IVT. J'ai pas besoin d'avoir 10 mille followers pour me sentir important ou apprécié. Je fais ce que je sais faire, des notifs (avec des fautes d'orthographe) en parlant de mon setup."</strong>
+          </div>
+          <p style="margin-top:0.75rem">Quand un coach parle de ce qui le motive vraiment, la communauté répond toujours plus fort que sur n'importe quel signal.</p>
+        </div>
+      </div>
+
+      <div class="salle-card us">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">🇺🇸</div>
+            <div>
+              <div class="salle-name">Actions US · Macro &amp; Portefeuille</div>
+              <div class="salle-coach">Sylvain · Xavier</div>
+            </div>
+          </div>
+          <span class="badge badge-blue">Walmart décryptée · $FIG acheté</span>
+        </div>
+        <div class="salle-body">
+          <p>Sylvain ouvrait avec le brief macro asiatique complet : Corée du Sud au record historique (+2% KOSPI), Nikkei +0,78%, Australie au sommet, or en consolidation vers 4 980$. Les grandes publications du jour à venir : Walmart, jobless claims, Philly Fed, discours Fed.</p>
+          <p>Xavier s'attaquait à <strong>Walmart</strong> : CA record à 190,7 Mds$, e-commerce +27%, Walmart Connect (pub) +41%, rachat de VIZIO pour les données. La guidance 2027 "timide" (BPA 2,75-2,85$ vs 2,90$ attendu) expliquait la stagnation du titre malgré 30 Mds$ de rachats d'actions et un dividende en hausse pour la 53e année consécutive.</p>
+          <p>En fin de journée, Sylvain ajoutait une position sur <strong>$FIG</strong> : belle publication T4 et sortie technique de range dans les volumes.</p>
+          <div class="trade-box">
+            <div class="trade-box-item">Titre <span>$FIG</span></div>
+            <div class="trade-box-item">Ordre <span>BUY 39 titres</span></div>
+            <div class="trade-box-item">Entrée <span>25,73 $</span></div>
+            <div class="trade-box-item">Stop <span class="red">18 $ (clôture daily)</span></div>
+            <div class="trade-box-item">TP1 <span class="green">51 $</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="salle-card crypto">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">₿</div>
+            <div>
+              <div class="salle-name">Crypto · Bitcoin</div>
+              <div class="salle-coach">FX59</div>
+            </div>
+          </div>
+          <span class="badge badge-gold">Gestion active BTC</span>
+        </div>
+        <div class="salle-body">
+          <p>FX59 gérait une position longue sur <strong>BTC autour de 66 400$</strong>. À 10h46, il alertait que le prix bloquait sous la MM50 H1 à 67 000$ : recommandation de prendre un TP et passer SL à BE, avec les prochains objectifs définis en deux horizons.</p>
+          <div class="trade-box">
+            <div class="trade-box-item">Titre <span>$BTC</span></div>
+            <div class="trade-box-item">Entrée <span>66 400 $</span></div>
+            <div class="trade-box-item">TP court terme <span class="green">67 000 $ / 68 000 $</span></div>
+            <div class="trade-box-item">TP swing <span class="green">70 500 $ / 84 000 $ / 99 000 $</span></div>
+          </div>
+          <p style="margin-top:0.75rem">À 14h34, le solde de la position a été stoppé à BE. Le marché bloquait, pas d'extension. FX59 attendait un nouveau break UT15 pour repositionner. Propre et sans ego.</p>
+        </div>
+      </div>
+
+      <div class="salle-card forex">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">💱</div>
+            <div>
+              <div class="salle-name">Forex · EUR/JPY</div>
+              <div class="salle-coach">Benj</div>
+            </div>
+          </div>
+          <span class="badge badge-purple">OC placé</span>
+        </div>
+        <div class="salle-body">
+          <p>Benj posait un ordre conditionnel sur <strong>EUR/JPY en vente</strong> à 183,40, retracement fibo 50% de l'englobante hebdomadaire baissière avec pull-back sur la tendance cassée. Invalidation en clôture journalière, trois objectifs progressifs.</p>
+          <div class="trade-box">
+            <div class="trade-box-item">Paire <span>EUR/JPY</span></div>
+            <div class="trade-box-item">Sens <span>SELL (OC)</span></div>
+            <div class="trade-box-item">Entrée <span>183,40</span></div>
+            <div class="trade-box-item">Stop <span class="red">185,20</span></div>
+            <div class="trade-box-item">TP1 <span class="green">181,00</span></div>
+            <div class="trade-box-item">TP2 <span class="green">176,10</span></div>
+            <div class="trade-box-item">TP3 <span class="green">171,20</span></div>
+          </div>
+          <p style="margin-top:0.75rem">Benj a précisé que son alerte personnelle n'avait pas fonctionné et que c'est la communauté qui l'a prévenu que la paire était revenue au niveau. Ce genre de détail dit beaucoup sur l'esprit du groupe.</p>
+        </div>
+      </div>
+
+      <div class="salle-card matieres">
+        <div class="salle-header">
+          <div class="salle-meta">
+            <div class="salle-icon">🛢️</div>
+            <div>
+              <div class="salle-name">Matières Premières · WTI</div>
+              <div class="salle-coach">Rodolphe (cofondateur)</div>
+            </div>
+          </div>
+          <span class="badge badge-gold">Plan 2026 en cours</span>
+        </div>
+        <div class="salle-body">
+          <p>Rodolphe partageait un de ses <strong>plans long terme sur le WTI</strong>, avec un PRU de 56,37$ dans le cadre de sa stratégie 2026. Une ligne tenue avec conviction, sans bruit.</p>
+          <div class="quote-block">
+            <strong>"Je n'en ai pas assez mais PRU 56,37$ — tout de même pas mal 🫶"</strong>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="vip-section reveal">
+    <div class="container">
+      <div class="vip-kicker">Membres VIP · Inclus dans l'abonnement</div>
+      <h2 class="vip-title">En plus des trades,<br />les membres ont aussi reçu…</h2>
+      <div class="vip-grid">
+        <div class="vip-card">
+          <div class="vip-card-icon">🎥</div>
+          <div>
+            <div class="vip-card-title">Live trading + replay Ludovick</div>
+            <div class="vip-card-text">Brief pre-market Nasdaq avec plans intraday, hebdomadaire et swing. TP1 Nasdaq confirmé à 110 points. Replay disponible dès 13h35.</div>
+          </div>
+        </div>
+        <div class="vip-card">
+          <div class="vip-card-icon">📰</div>
+          <div>
+            <div class="vip-card-title">Décryptage des publications</div>
+            <div class="vip-card-text">Renault, Air France, Nexans, Walmart décortiqués avant que le marché réagisse. Les vrais chiffres, pas les gros titres.</div>
+          </div>
+        </div>
+        <div class="vip-card">
+          <div class="vip-card-icon">🌍</div>
+          <div>
+            <div class="vip-card-title">Macro complète dès l'aube</div>
+            <div class="vip-card-text">Corée du Sud au record, Nikkei +0,78%, Australie au sommet, or à 4 980$, pétrole +4,5%, tensions Iran. Tout le contexte avant 8h.</div>
+          </div>
+        </div>
+        <div class="vip-card">
+          <div class="vip-card-icon">💬</div>
+          <div>
+            <div class="vip-card-title">Une communauté qui avance ensemble</div>
+            <div class="vip-card-text">Les membres alertent les coachs quand une alerte ne fonctionne pas. Les coachs partagent leurs vraies motivations. Tout le monde progresse dans le même sens.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-white reveal">
+    <div class="honesty-wrap">
+      <div class="honesty-block">
+        <div class="honesty-title">Le point d'honnêteté</div>
+        <div class="honesty-body">
+          <p>Sur le Bitcoin, FX59 a terminé la position à BE en après-midi. Le marché bloquait sous la MM50 H1, pas d'extension. Plutôt que de tenir en espérant, il a coupé et attendu un meilleur setup. Zéro perte, zéro ego.</p>
+          <p>Benj, sur le DAX, a été explicite à 14h34 : <strong>pas question de revendre sur les plus hauts du début de semaine.</strong> Si le rebond vers 25 140/25 180 ne venait pas, il ne ferait rien de plus. Cette discipline répétée chaque jour, c'est ce qui fait la différence sur le long terme.</p>
+          <p>Et Benj l'a reconnu sur le Forex : c'est la communauté qui l'a alerté quand la paire EUR/JPY est revenue sur son niveau, son alerte personnelle n'avait pas fonctionné. Ici, les coachs et les membres avancent ensemble.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-bg-soft reveal">
+    <div class="section-header container">
+      <div class="kicker">Résumé des performances</div>
+      <h2 class="section-title">La journée du 19 février, en un coup d'oeil</h2>
+      <p class="section-sub">7 coachs, 5 salles, une journée macro dense maîtrisée de bout en bout.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Coach</th>
+            <th>Salle</th>
+            <th>Fait marquant</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="coach-cell">Benj</span></td>
+            <td><span class="market-pill">Indices / Forex</span></td>
+            <td>DAX swing : <span class="g">TP1 atteint à 25 005</span>. CAC vente partielle. OC EUR/JPY placé.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Rodolphe</span></td>
+            <td><span class="market-pill">Indices / Mat. Premières</span></td>
+            <td>Dow Jones swing <span class="g">+1 800 pts cumulés</span>. WTI plan 2026, PRU 56,37$.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Xavier</span></td>
+            <td><span class="market-pill">ALL / Actions EU &amp; US</span></td>
+            <td>Brief + polarités. Topo Renault + Walmart. Défense : Thales +5%.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Inchi (3VG)</span></td>
+            <td><span class="market-pill">Actions Europe</span></td>
+            <td>Message passion communauté. Fernanda : ALMDT + ADOCIA suivis en cours.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Sylvain</span></td>
+            <td><span class="market-pill">Actions EU &amp; US</span></td>
+            <td>Topos Air France + Nexans. Achat $FIG 39 titres à 25,73$, TP1 51$.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">FX59</span></td>
+            <td><span class="market-pill">Crypto · BTC</span></td>
+            <td>Long BTC géré, solde coupé à BE. Niveaux swing définis jusqu'à 99 000$.</td>
+          </tr>
+          <tr>
+            <td><span class="coach-cell">Ludovick</span></td>
+            <td><span class="market-pill">Nasdaq</span></td>
+            <td><span class="g">TP1 Nasdaq 110 pts validé.</span> TP2 à 24 748. Replay pre-market disponible.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="cta-section reveal">
+    <div class="cta-inner">
+      <div class="kicker">Rejoindre IVT</div>
+      <h2 class="cta-title">Tu veux vivre ça<br />de l'intérieur ?</h2>
+      <p class="cta-text">
+        Chaque jour, nos coachs partagent leurs analyses, leurs trades et leur pédagogie en temps réel. Pas de promesses en l'air, pas de résultats embellis. Juste une équipe de passionnés qui trade avec toi, t'explique chaque décision, et construit une communauté où progresser ensemble est la priorité.
+      </p>
+      <a href="http://interactivtrading.com/vip?aff=xf-actus" class="btn-primary">
+        Découvrir l'abonnement VIP
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <p class="cta-recap">
+        19 fév. 2026 · 28 notifications · 7 coachs · DAX TP1 atteint · Dow Jones +1 800 pts cumulés · Et demain, ça recommence.
+      </p>
+    </div>
+  </section>
+
+  <script>
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.07 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
