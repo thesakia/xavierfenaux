@@ -29,8 +29,9 @@ jobs:
             --exclude='.github' \
             --exclude='.env' \
             --exclude='.well-known/acme-challenge' \
+            --exclude='www/dashboard/strategy/*.html' \
             --timeout=60 \
             -e "ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=2 -o StrictHostKeyChecking=accept-new" \
             ./ root@76.13.48.6:/var/www/xavierfenaux/
           ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new \
-            root@76.13.48.6 "printf '%s\n' '$GITHUB_SHA' > /var/www/xavierfenaux/.deploy-revision"
+            root@76.13.48.6 "chown -R www-data:www-data /var/www/xavierfenaux/www/dashboard/strategy; chmod 775 /var/www/xavierfenaux/www/dashboard/strategy; find /var/www/xavierfenaux/www/dashboard/strategy -type f -name '*.html' -exec chmod 664 {} \;; printf '%s\n' '$GITHUB_SHA' > /var/www/xavierfenaux/.deploy-revision"
