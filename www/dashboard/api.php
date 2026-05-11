@@ -106,6 +106,8 @@ function parse_strategy(string $path): array
 $strategy = latest_file(__DIR__ . '/strategy', ['html', 'htm']);
 $posts = $strategy ? parse_strategy($strategy) : [];
 $strategyVersion = $strategy ? ((string) (filemtime($strategy) ?: 0) . '-' . (string) (filesize($strategy) ?: 0)) : '';
+$styleContextPath = __DIR__ . '/style-context.md';
+$styleContext = is_file($styleContextPath) ? (string) file_get_contents($styleContextPath) : '';
 
 echo json_encode([
     'ok' => true,
@@ -113,5 +115,7 @@ echo json_encode([
     'strategyFile' => $strategy ? basename($strategy) : null,
     'strategyUpdatedAt' => $strategy ? date(DATE_ATOM, filemtime($strategy) ?: time()) : null,
     'strategyVersion' => $strategyVersion,
+    'styleContextName' => 'Xavier Fenaux / IVT, langage parlé',
+    'styleContext' => $styleContext,
     'posts' => $posts,
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

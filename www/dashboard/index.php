@@ -81,7 +81,7 @@ $user = dashboard_current_user();
   </main>
 
   <script>
-    const state = { posts: [], next: null, strategyVersion: '', events: null };
+    const state = { posts: [], next: null, strategyVersion: '', styleContext: '', styleContextName: '', events: null };
     const months = { janvier:0, fevrier:1, février:1, mars:2, avril:3, mai:4, juin:5, juillet:6, aout:7, août:7, septembre:8, octobre:9, novembre:10, decembre:11, décembre:11 };
 
     const $ = id => document.getElementById(id);
@@ -133,6 +133,22 @@ $user = dashboard_current_user();
       setTimeout(() => { btn.textContent = old; btn.classList.remove('ok'); }, 1200);
     }
 
+    function buildPromptForCopy(kind, prompt) {
+      const cleanPrompt = String(prompt || '').trim();
+      const cleanContext = String(state.styleContext || '').trim();
+      const label = kind === 'image' ? 'PROMPT IMAGE' : 'PROMPT CONTENU';
+
+      if (!cleanContext) return cleanPrompt;
+
+      return [
+        'CONTEXTE GLOBAL DE STYLE',
+        cleanContext,
+        '',
+        label,
+        cleanPrompt
+      ].join('\n');
+    }
+
     function promptFields(post, prefix) {
       const postId = escapeHtml(post.id);
       return `
@@ -160,7 +176,7 @@ $user = dashboard_current_user();
           const id = btn.dataset.id;
           const scope = btn.closest('.post') || btn.closest('#nextTask') || root;
           const prompt = scope.querySelector(`textarea[data-id="${id}"][data-kind="prompt"]`)?.value || '';
-          copyText(prompt, btn);
+          copyText(buildPromptForCopy('post', prompt), btn);
         };
       });
 
@@ -169,7 +185,7 @@ $user = dashboard_current_user();
           const id = btn.dataset.id;
           const scope = btn.closest('.post') || btn.closest('#nextTask') || root;
           const imagePrompt = scope.querySelector(`textarea[data-id="${id}"][data-kind="imagePrompt"]`)?.value || '';
-          copyText(imagePrompt, btn);
+          copyText(buildPromptForCopy('image', imagePrompt), btn);
         };
       });
 
@@ -271,6 +287,8 @@ $user = dashboard_current_user();
       state.posts = data.posts || [];
       state.next = findNext(state.posts);
       state.strategyVersion = data.strategyVersion || '';
+      state.styleContext = data.styleContext || '';
+      state.styleContextName = data.styleContextName || '';
       $('strategyFile').textContent = data.strategyFile || 'Aucun fichier';
       $('strategyUpdated').textContent = data.strategyUpdatedAt ? formatDate(new Date(data.strategyUpdatedAt)) : 'Non disponible';
       $('lastRefresh').textContent = formatDate(new Date());
@@ -312,13 +330,13 @@ $user = dashboard_current_user();
     ['search','category','status'].forEach(id => $(id).addEventListener('input', renderPosts));
     $('copyPostNext').addEventListener('click', () => {
       if (!state.next) return;
-      copyText(state.next.prompt || '', $('copyPostNext'));
+      copyText(buildPromptForCopy('post', state.next.prompt || ''), $('copyPostNext'));
       $('copyAllStatus').textContent = 'Prompt post copié.';
       setTimeout(() => $('copyAllStatus').textContent = '', 1500);
     });
     $('copyImageNext').addEventListener('click', () => {
       if (!state.next) return;
-      copyText(state.next.imagePrompt || '', $('copyImageNext'));
+      copyText(buildPromptForCopy('image', state.next.imagePrompt || ''), $('copyImageNext'));
       $('copyAllStatus').textContent = 'Prompt image copié.';
       setTimeout(() => $('copyAllStatus').textContent = '', 1500);
     });
