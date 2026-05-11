@@ -63,7 +63,8 @@ $user = dashboard_current_user();
         <p class="muted small">Mis à jour : <span id="strategyUpdated">...</span></p>
         <p class="muted small">Dashboard : <span id="lastRefresh">...</span></p>
         <p><span class="live-state" id="liveState">Live connecté</span></p>
-        <button class="btn gold" type="button" id="copyAllNext">Copier prompts de la prochaine tâche</button>
+        <button class="btn gold" type="button" id="copyPostNext">Copier prompt post</button>
+        <button class="btn dark" type="button" id="copyImageNext">Copier prompt image</button>
         <p class="status" id="copyAllStatus"></p>
       </aside>
     </section>
@@ -146,20 +147,29 @@ $user = dashboard_current_user();
           </div>
         </div>
         <div class="actions">
-          <button class="btn dark" type="button" data-action="copy-prompts" data-id="${postId}">Copier prompts</button>
+          <button class="btn dark" type="button" data-action="copy-post-prompt" data-id="${postId}">Copier prompt post</button>
+          <button class="btn gold" type="button" data-action="copy-image-prompt" data-id="${postId}">Copier prompt image</button>
         </div>
         <p class="status" id="status-${prefix}-${postId}"></p>
       `;
     }
 
     function wirePromptButtons(root = document) {
-      root.querySelectorAll('[data-action="copy-prompts"]').forEach(btn => {
+      root.querySelectorAll('[data-action="copy-post-prompt"]').forEach(btn => {
         btn.onclick = () => {
           const id = btn.dataset.id;
           const scope = btn.closest('.post') || btn.closest('#nextTask') || root;
           const prompt = scope.querySelector(`textarea[data-id="${id}"][data-kind="prompt"]`)?.value || '';
+          copyText(prompt, btn);
+        };
+      });
+
+      root.querySelectorAll('[data-action="copy-image-prompt"]').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.id;
+          const scope = btn.closest('.post') || btn.closest('#nextTask') || root;
           const imagePrompt = scope.querySelector(`textarea[data-id="${id}"][data-kind="imagePrompt"]`)?.value || '';
-          copyText(['PROMPT POST', prompt, '', 'PROMPT IMAGE', imagePrompt].join('\n'), btn);
+          copyText(imagePrompt, btn);
         };
       });
 
@@ -300,10 +310,16 @@ $user = dashboard_current_user();
 
     $('refreshBtn').addEventListener('click', loadStrategy);
     ['search','category','status'].forEach(id => $(id).addEventListener('input', renderPosts));
-    $('copyAllNext').addEventListener('click', () => {
+    $('copyPostNext').addEventListener('click', () => {
       if (!state.next) return;
-      copyText(['PROMPT POST', state.next.prompt || '', '', 'PROMPT IMAGE', state.next.imagePrompt || ''].join('\n'), $('copyAllNext'));
-      $('copyAllStatus').textContent = 'Prompts copiés.';
+      copyText(state.next.prompt || '', $('copyPostNext'));
+      $('copyAllStatus').textContent = 'Prompt post copié.';
+      setTimeout(() => $('copyAllStatus').textContent = '', 1500);
+    });
+    $('copyImageNext').addEventListener('click', () => {
+      if (!state.next) return;
+      copyText(state.next.imagePrompt || '', $('copyImageNext'));
+      $('copyAllStatus').textContent = 'Prompt image copié.';
       setTimeout(() => $('copyAllStatus').textContent = '', 1500);
     });
 
