@@ -75,7 +75,8 @@ function parse_strategy(string $path): array
         };
 
         $postId = text_between($article, '/<div class="post-id">(.*?)<\/div>/su');
-        $parts = array_map('trim', explode('·', $postId));
+        $parts = preg_split('/\s*(?:·|Â·)\s*/u', $postId) ?: [];
+        $parts = array_map('trim', $parts);
         $blocks = parse_blocks($article);
         $blockByType = [];
         foreach ($blocks as $block) {

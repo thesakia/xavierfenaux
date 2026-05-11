@@ -9,25 +9,24 @@ $user = dashboard_current_user();
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard · Xavier Fenaux</title>
+  <title>Plan de publication · Xavier Fenaux</title>
   <link rel="icon" type="image/png" href="/images/favicon-signature-black.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#f5f1e8;--panel:#fffaf0;--ink:#17140f;--muted:#6d6558;--accent:#997733;--line:rgba(23,20,15,.12);--soft:rgba(255,250,240,.72);--dark:#050505;--green:#168a4a;--red:#b42318;--blue:#155eef}
-    *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#fffaf0 0%,var(--bg) 44%,#ece4d4 100%);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.45}button,input{font:inherit}
-    .wrap{max-width:1240px;margin:auto;padding:0 22px}.topbar{position:sticky;top:0;z-index:10;background:rgba(245,241,232,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-    .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:12px;padding-bottom:12px}.brand{display:flex;align-items:center;gap:14px}.brand img{height:44px}.brand b{display:block}.brand span{color:var(--muted);font-size:13px}
-    .nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pill,.btn{border:1px solid var(--line);background:white;color:var(--ink);border-radius:999px;padding:9px 12px;text-decoration:none;font-size:13px;font-weight:900;cursor:pointer}.btn.dark{background:var(--ink);color:white}.btn.gold{background:var(--accent);color:white;border-color:var(--accent)}
-    header{padding:38px 0 18px}.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:900}h1{font-size:clamp(36px,6vw,72px);line-height:.95;letter-spacing:-.045em;margin:10px 0 14px;max-width:980px}.lead{font-size:18px;color:var(--muted);max-width:780px}
-    .grid{display:grid;gap:16px}.grid.two{grid-template-columns:1.25fr .75fr}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 18px 50px rgba(56,43,20,.1)}.panel h2{margin:0 0 12px;font-size:24px;letter-spacing:-.03em}.panel h3{margin:0 0 8px;font-size:18px}
-    .next{border-color:rgba(153,119,51,.38);background:linear-gradient(135deg,#fffaf0,#fff,#f5ead1)}.task-title{font-size:28px;line-height:1.08;letter-spacing:-.035em;margin:8px 0}.meta{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.tag{border:1px solid var(--line);background:white;border-radius:999px;padding:6px 9px;color:var(--muted);font-size:12px;font-weight:900}.tag.green{color:var(--green);border-color:rgba(22,138,74,.25)}.tag.blue{color:var(--blue);border-color:rgba(21,94,239,.24)}
-    .countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.countdown div{background:white;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}.countdown strong{display:block;font-size:24px}.countdown span{font-size:11px;color:var(--muted);font-weight:900;text-transform:uppercase}
-    .copy-block{position:relative;background:#fff;border:1px solid var(--line);border-radius:16px;margin:12px 0;overflow:hidden}.copy-block label{display:block;background:#f7f1e3;border-bottom:1px solid var(--line);padding:10px 12px;font-size:12px;color:var(--accent);font-weight:900;text-transform:uppercase;letter-spacing:.08em}.copy-block pre{white-space:pre-wrap;margin:0;padding:14px 104px 14px 14px;font-family:Inter,system-ui,sans-serif;color:#1d1a14}.copy-btn{position:absolute;right:10px;top:44px;border:0;border-radius:999px;background:var(--ink);color:white;padding:8px 10px;font-size:12px;font-weight:900;cursor:pointer}.copy-btn.ok{background:var(--green)}
-    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}.toolbar input,.toolbar select{border:1px solid var(--line);border-radius:999px;padding:11px 13px;background:white;min-width:210px}.post-list{display:grid;gap:12px}.post{background:white;border:1px solid var(--line);border-radius:16px;padding:14px}.post-top{display:flex;justify-content:space-between;gap:12px}.post h3{margin:4px 0}.post p{color:var(--muted);margin:0}.post details{margin-top:10px}.post summary{cursor:pointer;font-weight:900;color:var(--accent)}
-    .doc-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.doc-row:last-child{border-bottom:0}.muted{color:var(--muted)}.small{font-size:13px}.upload{display:flex;gap:8px;flex-wrap:wrap}.upload input{border:1px dashed var(--line);border-radius:12px;padding:10px;background:white;flex:1;min-width:220px}.status{font-size:13px;color:var(--muted);margin-top:10px}.empty{padding:18px;border:1px dashed var(--line);border-radius:16px;color:var(--muted);background:white}
-    @media(max-width:920px){.grid.two,.grid.three{grid-template-columns:1fr}.topbar .wrap{align-items:flex-start;flex-direction:column}.countdown{grid-template-columns:repeat(2,1fr)}.copy-block pre{padding-right:14px}.copy-btn{position:static;margin:0 0 12px 12px}.post-top{display:block}}
+    :root{--bg:#f5f1e8;--panel:#fffaf0;--ink:#17140f;--muted:#6d6558;--accent:#997733;--line:rgba(23,20,15,.12);--green:#168a4a;--blue:#155eef;--red:#b42318}
+    *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#fffaf0 0%,var(--bg) 52%,#ece4d4 100%);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.45}button,input,textarea,select{font:inherit}
+    .wrap{max-width:1220px;margin:auto;padding:0 22px}.topbar{position:sticky;top:0;z-index:10;background:rgba(245,241,232,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+    .topbar .wrap{display:flex;justify-content:space-between;align-items:center;gap:14px;padding-top:12px;padding-bottom:12px}.brand{display:flex;align-items:center;gap:14px}.brand img{height:42px}.brand b{display:block}.brand span{font-size:13px;color:var(--muted)}
+    .nav{display:flex;gap:8px;flex-wrap:wrap}.btn,.pill{border:1px solid var(--line);background:white;color:var(--ink);border-radius:999px;padding:9px 12px;text-decoration:none;font-size:13px;font-weight:900;cursor:pointer}.btn.dark{background:var(--ink);color:white}.btn.gold{background:var(--accent);border-color:var(--accent);color:white}.btn.ok{background:var(--green);border-color:var(--green);color:white}
+    header{padding:30px 0 18px}.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:900}h1{font-size:clamp(34px,5vw,58px);line-height:.98;letter-spacing:-.04em;margin:10px 0 10px}.lead{font-size:17px;color:var(--muted);max-width:760px}
+    .grid{display:grid;gap:16px}.two{grid-template-columns:1.05fr .95fr}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 18px 50px rgba(56,43,20,.1)}.panel h2{margin:0 0 12px;font-size:24px;letter-spacing:-.03em}.panel h3{margin:0 0 8px;font-size:18px}
+    .next{background:linear-gradient(135deg,#fffaf0,#fff,#f5ead1);border-color:rgba(153,119,51,.38)}.task-title{font-size:28px;line-height:1.08;letter-spacing:-.035em;margin:8px 0}.meta{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.tag{border:1px solid var(--line);background:white;border-radius:999px;padding:6px 9px;color:var(--muted);font-size:12px;font-weight:900}.tag.green{color:var(--green);border-color:rgba(22,138,74,.25)}.tag.blue{color:var(--blue);border-color:rgba(21,94,239,.24)}
+    .countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.countdown div{background:white;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}.countdown strong{display:block;font-size:24px}.countdown span{font-size:11px;color:var(--muted);font-weight:900;text-transform:uppercase}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{border:1px solid var(--line);border-radius:999px;padding:11px 13px;background:white;min-width:210px}.post-list{display:grid;gap:12px}.post{background:white;border:1px solid var(--line);border-radius:16px;padding:14px}.post-top{display:flex;justify-content:space-between;gap:12px}.post p{margin:0;color:var(--muted)}.post details{margin-top:10px}.post summary{cursor:pointer;font-weight:900;color:var(--accent)}
+    .prompt-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:7px}.field label{font-size:12px;font-weight:900;color:var(--accent);text-transform:uppercase;letter-spacing:.08em}.field textarea{width:100%;min-height:170px;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;resize:vertical;color:var(--ink)}.field textarea.post-text{min-height:220px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.status{font-size:13px;color:var(--muted);margin-top:8px}.status.error{color:var(--red);font-weight:900}.empty{padding:18px;border:1px dashed var(--line);border-radius:16px;color:var(--muted);background:white}.muted{color:var(--muted)}.small{font-size:13px}
+    @media(max-width:960px){.two,.prompt-grid{grid-template-columns:1fr}.topbar .wrap{align-items:flex-start;flex-direction:column}.countdown{grid-template-columns:repeat(2,1fr)}.post-top{display:block}}
   </style>
 </head>
 <body>
@@ -35,12 +34,11 @@ $user = dashboard_current_user();
     <div class="wrap">
       <div class="brand">
         <img src="/images/SignatureXav.png" alt="Xavier Fenaux">
-        <div><b>Dashboard publication IA</b><span><?= htmlspecialchars($user, ENT_QUOTES, 'UTF-8') ?></span></div>
+        <div><b>Plan de publication</b><span><?= htmlspecialchars($user, ENT_QUOTES, 'UTF-8') ?></span></div>
       </div>
       <nav class="nav">
         <a class="pill" href="#next">Prochaine tâche</a>
-        <a class="pill" href="#posts">Planning</a>
-        <a class="pill" href="#documents">Documents</a>
+        <a class="pill" href="#plan">Plan</a>
         <button class="btn dark" type="button" id="refreshBtn">Actualiser</button>
         <a class="btn" href="/dashboard/logout.php">Déconnexion</a>
       </nav>
@@ -49,55 +47,34 @@ $user = dashboard_current_user();
 
   <header class="wrap">
     <div class="kicker">xavierfenaux.com/dashboard</div>
-    <h1>Publication X, prompts IA et documents partagés</h1>
-    <p class="lead">Le dashboard relit la stratégie depuis le dossier protégé à chaque actualisation. Si le fichier de stratégie change, la prochaine tâche, les textes, les prompts et les visuels se mettent à jour.</p>
+    <h1>Plan de publication X</h1>
+    <p class="lead">Uniquement le planning, la prochaine tâche et les prompts à copier. Les prompts post et image sont modifiables ici et sauvegardés dans le fichier de stratégie.</p>
   </header>
 
   <main class="wrap grid" style="padding-bottom:60px">
     <section class="grid two" id="next">
       <div class="panel next">
-        <div class="kicker">À faire maintenant</div>
-        <div id="nextTask"><p class="muted">Chargement de la stratégie...</p></div>
+        <div class="kicker">Prochaine publication</div>
+        <div id="nextTask"><p class="muted">Chargement...</p></div>
       </div>
       <aside class="panel">
-        <h2>Source active</h2>
-        <p class="muted small">Fichier de stratégie lu en temps réel :</p>
-        <p><b id="strategyFile">...</b></p>
-        <p class="muted small">Dernière modification : <span id="strategyUpdated">...</span></p>
-        <p class="muted small">Dernier rafraîchissement dashboard : <span id="lastRefresh">...</span></p>
-        <button class="btn gold" type="button" id="copyAllNext">Copier tout pour la tâche</button>
+        <h2>Source</h2>
+        <p class="muted small">Fichier stratégie : <b id="strategyFile">...</b></p>
+        <p class="muted small">Mis à jour : <span id="strategyUpdated">...</span></p>
+        <p class="muted small">Dashboard : <span id="lastRefresh">...</span></p>
+        <button class="btn gold" type="button" id="copyAllNext">Copier prompts de la prochaine tâche</button>
         <p class="status" id="copyAllStatus"></p>
       </aside>
     </section>
 
-    <section class="grid two">
-      <div class="panel" id="posts">
-        <h2>Planning et prompts</h2>
-        <div class="toolbar">
-          <input id="search" placeholder="Rechercher : CAC, CPI, ZEC...">
-          <select id="category"><option value="">Toutes catégories</option></select>
-          <select id="status"><option value="">Tous statuts</option></select>
-        </div>
-        <div id="postList" class="post-list"></div>
+    <section class="panel" id="plan">
+      <h2>Plan de publication</h2>
+      <div class="toolbar">
+        <input id="search" placeholder="Rechercher : CAC, CPI, ZEC...">
+        <select id="category"><option value="">Toutes catégories</option></select>
+        <select id="status"><option value="">Tous statuts</option></select>
       </div>
-
-      <div class="grid">
-        <section class="panel" id="documents">
-          <h2>Documents partagés</h2>
-          <form class="upload" id="uploadForm">
-            <input type="file" name="file" required>
-            <button class="btn dark" type="submit">Ajouter</button>
-          </form>
-          <p class="status" id="uploadStatus"></p>
-          <div id="documentList"></div>
-        </section>
-        <section class="panel">
-          <h2>Règles de collaboration</h2>
-          <div class="empty">
-            Déposer ici les documents, exports, prompts et stratégies à partager entre les deux comptes. Pour mettre la stratégie à jour, remplacer le fichier HTML dans <b>/dashboard/strategy</b> : le dashboard prendra automatiquement le fichier le plus récemment modifié.
-          </div>
-        </section>
-      </div>
+      <div id="postList" class="post-list"></div>
     </section>
   </main>
 
@@ -105,34 +82,29 @@ $user = dashboard_current_user();
     const state = { posts: [], next: null };
     const months = { janvier:0, fevrier:1, février:1, mars:2, avril:3, mai:4, juin:5, juillet:6, aout:7, août:7, septembre:8, octobre:9, novembre:10, decembre:11, décembre:11 };
 
+    const $ = id => document.getElementById(id);
+
     function parseSchedule(post) {
       const label = (post.dateLabel || '').toLowerCase().replace('.', '');
       const dateMatch = label.match(/(\d{1,2})\s+([a-zéû]+)/i);
       const timeMatch = (post.time || '').match(/(\d{1,2}):(\d{2})/);
       if (!dateMatch || !timeMatch) return null;
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = months[dateMatch[2].normalize('NFD').replace(/[\u0300-\u036f]/g, '')] ?? months[dateMatch[2]];
+      const normalizedMonth = dateMatch[2].normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const month = months[normalizedMonth] ?? months[dateMatch[2]];
       if (month === undefined) return null;
-      return new Date(year, month, Number(dateMatch[1]), Number(timeMatch[1]), Number(timeMatch[2]), 0, 0);
+      const now = new Date();
+      return new Date(now.getFullYear(), month, Number(dateMatch[1]), Number(timeMatch[1]), Number(timeMatch[2]), 0, 0);
     }
 
     function formatDate(d) {
       return d ? new Intl.DateTimeFormat('fr-FR', { dateStyle:'full', timeStyle:'short' }).format(d) : 'Date non reconnue';
     }
 
-    function formatBytes(size) {
-      if (size < 1024) return size + ' o';
-      if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' Ko';
-      return (size / 1024 / 1024).toFixed(1) + ' Mo';
-    }
-
     function findNext(posts) {
       const now = new Date();
       const dated = posts.map(post => ({ ...post, schedule: parseSchedule(post) })).filter(post => post.schedule);
       const upcoming = dated.filter(post => post.schedule >= now).sort((a, b) => a.schedule - b.schedule);
-      if (upcoming.length) return upcoming[0];
-      return dated.sort((a, b) => b.schedule - a.schedule)[0] || null;
+      return upcoming[0] || dated.sort((a, b) => b.schedule - a.schedule)[0] || null;
     }
 
     function countdownParts(target) {
@@ -146,32 +118,93 @@ $user = dashboard_current_user();
       };
     }
 
-    async function copyText(text, btn) {
-      await navigator.clipboard.writeText(text);
-      if (btn) {
-        const old = btn.textContent;
-        btn.textContent = 'Copié';
-        btn.classList.add('ok');
-        setTimeout(() => { btn.textContent = old; btn.classList.remove('ok'); }, 1200);
-      }
-    }
-
-    function block(label, text, type = '') {
-      if (!text) return '';
-      const id = 'copy-' + Math.random().toString(36).slice(2);
-      setTimeout(() => {
-        const btn = document.getElementById(id);
-        if (btn) btn.addEventListener('click', () => copyText(text, btn));
-      });
-      return `<div class="copy-block ${type}"><label>${label}</label><pre>${escapeHtml(text)}</pre><button class="copy-btn" id="${id}" type="button">Copier</button></div>`;
-    }
-
     function escapeHtml(value) {
       return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
     }
 
+    async function copyText(text, btn) {
+      await navigator.clipboard.writeText(text);
+      if (!btn) return;
+      const old = btn.textContent;
+      btn.textContent = 'Copié';
+      btn.classList.add('ok');
+      setTimeout(() => { btn.textContent = old; btn.classList.remove('ok'); }, 1200);
+    }
+
+    function promptFields(post, prefix) {
+      const postId = escapeHtml(post.id);
+      return `
+        <div class="prompt-grid">
+          <div class="field">
+            <label for="${prefix}-prompt-${postId}">Prompt post</label>
+            <textarea id="${prefix}-prompt-${postId}" data-kind="prompt" data-id="${postId}">${escapeHtml(post.prompt || '')}</textarea>
+          </div>
+          <div class="field">
+            <label for="${prefix}-image-${postId}">Prompt image</label>
+            <textarea id="${prefix}-image-${postId}" data-kind="imagePrompt" data-id="${postId}">${escapeHtml(post.imagePrompt || '')}</textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn dark" type="button" data-action="copy-prompts" data-id="${postId}">Copier prompts</button>
+          <button class="btn gold" type="button" data-action="save-prompts" data-id="${postId}">Sauvegarder prompts</button>
+        </div>
+        <p class="status" id="status-${prefix}-${postId}"></p>
+      `;
+    }
+
+    function wirePromptButtons(root = document) {
+      root.querySelectorAll('[data-action="copy-prompts"]').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.dataset.id;
+          const scope = btn.closest('.post') || btn.closest('#nextTask') || root;
+          const prompt = scope.querySelector(`textarea[data-id="${id}"][data-kind="prompt"]`)?.value || '';
+          const imagePrompt = scope.querySelector(`textarea[data-id="${id}"][data-kind="imagePrompt"]`)?.value || '';
+          copyText(['PROMPT POST', prompt, '', 'PROMPT IMAGE', imagePrompt].join('\n'), btn);
+        };
+      });
+
+      root.querySelectorAll('[data-action="save-prompts"]').forEach(btn => {
+        btn.onclick = async () => savePrompts(btn.dataset.id, btn);
+      });
+    }
+
+    async function savePrompts(id, btn) {
+      const scope = btn.closest('.post') || btn.closest('#nextTask') || document;
+      const prompt = scope.querySelector(`textarea[data-id="${id}"][data-kind="prompt"]`)?.value || '';
+      const imagePrompt = scope.querySelector(`textarea[data-id="${id}"][data-kind="imagePrompt"]`)?.value || '';
+      const statusNodes = document.querySelectorAll(`[id$="-${id}"].status`);
+      statusNodes.forEach(node => { node.textContent = 'Sauvegarde...'; node.classList.remove('error'); });
+
+      const res = await fetch('/dashboard/save-prompt.php', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ id, prompt, imagePrompt })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        statusNodes.forEach(node => { node.textContent = data.error || 'Sauvegarde impossible'; node.classList.add('error'); });
+        return;
+      }
+
+      const post = state.posts.find(p => p.id === id);
+      if (post) {
+        post.prompt = prompt;
+        post.imagePrompt = imagePrompt;
+      }
+      if (state.next && state.next.id === id) {
+        state.next.prompt = prompt;
+        state.next.imagePrompt = imagePrompt;
+      }
+      statusNodes.forEach(node => { node.textContent = 'Prompts sauvegardés.'; node.classList.remove('error'); });
+      if (btn) {
+        btn.textContent = 'Sauvegardé';
+        setTimeout(() => btn.textContent = 'Sauvegarder prompts', 1200);
+      }
+      setTimeout(loadStrategy, 600);
+    }
+
     function renderNext() {
-      const target = document.getElementById('nextTask');
+      const target = $('nextTask');
       const post = state.next;
       if (!post) {
         target.innerHTML = '<div class="empty">Aucune tâche trouvée dans la stratégie.</div>';
@@ -183,29 +216,28 @@ $user = dashboard_current_user();
         <div class="task-title">${escapeHtml(post.title)}</div>
         <p class="muted">${escapeHtml(post.asset || post.meta)}</p>
         <div class="countdown"><div><strong>${c.days}</strong><span>jours</span></div><div><strong>${c.hours}</strong><span>heures</span></div><div><strong>${c.minutes}</strong><span>minutes</span></div><div><strong>${c.seconds}</strong><span>secondes</span></div></div>
-        ${block('Post prêt à publier', post.text)}
-        ${block('Réponse sous le post', post.reply)}
-        ${block('Prompt post à envoyer à l’IA', post.prompt)}
-        ${block('Prompt image à envoyer à l’IA', post.imagePrompt)}
+        ${promptFields(post, 'next')}
       `;
+      wirePromptButtons(target);
     }
 
     function renderFilters() {
       const cats = [...new Set(state.posts.map(p => p.category).filter(Boolean))].sort();
       const statuses = [...new Set(state.posts.map(p => p.status).filter(Boolean))].sort();
-      document.getElementById('category').innerHTML = '<option value="">Toutes catégories</option>' + cats.map(x => `<option>${escapeHtml(x)}</option>`).join('');
-      document.getElementById('status').innerHTML = '<option value="">Tous statuts</option>' + statuses.map(x => `<option>${escapeHtml(x)}</option>`).join('');
+      $('category').innerHTML = '<option value="">Toutes catégories</option>' + cats.map(x => `<option>${escapeHtml(x)}</option>`).join('');
+      $('status').innerHTML = '<option value="">Tous statuts</option>' + statuses.map(x => `<option>${escapeHtml(x)}</option>`).join('');
     }
 
     function renderPosts() {
-      const q = document.getElementById('search').value.toLowerCase();
-      const cat = document.getElementById('category').value;
-      const status = document.getElementById('status').value;
+      const q = $('search').value.toLowerCase();
+      const cat = $('category').value;
+      const status = $('status').value;
       const posts = state.posts.filter(post => {
-        const hay = [post.id, post.title, post.category, post.status, post.asset, post.text, post.prompt, post.imagePrompt].join(' ').toLowerCase();
+        const hay = [post.id, post.title, post.category, post.status, post.asset, post.prompt, post.imagePrompt].join(' ').toLowerCase();
         return (!q || hay.includes(q)) && (!cat || post.category === cat) && (!status || post.status === status);
       });
-      document.getElementById('postList').innerHTML = posts.map(post => `
+
+      $('postList').innerHTML = posts.map(post => `
         <article class="post">
           <div class="post-top">
             <div>
@@ -216,14 +248,12 @@ $user = dashboard_current_user();
             <span class="tag">${escapeHtml(post.status)}</span>
           </div>
           <details>
-            <summary>Copier les contenus</summary>
-            ${block('Post', post.text)}
-            ${block('Réponse', post.reply)}
-            ${block('Prompt post', post.prompt)}
-            ${block('Prompt image', post.imagePrompt)}
+            <summary>Voir / modifier les prompts</summary>
+            ${promptFields(post, 'post')}
           </details>
         </article>
       `).join('') || '<div class="empty">Aucun post ne correspond aux filtres.</div>';
+      wirePromptButtons($('postList'));
     }
 
     async function loadStrategy() {
@@ -232,69 +262,28 @@ $user = dashboard_current_user();
       const data = await res.json();
       state.posts = data.posts || [];
       state.next = findNext(state.posts);
-      document.getElementById('strategyFile').textContent = data.strategyFile || 'Aucun fichier';
-      document.getElementById('strategyUpdated').textContent = data.strategyUpdatedAt ? formatDate(new Date(data.strategyUpdatedAt)) : 'Non disponible';
-      document.getElementById('lastRefresh').textContent = formatDate(new Date());
+      $('strategyFile').textContent = data.strategyFile || 'Aucun fichier';
+      $('strategyUpdated').textContent = data.strategyUpdatedAt ? formatDate(new Date(data.strategyUpdatedAt)) : 'Non disponible';
+      $('lastRefresh').textContent = formatDate(new Date());
       renderFilters();
       renderNext();
       renderPosts();
     }
 
-    async function loadDocuments() {
-      const res = await fetch('/dashboard/documents.php?ts=' + Date.now(), { cache: 'no-store' });
-      if (!res.ok) return;
-      const data = await res.json();
-      const docs = data.documents || [];
-      document.getElementById('documentList').innerHTML = docs.map(doc => `
-        <div class="doc-row">
-          <div><b>${escapeHtml(doc.name)}</b><div class="muted small">${formatBytes(doc.size)} · ${formatDate(new Date(doc.updatedAt))}</div></div>
-          <a class="btn" href="${doc.url}">Télécharger</a>
-        </div>
-      `).join('') || '<div class="empty" style="margin-top:12px">Aucun document partagé pour le moment.</div>';
-    }
-
-    document.getElementById('refreshBtn').addEventListener('click', () => Promise.all([loadStrategy(), loadDocuments()]));
-    ['search','category','status'].forEach(id => document.getElementById(id).addEventListener('input', renderPosts));
-    document.getElementById('copyAllNext').addEventListener('click', async () => {
+    $('refreshBtn').addEventListener('click', loadStrategy);
+    ['search','category','status'].forEach(id => $(id).addEventListener('input', renderPosts));
+    $('copyAllNext').addEventListener('click', () => {
       if (!state.next) return;
-      const text = [
-        `Tâche ${state.next.id} · ${state.next.dateLabel} ${state.next.time}`,
-        state.next.title,
-        '',
-        'POST',
-        state.next.text || 'À générer',
-        '',
-        'RÉPONSE',
-        state.next.reply || 'À générer',
-        '',
-        'PROMPT POST',
-        state.next.prompt || 'Aucun prompt',
-        '',
-        'PROMPT IMAGE',
-        state.next.imagePrompt || 'Aucun prompt image'
-      ].join('\n');
-      await copyText(text);
-      document.getElementById('copyAllStatus').textContent = 'Tâche complète copiée.';
-      setTimeout(() => document.getElementById('copyAllStatus').textContent = '', 1500);
+      copyText(['PROMPT POST', state.next.prompt || '', '', 'PROMPT IMAGE', state.next.imagePrompt || ''].join('\n'), $('copyAllNext'));
+      $('copyAllStatus').textContent = 'Prompts copiés.';
+      setTimeout(() => $('copyAllStatus').textContent = '', 1500);
     });
 
-    document.getElementById('uploadForm').addEventListener('submit', async event => {
-      event.preventDefault();
-      const status = document.getElementById('uploadStatus');
-      status.textContent = 'Upload en cours...';
-      const res = await fetch('/dashboard/documents.php', { method: 'POST', body: new FormData(event.currentTarget) });
-      status.textContent = res.ok ? 'Document ajouté.' : 'Upload impossible.';
-      if (res.ok) {
-        event.currentTarget.reset();
-        loadDocuments();
-      }
+    loadStrategy().catch(error => {
+      $('nextTask').innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
     });
-
-    Promise.all([loadStrategy(), loadDocuments()]).catch(error => {
-      document.getElementById('nextTask').innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
-    });
-    setInterval(() => { renderNext(); }, 1000);
-    setInterval(() => { loadStrategy(); loadDocuments(); }, 60000);
+    setInterval(renderNext, 1000);
+    setInterval(loadStrategy, 60000);
   </script>
 </body>
 </html>
