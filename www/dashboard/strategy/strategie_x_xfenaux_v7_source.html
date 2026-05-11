@@ -1,0 +1,1459 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stratégie X Xavier Fenaux · V7 · stratégie, VIP et prompts intégrés</title>
+<style>
+:root {
+  --bg:#f7f7fb; --panel:#fff; --dark:#030717; --text:#121421; --muted:#667085;
+  --violet:#6F4FF2; --violet2:#9F8BF6; --gold:#d9b75f; --line:#e7e8f0;
+  --green:#12b76a; --orange:#f79009; --red:#f04438; --shadow:0 18px 50px rgba(15,23,42,.09); --radius:22px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#fff 0%,var(--bg) 30%,#eef0fb 100%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.45}
+header{background:radial-gradient(circle at 20% 10%,rgba(111,79,242,.28),transparent 38%),linear-gradient(135deg,#030717,#11183a);color:white;padding:50px 22px 36px}
+.wrap{max-width:1180px;margin:auto}
+.kicker{color:#dcd5ff;font-weight:900;letter-spacing:.08em;text-transform:uppercase;font-size:12px}
+h1{font-size:clamp(34px,6vw,68px);line-height:.96;margin:14px 0 16px;letter-spacing:-.045em;max-width:980px}
+.lead{font-size:18px;color:#e8e8f8;max-width:880px}
+.top-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.btn,.done-btn{border:0;background:var(--violet);color:white;padding:12px 16px;border-radius:999px;font-weight:900;box-shadow:0 10px 24px rgba(111,79,242,.28);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.gold{background:linear-gradient(135deg,#f7e7a6,#e6c15f,#b8892d);color:#1b1400}
+.btn.light{background:white;color:#221b55}
+.done-btn{background:#f1efff;color:#3a2b97;border:1px solid #ded8ff;box-shadow:none}
+.done-btn.done{background:var(--green);color:white;border-color:var(--green)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:28px}
+.stat{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:16px;backdrop-filter:blur(8px)}
+.stat strong{font-size:30px;display:block}
+main{padding:26px 22px 70px}
+.section{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin:18px 0}
+h2{font-size:28px;letter-spacing:-.03em;margin:0 0 12px}
+h3{font-size:22px;letter-spacing:-.03em;margin:4px 0 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.rules,.case-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.rule,.case-card{background:#fbfbff;border:1px solid var(--line);border-radius:16px;padding:14px}
+.rule strong,.case-label{display:block;color:var(--violet);font-weight:900;margin-bottom:8px}
+.case-card p{color:#475467;font-size:14px}
+.controls{position:sticky;top:0;z-index:5;background:rgba(247,247,251,.92);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:20px;padding:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0;box-shadow:var(--shadow)}
+.controls input,.controls select{border:1px solid var(--line);border-radius:999px;padding:11px 12px;background:white;min-width:190px}
+.post-list{display:grid;gap:18px}
+.post-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;scroll-margin-top:90px}
+.card-top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+.post-id{font-weight:900;color:var(--violet);font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+.mini-meta{color:var(--muted);font-size:13px;margin-top:7px}
+.badges{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}
+.badges span{background:#f1efff;color:#3a2b97;border:1px solid #ded8ff;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;white-space:nowrap}
+.meta-grid{display:grid;grid-template-columns:1.1fr 1.3fr 1.4fr;gap:10px;margin:16px 0}
+.meta-grid div{background:#fafaff;border:1px solid var(--line);border-radius:15px;padding:12px;color:var(--muted);font-size:13px}
+.meta-grid b{color:var(--text)}
+.block{position:relative;background:#fbfbff;border:1px solid var(--line);border-radius:16px;margin:12px 0;overflow:hidden}
+.block-label{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:900;background:#f2f1ff;border-bottom:1px solid var(--line);padding:10px 12px}
+pre{white-space:pre-wrap;font-family:inherit;margin:0;padding:14px 100px 14px 14px;font-size:15px;color:#171821}
+.block.prompt{border-color:#d9d2ff}
+.block.prompt .block-label{background:#ece8ff;color:#3b2aa0}
+.block.image-prompt{border-color:#ead18a}
+.block.image-prompt .block-label{background:#fff8e1;color:#7a5900}
+.copy{position:absolute;right:10px;top:45px;border:0;border-radius:999px;background:var(--dark);color:white;padding:8px 10px;font-weight:900;cursor:pointer;font-size:12px}
+.copy.ok{background:var(--green)}
+.tracker-row{margin-top:12px;background:#fcfcff;border:1px dashed #ccd0e8;border-radius:16px;padding:12px}
+.tracker-row summary{font-weight:900;cursor:pointer;color:#4133a5}
+.inputs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:12px}
+.inputs label{font-size:12px;color:var(--muted);font-weight:800}
+.inputs input,.inputs select,.inputs textarea{width:100%;margin-top:5px;border:1px solid var(--line);border-radius:10px;padding:9px;background:white}
+.inputs textarea{min-height:42px;grid-column:span 2}
+.footer-note{color:var(--muted);font-size:13px;margin-top:18px}
+.ops-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:14px}
+.ops-card{background:#fbfbff;border:1px solid var(--line);border-radius:16px;padding:14px}
+.ops-card strong{display:block;color:var(--violet);font-weight:900;margin-bottom:8px}
+.ops-card ul{margin:8px 0 0;padding-left:18px;color:#475467;font-size:14px}
+.cadence{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;margin-top:14px}
+.day-card{background:#fafaff;border:1px solid var(--line);border-radius:16px;padding:12px;font-size:13px}
+.day-card b{display:block;color:#121421;margin-bottom:8px}
+.day-card span{display:block;color:#667085;margin:5px 0}
+.prompt-library{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:14px}
+.prompt-card{background:#fbfbff;border:1px solid var(--line);border-radius:16px;padding:14px}
+.prompt-card h3{font-size:18px;margin:0 0 8px}
+.prompt-card .mini-meta{margin-bottom:10px}
+.checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.checklist div{background:#fafaff;border:1px solid var(--line);border-radius:14px;padding:11px;color:#475467;font-size:14px}
+.is-collapsed .card-body{display:none}
+.is-collapsed{opacity:.82}
+@media(max-width:980px){.stats,.rules,.case-grid,.meta-grid,.inputs,.ops-grid,.prompt-library,.checklist{grid-template-columns:1fr}.cadence{grid-template-columns:1fr 1fr}pre{padding-right:14px}.copy{position:static;margin:0 0 12px 12px}.card-top{display:block}}
+@media print{.controls,.copy,.top-actions,.done-btn{display:none}body{background:white}.post-card,.section{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="kicker">Stratégie X · Xavier Fenaux · V7</div>
+  <h1>Plan 1 semaine avec prompts, Morning Mood et cas VIP intégrés</h1>
+  <p class="lead">Cette version devient un poste de pilotage éditorial : les posts planifiés restent prêts à publier, les cas VIP sont cadrés, et les prompts opérationnels servent à générer les contenus récurrents sans perdre la voix Xavier.</p>
+  <div class="top-actions"><a class="btn gold" href="#planning">Voir le planning</a><a class="btn light" href="#prompts">Prompts intégrés</a><a class="btn light" href="#morning-mood">Morning Mood</a><a class="btn light" href="#cases">Cas VIP utilisables</a><button class="btn" onclick="collapseAll(true)">Tout marquer programmé</button><button class="btn" onclick="collapseAll(false)">Tout déplier</button><button class="btn" onclick="exportCSV()">Exporter le suivi CSV</button></div>
+  <div class="stats">
+    <div class="stat"><strong>21</strong>posts planifiés</div>
+    <div class="stat"><strong>202</strong>notifications analysées</div>
+    <div class="stat"><strong>6</strong>prompts récurrents</div>
+    <div class="stat"><strong>1</strong>process Morning Mood</div>
+  </div>
+</div></header>
+<main><div class="wrap">
+  <section class="section">
+    <h2>Règle de transformation VIP vers X</h2>
+    <div class="rules">
+      <div class="rule"><strong>Trade terminé</strong>On peut publier les niveaux : zone, entrée, invalidation, BE, TP1, TP2, résultat réel et leçon.</div>
+      <div class="rule"><strong>Trade ouvert</strong>On publie l’anatomie du plan et la méthode. Pas de bilan, pas de “ça a marché”, pas de preuve marketing.</div>
+      <div class="rule"><strong>Donnée absente</strong>On ne l’invente pas. Si l’entrée exacte ou la clôture n’est pas dans l’export, on écrit seulement ce qui est confirmé.</div>
+    </div>
+    <p class="footer-note">C’est le changement important : les posts ne doivent plus dire “un bon plan commence par...”, puis rester abstraits. Ils doivent montrer le plan réel quand c’est publiable.</p>
+  </section>
+
+  <section class="section" id="cases">
+    <h2>Cas VIP extraits des notifications</h2>
+    <div class="case-grid">
+<div class="case-card">
+  <div class="case-label">C01 · Terminé partiellement et publiable</div>
+  <h3>CAC 40 : plan du jour vendeur, sécurisation, TP1 atteint</h3>
+  <p><b>Source</b><br>04/05 · Xavier · Indices · Plan du jour</p>
+  <p><b>Faits utilisables</b><br>Déclenchement vendeur H1 / dégradation sous 8 070-8 050, position light, SL à BE, TP1 visé 7 950-7 965, notification de TP le 04/05 en fin de journée. TP2 indiqué : 7 600 sur le reste.</p>
+  <p><b>Usage public</b><br>À publier comme étude de cas “plan exécuté”, mais rester prudent sur l’entrée exacte si elle n’est pas explicitement donnée dans la notification.</p>
+  <p><b>Règle</b><br>Publier les niveaux TP1/TP2, mais éviter d’inventer un prix d’entrée précis absent de l’export.</p>
+</div>
+<div class="case-card">
+  <div class="case-label">C02 · Plan complet, mais à publier comme terminé seulement après clôture</div>
+  <h3>CAC 40 : réexposition swing vendeur à 8 295 pts</h3>
+  <p><b>Source</b><br>07/05 · Xavier · Indices · Swing</p>
+  <p><b>Faits utilisables</b><br>Zone travaillée 8 200/8 300, vente 8 295, taille 1/3 swing, invalidation au-dessus de 8 370, passage à BE sous 8 250, TP1 7 990, TP2 7 600. SL à BE placé après passage vers 8 250.</p>
+  <p><b>Usage public</b><br>Excellent contenu public une fois le trade terminé : c’est le cas parfait pour montrer que le plan était écrit avant le résultat.</p>
+  <p><b>Règle</b><br>Tant que le trade est ouvert, publier uniquement “méthode et anatomie du plan”. Dès qu’il est clos, publier le bilan avec résultat réel.</p>
+</div>
+<div class="case-card">
+  <div class="case-label">C03 · Gestion active, pas trade terminé</div>
+  <h3>ZEC : de la zone 400 $ vers la zone proche 700 $</h3>
+  <p><b>Source</b><br>10/05 · Xavier · Crypto · Gestion active</p>
+  <p><b>Faits utilisables</b><br>ZEC vu proche 400 $, mouvement évoqué vers proche 700 $, soit environ +70 %. Xavier insiste sur la zone de TP et la règle : ne pas tout rendre au marché, sortie au premier breakout baissier Daily.</p>
+  <p><b>Usage public</b><br>À publier comme leçon de gestion active, pas comme bilan définitif si la sortie n’a pas eu lieu.</p>
+  <p><b>Règle</b><br>Mentionner “zone de prise de profit” et “ne pas rendre au marché”, pas “trade clôturé” sans confirmation.</p>
+</div>
+<div class="case-card">
+  <div class="case-label">C04 · Allègement publiable, pas forcément clôture totale</div>
+  <h3>ETF défense Guard : zone d’allègement 11 / 11,50</h3>
+  <p><b>Source</b><br>06/05 · Xavier · Actions EU · Swing</p>
+  <p><b>Faits utilisables</b><br>Zone d’allègement prévue 11 / 11,50 indiquée comme atteinte. Le message parle de gérer les positions précédentes et garder suffisamment pour laisser filer.</p>
+  <p><b>Usage public</b><br>À publier comme exemple de gestion par paliers : prendre une partie, laisser travailler le reste.</p>
+  <p><b>Règle</b><br>Dire “allègement” ou “gestion par paliers”, pas “sortie totale” si ce n’est pas écrit.</p>
+</div></div>
+  </section>
+
+  <section class="section" id="systeme">
+    <h2>Système éditorial intégré</h2>
+    <p class="footer-note">Objectif : séparer ce qui est planifié, ce qui dépend de l’actualité, ce qui vient des VIP, et ce qui doit être généré en brouillon puis validé.</p>
+    <div class="ops-grid">
+      <div class="ops-card"><strong>1. Socle quotidien</strong>Morning Mood chaque matin, citation à 9h, Flash News en brouillon quand un actif bouge vraiment, Top/Flop en fin de séance.</div>
+      <div class="ops-card"><strong>2. Socle stratégique</strong>Les 21 posts de la semaine donnent le fil conducteur : macro, discipline, VIP expliqué, psychologie, IA, cash et bilan.</div>
+      <div class="ops-card"><strong>3. Socle opportuniste</strong>Les prompts Flash News, Top/Flop et Bilan servent uniquement avec données fraîches. Rien n’est inventé, tout reste en brouillon.</div>
+      <div class="ops-card"><strong>4. Socle preuve VIP</strong>Un trade terminé peut devenir une étude de cas. Un trade ouvert devient seulement un post méthode, avec résultat absent ou marqué en attente.</div>
+    </div>
+    <div class="checklist">
+      <div><b>Règle de validation</b><br>Chaque contenu public doit avoir : angle clair, chiffre si disponible, impact investisseur, aucun conseil personnalisé, aucun niveau inventé.</div>
+      <div><b>Règle de voix</b><br>Signature xavier, ton praticien, direct, pédagogique. Pas de posture de coach vide, pas de condescendance, pas de promesse.</div>
+    </div>
+  </section>
+
+  <section class="section" id="cadence">
+    <h2>Cadence hebdomadaire recommandée</h2>
+    <div class="cadence">
+      <div class="day-card"><b>Lundi</b><span>Matin : Morning Mood</span><span>9h : Citation</span><span>11h/15h : Flash News</span><span>17h : Thread Viral</span><span>Clôture : Top/Flop</span></div>
+      <div class="day-card"><b>Mardi</b><span>Matin : Morning Mood</span><span>9h : Citation</span><span>13h : Top/Flop</span><span>17h : Flash News</span><span>Clôture : Top/Flop</span></div>
+      <div class="day-card"><b>Mercredi</b><span>Matin : Morning Mood</span><span>9h : Citation</span><span>13h : Storytelling</span><span>17h : Thread Viral</span><span>Clôture : Top/Flop</span></div>
+      <div class="day-card"><b>Jeudi</b><span>Matin : Morning Mood</span><span>9h : Citation</span><span>13h : Top/Flop</span><span>17h : Flash News</span><span>Clôture : Top/Flop</span></div>
+      <div class="day-card"><b>Vendredi</b><span>Matin : Morning Mood</span><span>9h : Citation</span><span>13h : Storytelling</span><span>17h : Thread Viral</span><span>Clôture : Top/Flop</span></div>
+      <div class="day-card"><b>Samedi</b><span>Posts méthode</span><span>Storytelling intemporel</span><span>Watchlist / préparation</span><span>Pas d’actu forcée</span></div>
+      <div class="day-card"><b>Dimanche</b><span>Préparation semaine</span><span>Cash / patrimoine</span><span>Recyclage du gagnant</span><span>Analyse stats X</span></div>
+    </div>
+    <p class="footer-note">Tout ce qui dépend de l’actualité est généré en brouillon. Xavier valide avant publication.</p>
+  </section>
+
+  <section class="section" id="prompts">
+    <h2>Prompts opérationnels intégrés</h2>
+    <div class="prompt-library">
+      <div class="prompt-card">
+        <h3>Morning Mood quotidien</h3>
+        <div class="mini-meta">1x par jour · le matin · source : CONTENU_X_PROMPTS.md</div>
+        <div class="block prompt"><div class="block-label">Prompt à copier</div><pre>Cherche les infos des 8 dernières heures sur MarketWatch, CNBC, Bloomberg, ZeroHedge, Google News, Earnings Whispers et génère mon Morning Mood IvT du [JOUR DD/MM] en suivant exactement mon process habituel.
+
+Polarités du jour :
+[COLLER LES POLARITÉS ICI]</pre><button class="copy" type="button">Copier</button></div>
+      </div>
+      <div class="prompt-card">
+        <h3>Flash News marché</h3>
+        <div class="mini-meta">Toutes les heures en brouillon · variation significative +2% ou plus</div>
+        <div class="block prompt"><div class="block-label">Prompt à copier</div><pre>Cherche en ce moment les actualités des dernières 2 heures sur les marchés financiers : forex, matières premières, crypto, indices, obligations.
+
+Identifie le ou les actifs ayant bougé de plus de 2% aujourd'hui avec un driver clair.
+
+Pour chaque actif retenu, génère un post X selon ce format :
+
+⚡ [EMOJI ACTIF] [NOM ACTIF] [VARIATION +/- %]
+
+[1 phrase : ce qui s'est passé]
+[1 phrase : pourquoi ça bouge : driver identifié]
+[1 phrase : ce que ça implique pour les marchés ou l'investisseur]
+
+#[hashtag pertinent] #Trading #IvT
+
+Ton : direct, factuel, pédagogique. Max 220 caractères hors hashtags.
+Mettre en brouillon : je valide avant publication.</pre><button class="copy" type="button">Copier</button></div>
+      </div>
+      <div class="prompt-card">
+        <h3>Top 3 / Flop 3 par indice</h3>
+        <div class="mini-meta">1x par jour · fin de séance ou milieu de journée</div>
+        <div class="block prompt"><div class="block-label">Prompt à copier</div><pre>Cherche les plus fortes variations d'actions du jour sur ces 5 indices :
+CAC 40, DAX, S&amp;P 500, Nasdaq, Dow Jones.
+
+Pour chaque indice, identifie le Top 3 : plus fortes hausses, et le Flop 3 : plus fortes baisses.
+
+Pour chaque action, génère une explication pédagogique de 5 lignes MAX expliquant pourquoi cette variation aujourd'hui : cause précise, pas générique.
+
+Présente le résultat sous ce format exact pour chaque indice :
+
+📊 [NOM INDICE] : Top/Flop du jour
+
+🟢 TOP 3
+1. [Ticker] [Nom] +X% : [Explication 5 lignes max]
+2. [Ticker] [Nom] +X% : [Explication 5 lignes max]
+3. [Ticker] [Nom] +X% : [Explication 5 lignes max]
+
+🔴 FLOP 3
+1. [Ticker] [Nom] -X% : [Explication 5 lignes max]
+2. [Ticker] [Nom] -X% : [Explication 5 lignes max]
+3. [Ticker] [Nom] -X% : [Explication 5 lignes max]
+
+Ton : pédagogique, factuel, accessible à un investisseur retail.
+Mettre en brouillon : je valide avant publication.</pre><button class="copy" type="button">Copier</button></div>
+      </div>
+      <div class="prompt-card">
+        <h3>Storytelling trader / gérant</h3>
+        <div class="mini-meta">2 à 3x par semaine · histoire vraie, récente ou intemporelle</div>
+        <div class="block prompt"><div class="block-label">Prompt à copier</div><pre>Cherche sur internet une histoire vraie et récente, ou intemporelle si elle est marquante, sur un trader, investisseur ou grand gérant de fonds : une décision, une erreur, un pari, une période de crise qu'il a traversée.
+
+Génère un post X storytelling selon ce format :
+
+[Nom] a [fait quelque chose d'inhabituel / pris un risque / traversé une crise].
+
+Voilà ce qui s'est passé 🧵
+
+[Tweet 1 : accroche, situation, enjeu]
+[Tweet 2 : contexte, qui, quand, pourquoi]
+[Tweet 3 : décision ou événement clé]
+[Tweet 4 : conséquences]
+[Tweet 5 : leçon pour un investisseur retail aujourd'hui]
+[Tweet 6 : conclusion courte + signature xavier]
+
+Règles :
+- Ton narratif, pas encyclopédique
+- Chaque tweet = 1 idée, max 220 caractères
+- La leçon finale doit être concrète et applicable
+- Pas de condescendance, pas de morale facile
+Mettre en brouillon : je valide avant publication.</pre><button class="copy" type="button">Copier</button></div>
+      </div>
+      <div class="prompt-card">
+        <h3>Thread viral</h3>
+        <div class="mini-meta">1x par semaine · 10 choses à savoir, faire ou éviter</div>
+        <div class="block prompt"><div class="block-label">Prompt à copier</div><pre>Génère un thread X viral sur le sujet suivant : [SUJET AU CHOIX]
+
+Exemples :
+- 10 erreurs que font tous les débutants en bourse
+- 10 choses que les grands investisseurs font différemment
+- 10 règles de discipline que personne ne veut entendre
+- 10 signaux que le marché t'envoie et que tu ignores
+- 10 vérités sur la gestion du risque
+- 10 biais cognitifs qui te coûtent de l'argent
+
+Format du thread :
+
+Tweet 0 : ACCROCHE
+"[Affirmation choc ou question qui dérange].
+Un thread qui va en déranger plus d'un 🧵"
+
+Tweet 1 à 10 :
+[Numéro]. [Titre du point]
+[1-2 phrases choc : contre-intuitif, tranchant, mémorable]
+[1 phrase concrète : ce que ça implique pour toi]
+
+Tweet 11 : CONCLUSION
+[Résumé en 1 phrase]
+[Appel à l'action : RT / Follow / Commente]
+Signé xavier
+
+Règles :
+- Chaque point doit pouvoir devenir un tweet standalone viral
+- Éviter les généralités creuses
+- Privilégier les formulations qui frottent et questionnent
+- Max 220 caractères par tweet
+Mettre en brouillon : je valide avant publication.</pre><button class="copy" type="button">Copier</button></div>
+      </div>
+      <div class="prompt-card">
+        <h3>Citation inspirante quotidienne</h3>
+        <div class="mini-meta">1x par jour · discipline, patience, remise en question</div>
+        <div class="block prompt"><div class="block-label">Prompt à copier</div><pre>Génère une citation forte pour aujourd'hui sur le thème : [THÈME DU JOUR]
+
+Thèmes en rotation :
+- Discipline
+- Agir malgré la peur
+- Les difficultés comme moteur
+- Remise en question
+- Patience et long terme
+- L'échec comme école
+- La constance vs le talent
+- Lâcher le résultat, contrôler le process
+
+Format :
+[Citation : inventée ou réelle, attribuée ou non]
+
+[1-2 lignes de Xavier qui contextualise dans l'univers trading/investissement/vie]
+
+Signé xavier
+
+Règles :
+- La citation peut être originale
+- Elle doit sonner vraie, pas Instagram-vide
+- La contextualisation doit apporter quelque chose de concret
+- Ton : praticien, pas coach de vie
+Mettre en brouillon : je valide avant publication.</pre><button class="copy" type="button">Copier</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="morning-mood">
+    <h2>Process Morning Mood IvT</h2>
+    <div class="ops-grid">
+      <div class="ops-card"><strong>Fenêtre de sourcing</strong>8 à 12 dernières heures. Le lundi, élargir au weekend avec 48h maximum. Priorité à la presse US et anglo-saxonne pour être en avance sur le cycle français.</div>
+      <div class="ops-card"><strong>Collecte obligatoire</strong>Trump / Maison Blanche, diplomatie, Fed/BCE/Trésor, pétrole, or, crypto, earnings, grands fonds, semi-conducteurs, consommation US.</div>
+      <div class="ops-card"><strong>Angles différenciants</strong>Effets de second ordre, chaînes d’approvisionnement, signal contrarian, divergences entre narratif dominant et flux réels.</div>
+      <div class="ops-card"><strong>Sortie attendue</strong>Brief 600 à 900 mots, 5 à 7 blocs, polarités complètes, mot de la fin 80 à 120 mots, signature xavier.</div>
+    </div>
+    <div class="checklist">
+      <div><b>Structure fixe</b><br>Salut à tous, accroche du jour, blocs macro/géopolitique/institutionnel/micro/agenda/crypto si utile, polarités, mot de la fin, signature xavier.</div>
+      <div><b>Interdits</b><br>Pas de tirets longs, pas de séparateurs horizontaux, pas de source citée dans le corps, pas de contenu hors fenêtre, pas de polarités inventées.</div>
+      <div><b>Qualité minimale</b><br>Au moins un chiffre clé par bloc, impact investisseur concret, phrases courtes, pédagogie sans condescendance, angle neuf même sur un sujet récurrent.</div>
+      <div><b>Mot de la fin</b><br>Direct, engagé, praticien. Action, conséquence, résultat. Élan mental sans développement personnel creux.</div>
+    </div>
+    <div class="block prompt"><div class="block-label">Prompt complet Morning Mood</div><pre>Je vais te donner les informations collectées ce matin : fenêtre des 8-12 dernières heures.
+À partir de ces données, rédige mon Morning Mood IvT du [JOUR DD/MM].
+
+Consignes :
+- Voix : directe, pédagogique, praticien de marché, accessible sans être condescendant
+- Structure : accroche, blocs thématiques emoji, polarités, mot de la fin, signature xavier
+- Chaque bloc doit traduire l'info en impact investisseur concret
+- Pas de tirets longs, pas de séparateurs horizontaux, pas de citations de sources
+- Fenêtre : contenu des 8-12 dernières heures uniquement
+- Longueur cible : 600-900 mots hors polarités
+- Ton du Mot de la fin : direct, engagé, praticien, pas de développement perso creux
+
+Polarités du jour fournies par les coaches :
+[COLLER LES POLARITÉS ICI]
+
+Informations du matin :
+[COLLER LES INFOS ICI]</pre><button class="copy" type="button">Copier</button></div>
+  </section>
+
+  <section class="section" id="planning">
+    <h2>Planning 1 semaine</h2>
+    <table><thead><tr><th>#</th><th>Date</th><th>Heure</th><th>Catégorie</th><th>Actifs</th><th>Angle</th><th>Statut</th></tr></thead><tbody><tr><td><a href="#P01">P01</a></td><td>Lun. 11 mai</td><td>08:20</td><td>Marché multi-actifs</td><td>S&amp;P 500 · Nasdaq · CAC 40 · pétrole</td><td>Semaine de marché : ne pas tout résumer au CPI ni au Nasdaq.</td><td>Planifié</td></tr><tr><td><a href="#P02">P02</a></td><td>Lun. 11 mai</td><td>12:15</td><td>VIP expliqué</td><td>CAC 40</td><td>Anatomie du plan CAC 40 : publier les niveaux seulement si le trade est terminé.</td><td>Conditionnel</td></tr><tr><td><a href="#P03">P03</a></td><td>Lun. 11 mai</td><td>20:30</td><td>Psychologie</td><td>Multi-actifs</td><td>Trop d’actifs, trop d’unités de temps, trop de bruit.</td><td>Planifié</td></tr><tr><td><a href="#P04">P04</a></td><td>Mar. 12 mai</td><td>08:15</td><td>Macro</td><td>CPI · indices · taux</td><td>Jour CPI : lire la réaction croisée, pas le chiffre seul.</td><td>À adapter</td></tr><tr><td><a href="#P05">P05</a></td><td>Mar. 12 mai</td><td>12:15</td><td>VIP expliqué</td><td>CAC 40</td><td>Cas CAC 40 terminé partiellement : expliquer la séquence, pas juste la phrase “plan &gt; prédiction”.</td><td>Planifié</td></tr><tr><td><a href="#P06">P06</a></td><td>Mar. 12 mai</td><td>17:30</td><td>Actu chaude</td><td>CPI · taux · dollar · indices</td><td>Après CPI : le marché a-t-il réagi au chiffre ou à la surprise ?</td><td>À générer après chiffre</td></tr><tr><td><a href="#P07">P07</a></td><td>Mer. 13 mai</td><td>08:30</td><td>Macro</td><td>PPI · marges · inflation</td><td>PPI : coûts producteurs, marges et Fed.</td><td>À adapter</td></tr><tr><td><a href="#P08">P08</a></td><td>Mer. 13 mai</td><td>12:15</td><td>Actions US</td><td>S&amp;P 500 · résultats</td><td>Bons résultats et valorisations qui remontent : ce n’est pas la même lecture.</td><td>À adapter</td></tr><tr><td><a href="#P09">P09</a></td><td>Mer. 13 mai</td><td>20:30</td><td>Méthode</td><td>Trade terminé</td><td>Nouvelle règle éditoriale : publier un plan précis seulement quand il est terminé ou clairement marqué en cours.</td><td>Planifié</td></tr><tr><td><a href="#P10">P10</a></td><td>Jeu. 14 mai</td><td>08:30</td><td>Macro</td><td>Retail sales · S&amp;P 500</td><td>Ventes au détail : le consommateur US peut changer la lecture du S&amp;P 500.</td><td>À adapter</td></tr><tr><td><a href="#P11">P11</a></td><td>Jeu. 14 mai</td><td>12:15</td><td>Géopolitique</td><td>CAC 40 · Chine · luxe · énergie</td><td>Trump / Chine / guerre : le CAC 40 aussi est concerné.</td><td>À adapter</td></tr><tr><td><a href="#P12">P12</a></td><td>Jeu. 14 mai</td><td>20:30</td><td>VIP expliqué</td><td>ZEC · gestion active</td><td>ZEC : quand une idée marche, le risque devient de tout rendre au marché.</td><td>À adapter</td></tr><tr><td><a href="#P13">P13</a></td><td>Ven. 15 mai</td><td>08:30</td><td>Bilan</td><td>Multi-actifs</td><td>Bilan de semaine : ce que les actifs ont vraiment raconté.</td><td>À générer avec contexte</td></tr><tr><td><a href="#P14">P14</a></td><td>Ven. 15 mai</td><td>12:30</td><td>VIP expliqué</td><td>ETF défense · Guard</td><td>Allègement : prendre une partie, laisser travailler le reste.</td><td>À adapter</td></tr><tr><td><a href="#P15">P15</a></td><td>Ven. 15 mai</td><td>17:00</td><td>Actions / IA</td><td>IA · AMD · chaîne de valeur</td><td>L’IA, ce n’est pas une seule action. C’est une chaîne de valeur.</td><td>Planifié</td></tr><tr><td><a href="#P16">P16</a></td><td>Sam. 16 mai</td><td>09:30</td><td>Méthode</td><td>Trade terminé</td><td>Le format gagnant pour un trade VIP terminé.</td><td>Planifié</td></tr><tr><td><a href="#P17">P17</a></td><td>Sam. 16 mai</td><td>13:00</td><td>Storytelling</td><td>Livermore · confirmation</td><td>Confirmation avant conviction.</td><td>Planifié</td></tr><tr><td><a href="#P18">P18</a></td><td>Sam. 16 mai</td><td>18:30</td><td>Préparation</td><td>Watchlist · anti-FOMO</td><td>Une watchlist n’est pas une liste de courses. C’est un filtre anti-FOMO.</td><td>Planifié</td></tr><tr><td><a href="#P19">P19</a></td><td>Dim. 17 mai</td><td>09:30</td><td>Préparation semaine</td><td>S&amp;P 500 · CAC 40 · pétrole · dollar</td><td>Préparer lundi avec 4 questions, pas 40 prédictions.</td><td>À adapter</td></tr><tr><td><a href="#P20">P20</a></td><td>Dim. 17 mai</td><td>14:30</td><td>Patrimoine / cash</td><td>Cash · opportunité</td><td>Le cash n’est pas toujours de la peur. Parfois, c’est une option.</td><td>À adapter</td></tr><tr><td><a href="#P21">P21</a></td><td>Dim. 17 mai</td><td>19:00</td><td>Boucle performance</td><td>Stats X</td><td>Recycler le meilleur angle réel de la semaine.</td><td>À générer avec stats</td></tr></tbody></table>
+  </section>
+
+  <div class="controls">
+    <input id="search" placeholder="Rechercher : CAC, TP1, ZEC, Trump...">
+    <select id="catFilter"><option value="">Toutes catégories</option><option>Actions / IA</option><option>Actions US</option><option>Actu chaude</option><option>Bilan</option><option>Boucle performance</option><option>Géopolitique</option><option>Macro</option><option>Marché multi-actifs</option><option>Méthode</option><option>Patrimoine / cash</option><option>Préparation</option><option>Préparation semaine</option><option>Psychologie</option><option>Storytelling</option><option>VIP expliqué</option></select>
+    <select id="statusFilter"><option value="">Tous statuts</option><option>Conditionnel</option><option>Planifié</option><option>À adapter</option><option>À générer après chiffre</option><option>À générer avec contexte</option><option>À générer avec stats</option></select>
+    <button class="btn" onclick="resetFilters()">Réinitialiser</button>
+  </div>
+
+  <section class="post-list">
+<article class="post-card" id="P01" data-cat="Marché multi-actifs" data-status="Planifié" data-asset="S&amp;P 500 · Nasdaq · CAC 40 · pétrole">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P01 · Lun. 11 mai · 08:20</div>
+      <h3>Semaine de marché : ne pas tout résumer au CPI ni au Nasdaq.</h3>
+      <div class="mini-meta">Marché multi-actifs · S&amp;P 500 · Nasdaq · CAC 40 · pétrole</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Marché multi-actifs</span><span>HAUTE</span><span>Planifié</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Briefings Xavier + macro semaine</div>
+      <div><b>Garde-fou</b><br>Post public général. Vérifier pétrole, dollar, taux, futures US et CAC avant publication.</div>
+      <div><b>Angle</b><br>Semaine de marché : ne pas tout résumer au CPI ni au Nasdaq.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Cette semaine ne se résume pas au CPI.
+
+Et elle ne se lit pas uniquement avec le Nasdaq.
+
+Je vais surtout regarder la cohérence entre :
+
+• S&amp;P 500 : température globale US
+• Nasdaq : tech, taux, IA, valorisations
+• CAC 40 : Europe, luxe, banques, énergie
+• pétrole : guerre, inflation, marges
+• dollar et taux : lecture Fed
+• or : stress ou détente
+
+Le piège, c’est de chercher “la” nouvelle qui explique tout.
+
+Le marché raconte rarement une histoire avec un seul actif.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Un indice peut mentir seul. Plusieurs actifs cohérents donnent une vraie information.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P01 pour Xavier Fenaux. Sujet : semaine multi-actifs, ne pas tout réduire au CPI ou au Nasdaq. Intégrer S&amp;P 500, Nasdaq, CAC 40, pétrole, dollar, taux et or. Ton direct, marché, pédagogique, sans conseil financier. 900 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un visuel 16:9 premium IVT, fond clair blanc/gris, accents violets. Au centre “Semaine marché”. Autour : S&amp;P 500, Nasdaq, CAC 40, pétrole, dollar/taux, or. Texte minimal : “Ne pas lire un seul actif”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P01" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P01" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P01" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P01" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P01" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P01"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P01" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P02" data-cat="VIP expliqué" data-status="Conditionnel" data-asset="CAC 40">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P02 · Lun. 11 mai · 12:15</div>
+      <h3>Anatomie du plan CAC 40 : publier les niveaux seulement si le trade est terminé.</h3>
+      <div class="mini-meta">VIP expliqué · CAC 40</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>VIP expliqué</span><span>TRÈS HAUTE</span><span>Conditionnel</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>C02 · CAC 40 8 295, plan complet</div>
+      <div><b>Garde-fou</b><br>Si le trade est encore ouvert : publier la méthode sans résultat. Si le trade est clos : ajouter le résultat réel dans le bloc prévu.</div>
+      <div><b>Angle</b><br>Anatomie du plan CAC 40 : publier les niveaux seulement si le trade est terminé.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Exemple concret de ce qu’on fait chez les VIP.
+
+Sur le CAC 40, le plan n’était pas :
+“je pense que ça va baisser”.
+
+Le plan était écrit avant :
+
+• zone travaillée : 8 200 / 8 300
+• entrée vente : 8 295
+• taille : 1/3 swing
+• invalidation : au-dessus de 8 370
+• sécurisation : passage à BE sous 8 250
+• TP1 : 7 990
+• TP2 : 7 600
+
+Ensuite, le marché fait ce qu’il veut.
+
+Notre travail, ce n’est pas de deviner.
+C’est d’avoir chaque décision prévue avant l’émotion.
+
+Résultat du plan : {{à compléter uniquement si le trade est terminé}}.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Un plan sérieux ne commence pas par une opinion. Il commence par une zone, une invalidation et une gestion.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P02 pour Xavier Fenaux à partir du plan CAC 40 VIP. Mentionner les niveaux précis : zone 8 200/8 300, vente 8 295, taille 1/3 swing, invalidation au-dessus de 8 370, BE sous 8 250, TP1 7 990, TP2 7 600. Ajouter le résultat uniquement si le trade est terminé. Sinon laisser la partie résultat en placeholder. Ton Xavier, concret, pédagogique, sans conseil financier. 1 100 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un schéma 16:9 pédagogique IVT, fond clair. Titre : “Anatomie d’un plan CAC 40”. Timeline : zone 8 200/8 300 → entrée 8 295 → invalidation 8 370 → BE sous 8 250 → TP1 7 990 → TP2 7 600. Style premium, cartes arrondies, peu de texte.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P02" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P02" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P02" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P02" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P02" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P02"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P02" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P03" data-cat="Psychologie" data-status="Planifié" data-asset="Multi-actifs">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P03 · Lun. 11 mai · 20:30</div>
+      <h3>Trop d’actifs, trop d’unités de temps, trop de bruit.</h3>
+      <div class="mini-meta">Psychologie · Multi-actifs</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Psychologie</span><span>HAUTE</span><span>Planifié</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Leçon des casseroles · notifications Xavier</div>
+      <div><b>Garde-fou</b><br>Ne pas copier la notification. Transformer en angle public sur la surcharge mentale.</div>
+      <div><b>Angle</b><br>Trop d’actifs, trop d’unités de temps, trop de bruit.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Le problème de beaucoup de particuliers, ce n’est pas de manquer d’informations.
+
+C’est d’en suivre trop.
+
+CAC 40.
+Nasdaq.
+Pétrole.
+Crypto.
+Or.
+CPI.
+Trump.
+Fed.
+
+À force de tout regarder, le cerveau ne suit plus un plan.
+Il essaie juste d’éteindre des incendies.
+
+Et quand tu trades en mode pompier, tu finis souvent par confondre action et précipitation.
+
+La concentration est une forme de gestion du risque.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Suivre moins, mais mieux, c’est parfois le meilleur upgrade d’un trader.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P03 pour Xavier Fenaux. Angle psychologie inspiré des notifications : surcharge mentale, trop d’actifs, trop d’unités de temps, pas assez de plan. Ton direct, imagé, utile. 850 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un visuel 16:9 IVT fond clair. Un trader face à plusieurs écrans : CAC, Nasdaq, pétrole, crypto, CPI. Les flux deviennent trop nombreux. Texte minimal : “Trop suivre peut brouiller le plan”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P03" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P03" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P03" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P03" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P03" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P03"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P03" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P04" data-cat="Macro" data-status="À adapter" data-asset="CPI · indices · taux">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P04 · Mar. 12 mai · 08:15</div>
+      <h3>Jour CPI : lire la réaction croisée, pas le chiffre seul.</h3>
+      <div class="mini-meta">Macro · CPI · indices · taux</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Macro</span><span>HAUTE</span><span>À adapter</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Calendrier macro + lecture Xavier</div>
+      <div><b>Garde-fou</b><br>Avant publication, ne donner aucun chiffre. Après publication, vérifier BLS, attentes et réactions de marché.</div>
+      <div><b>Angle</b><br>Jour CPI : lire la réaction croisée, pas le chiffre seul.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Jour CPI.
+
+Mais le chiffre seul ne suffit pas.
+
+Je veux surtout voir comment le marché réagit autour de lui :
+
+• les taux montent ou baissent ?
+• le dollar confirme ou contredit ?
+• l’or joue refuge ou respire ?
+• le S&amp;P 500 suit le Nasdaq ou diverge ?
+• le CAC 40 encaisse ou décroche ?
+
+Un chiffre macro attire l’attention.
+
+La réaction croisée donne le message.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Le chiffre est l’événement. La réaction des actifs est l’information.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P04 pour Xavier Fenaux mardi 12 mai avant CPI. Angle : lire la réaction croisée entre taux, dollar, or, S&amp;P 500, Nasdaq et CAC 40. Pas de prédiction, pas de chiffre non publié. 850 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un visuel 16:9 IVT fond clair. Au centre “CPI”. Autour : taux, dollar, or, S&amp;P 500, Nasdaq, CAC 40. Texte minimal : “Le chiffre ne parle pas seul”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P04" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P04" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P04" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P04" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P04" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P04"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P04" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P05" data-cat="VIP expliqué" data-status="Planifié" data-asset="CAC 40">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P05 · Mar. 12 mai · 12:15</div>
+      <h3>Cas CAC 40 terminé partiellement : expliquer la séquence, pas juste la phrase “plan &gt; prédiction”.</h3>
+      <div class="mini-meta">VIP expliqué · CAC 40</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>VIP expliqué</span><span>HAUTE</span><span>Planifié</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>C01 · CAC 40 TP1 atteint</div>
+      <div><b>Garde-fou</b><br>L’entrée exacte du 04/05 n’est pas explicite dans l’export. Ne pas l’inventer. Présenter le déclenchement et les niveaux de gestion confirmés.</div>
+      <div><b>Angle</b><br>Cas CAC 40 terminé partiellement : expliquer la séquence, pas juste la phrase “plan &gt; prédiction”.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Quand je parle de plan, je ne parle pas d’une phrase jolie pour Twitter.
+
+Exemple CAC 40 chez les VIP.
+
+Le plan du jour était vendeur, avec une lecture précise :
+
+• indice faible
+• zone swing travaillée depuis longtemps
+• dégradation surveillée sous 8 070 / 8 050
+• position légère en début de semaine
+• SL remonté à BE rapidement
+• TP1 travaillé vers 7 950 / 7 965
+• TP2 sur le reste : 7 600
+
+Le TP1 a été pris.
+
+La leçon n’est pas “on avait raison”.
+
+La leçon, c’est que chaque étape était prévue avant que le marché bouge.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Un bon plan transforme une opinion en procédure. C’est ça qui change tout.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P05 pour Xavier Fenaux. Sujet : cas CAC 40 terminé partiellement chez les VIP. Mentionner dégradation 8 070/8 050, position légère, SL à BE, TP1 7 950/7 965, TP2 7 600, TP1 pris. Ne pas inventer d’entrée exacte. Ton concret, public, sans promesse. 1 000 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un schéma 16:9 IVT fond clair. Sujet : CAC 40, plan exécuté. Timeline : dégradation 8 070/8 050 → sécurisation BE → TP1 7 950/7 965 → TP2 7 600. Texte minimal : “Le plan avant le résultat”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P05" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P05" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P05" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P05" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P05" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P05"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P05" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P06" data-cat="Actu chaude" data-status="À générer après chiffre" data-asset="CPI · taux · dollar · indices">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P06 · Mar. 12 mai · 17:30</div>
+      <h3>Après CPI : le marché a-t-il réagi au chiffre ou à la surprise ?</h3>
+      <div class="mini-meta">Actu chaude · CPI · taux · dollar · indices</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Actu chaude</span><span>HAUTE</span><span>À générer après chiffre</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>CPI réel + réactions marché</div>
+      <div><b>Garde-fou</b><br>Vérifier les chiffres officiels et la réaction réelle avant rédaction.</div>
+      <div><b>Angle</b><br>Après CPI : le marché a-t-il réagi au chiffre ou à la surprise ?</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>À générer après publication du CPI avec : chiffre réel, consensus, réaction taux US 10 ans, dollar, or, S&amp;P 500, Nasdaq, CAC 40.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>À générer selon contexte réel.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Le CPI US vient d’être publié. Recherche les chiffres officiels BLS, le consensus et les réactions réelles : taux US 10 ans, dollar, or, S&amp;P 500, Nasdaq, CAC 40. Prépare le post X P06 pour Xavier Fenaux. Angle : le marché réagit à la surprise et à la cohérence inter-marchés. 1 000 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un visuel 16:9 IVT fond clair. Placeholders : CPI réel, consensus, taux, dollar, or, S&amp;P 500, Nasdaq, CAC 40. Titre : “Ce que le marché a vraiment pricé”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P06" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P06" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P06" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P06" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P06" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P06"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P06" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P07" data-cat="Macro" data-status="À adapter" data-asset="PPI · marges · inflation">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P07 · Mer. 13 mai · 08:30</div>
+      <h3>PPI : coûts producteurs, marges et Fed.</h3>
+      <div class="mini-meta">Macro · PPI · marges · inflation</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Macro</span><span>HAUTE</span><span>À adapter</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>PPI + lecture marges</div>
+      <div><b>Garde-fou</b><br>Avant publication, ne pas donner de chiffre. Après publication, vérifier BLS.</div>
+      <div><b>Angle</b><br>PPI : coûts producteurs, marges et Fed.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Le PPI est moins sexy que le CPI.
+
+Mais il peut être très utile.
+
+Le CPI parle plutôt du prix payé par le consommateur.
+Le PPI regarde les pressions côté producteurs.
+
+Et si les coûts remontent, les entreprises ont deux choix :
+
+• absorber dans les marges
+• répercuter dans les prix
+
+Dans les deux cas, le marché écoute.
+
+Inflation, marges, Fed, résultats : tout est lié.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Le PPI est moins médiatique. Mais pour les marges, il peut parler très fort.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P07 pour Xavier Fenaux avant PPI. Expliquer PPI, coûts producteurs, marges, prix, Fed et résultats. Ton simple, marché, accessible. 850 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un schéma 16:9 IVT fond clair : PPI → coûts entreprises → marges ou prix → Fed / marchés. Texte minimal : “Les coûts parlent aussi”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P07" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P07" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P07" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P07" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P07" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P07"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P07" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P08" data-cat="Actions US" data-status="À adapter" data-asset="S&amp;P 500 · résultats">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P08 · Mer. 13 mai · 12:15</div>
+      <h3>Bons résultats et valorisations qui remontent : ce n’est pas la même lecture.</h3>
+      <div class="mini-meta">Actions US · S&amp;P 500 · résultats</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Actions US</span><span>MOYENNE</span><span>À adapter</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Notification Xavier sur résultats T1 S&amp;P 500</div>
+      <div><b>Garde-fou</b><br>Vérifier s’il y a eu des publications majeures depuis le fichier.</div>
+      <div><b>Angle</b><br>Bons résultats et valorisations qui remontent : ce n’est pas la même lecture.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Un marché peut monter pour une bonne raison.
+
+Et devenir plus exigeant en même temps.
+
+Sur le S&amp;P 500, il ne suffit pas de regarder :
+“les entreprises gagnent plus”.
+
+Il faut aussi regarder :
+“combien le marché accepte de payer ces bénéfices”.
+
+Bénéfices en hausse + multiples raisonnables : respiration saine.
+
+Bénéfices en hausse + multiples qui s’étirent trop : marché plus sensible aux mauvaises nouvelles.
+
+Le prix compte toujours.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Le bénéfice raconte l’entreprise. Le multiple raconte l’appétit du marché.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P08 pour Xavier Fenaux. Sujet : S&amp;P 500, résultats solides, mais valorisations qui remontent. Expliquer bénéfices vs multiples. Ton pédagogique, marché, pas alarmiste. 900 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P08" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P08" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P08" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P08" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P08" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P08"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P08" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P09" data-cat="Méthode" data-status="Planifié" data-asset="Trade terminé">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P09 · Mer. 13 mai · 20:30</div>
+      <h3>Nouvelle règle éditoriale : publier un plan précis seulement quand il est terminé ou clairement marqué en cours.</h3>
+      <div class="mini-meta">Méthode · Trade terminé</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Méthode</span><span>HAUTE</span><span>Planifié</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Règle éditoriale VIP</div>
+      <div><b>Garde-fou</b><br>Post interne plutôt à garder comme règle de production. Peut servir de rappel dans le fichier.</div>
+      <div><b>Angle</b><br>Nouvelle règle éditoriale : publier un plan précis seulement quand il est terminé ou clairement marqué en cours.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Règle simple pour les prochains posts issus du QG.
+
+Si le trade est terminé :
+
+on peut montrer le plan complet.
+Entrée.
+Zone.
+Taille.
+Invalidation.
+BE.
+TP1.
+TP2.
+Résultat réel.
+
+Si le trade est encore ouvert :
+
+on ne vend pas le résultat.
+On explique la méthode.
+On montre la structure.
+On garde la partie sensible dans le VIP.
+
+La crédibilité se joue là.
+
+Un bon post public doit donner envie par la clarté.
+Pas par une promesse.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>La transparence gagne. Le teasing flou fatigue.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare une règle éditoriale interne pour transformer les notifications VIP en posts X : si trade terminé, publier les niveaux et résultat réel ; si trade ouvert, publier seulement la méthode ; ne jamais promettre, ne jamais inventer un niveau absent. Ton direct et opérationnel.</pre><button class="copy" type="button">Copier</button></div>
+    
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P09" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P09" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P09" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P09" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P09" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P09"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P09" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P10" data-cat="Macro" data-status="À adapter" data-asset="Retail sales · S&amp;P 500">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P10 · Jeu. 14 mai · 08:30</div>
+      <h3>Ventes au détail : le consommateur US peut changer la lecture du S&amp;P 500.</h3>
+      <div class="mini-meta">Macro · Retail sales · S&amp;P 500</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Macro</span><span>HAUTE</span><span>À adapter</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Calendrier retail sales</div>
+      <div><b>Garde-fou</b><br>Vérifier le calendrier Census, le mois de référence et le consensus.</div>
+      <div><b>Angle</b><br>Ventes au détail : le consommateur US peut changer la lecture du S&amp;P 500.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Après l’inflation, le marché va regarder le consommateur US.
+
+Parce qu’un S&amp;P 500 solide repose aussi sur une question simple :
+
+les entreprises vendent-elles encore ?
+
+Des ventes au détail fortes peuvent rassurer sur la croissance.
+
+Mais si elles arrivent avec une inflation collante, elles peuvent aussi compliquer l’équation de la Fed.
+
+C’est pour ça qu’un chiffre ne se lit jamais seul.
+
+Croissance, inflation, taux, marges : tout doit rester cohérent.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Un consommateur solide peut soutenir les revenus. Mais il peut aussi maintenir la pression inflationniste.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P10 pour Xavier Fenaux avant les ventes au détail US. Sujet : consommateur US, S&amp;P 500, croissance, inflation, Fed. Ton clair, marché. 900 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un visuel 16:9 IVT fond clair. Consommateur → revenus entreprises → S&amp;P 500, avec bifurcation inflation / Fed. Texte minimal : “Le consommateur change la lecture”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P10" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P10" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P10" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P10" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P10" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P10"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P10" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P11" data-cat="Géopolitique" data-status="À adapter" data-asset="CAC 40 · Chine · luxe · énergie">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P11 · Jeu. 14 mai · 12:15</div>
+      <h3>Trump / Chine / guerre : le CAC 40 aussi est concerné.</h3>
+      <div class="mini-meta">Géopolitique · CAC 40 · Chine · luxe · énergie</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Géopolitique</span><span>HAUTE</span><span>À adapter</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Briefings Xavier Trump / Iran / pétrole</div>
+      <div><b>Garde-fou</b><br>Vérifier l’actualité Trump, Chine, Iran, pétrole avant publication.</div>
+      <div><b>Angle</b><br>Trump / Chine / guerre : le CAC 40 aussi est concerné.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Erreur classique : penser que Trump, la Chine ou la géopolitique ne concernent que Wall Street.
+
+Le CAC 40 aussi est exposé.
+
+Pas de la même manière, mais clairement :
+
+• luxe : demande chinoise
+• banques : taux et risque
+• énergie : pétrole
+• industrie : commerce mondial
+• euro/dollar : compétitivité
+
+Donc quand le marché parle tarifs, Chine, guerre ou pétrole, il ne faut pas regarder uniquement le Nasdaq.
+
+Il faut aussi voir comment l’Europe digère le choc.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Le CAC 40 n’est pas un indice local. C’est une vitrine mondiale cotée en Europe.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P11 pour Xavier Fenaux. Sujet : Trump, Chine, guerre, pétrole et impact CAC 40 via luxe, banques, énergie, industrie, euro/dollar. Vérifier l’actualité avant rédaction. Ton marché, direct. 900 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un visuel 16:9 IVT fond clair. Au centre CAC 40. Autour : luxe, banques, énergie, industrie, euro/dollar. En haut : USA / Chine / pétrole. Texte minimal : “Le CAC aussi est exposé”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P11" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P11" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P11" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P11" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P11" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P11"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P11" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P12" data-cat="VIP expliqué" data-status="À adapter" data-asset="ZEC · gestion active">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P12 · Jeu. 14 mai · 20:30</div>
+      <h3>ZEC : quand une idée marche, le risque devient de tout rendre au marché.</h3>
+      <div class="mini-meta">VIP expliqué · ZEC · gestion active</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>VIP expliqué</span><span>MOYENNE</span><span>À adapter</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>C03 · ZEC zone 400 vers 700</div>
+      <div><b>Garde-fou</b><br>Ne pas présenter comme trade clôturé si la sortie n’est pas confirmée. Vérifier prix actuel si chiffre publié.</div>
+      <div><b>Angle</b><br>ZEC : quand une idée marche, le risque devient de tout rendre au marché.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Le plus dur, ce n’est pas toujours de trouver une bonne idée.
+
+Parfois, c’est de la gérer quand elle fonctionne.
+
+Exemple récent sur ZEC.
+
+La zone importante était autour des 400 $.
+Le mouvement a ensuite approché la zone des 700 $.
+
+À ce moment-là, le sujet n’est plus :
+“est-ce que j’avais raison ?”
+
+Le vrai sujet devient :
+“comment je ne rends pas tout au marché ?”
+
+Une zone de TP n’est pas un manque d’ambition.
+
+C’est une décision prise avant l’euphorie.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Quand le trade marche, le plan doit parler plus fort que la gourmandise.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P12 pour Xavier Fenaux. Sujet : ZEC, zone 400 $, mouvement proche 700 $, gestion active, zone de TP, ne pas rendre au marché. Ne pas dire que le trade est terminé si la sortie n’est pas confirmée. Ton direct, crypto, pédagogique. 1 000 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un visuel 16:9 IVT fond clair. Courbe crypto qui part d’une zone 400 vers une zone 700, puis carte “zone de TP”. Texte minimal : “Quand ça marche, il faut gérer”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P12" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P12" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P12" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P12" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P12" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P12"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P12" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P13" data-cat="Bilan" data-status="À générer avec contexte" data-asset="Multi-actifs">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P13 · Ven. 15 mai · 08:30</div>
+      <h3>Bilan de semaine : ce que les actifs ont vraiment raconté.</h3>
+      <div class="mini-meta">Bilan · Multi-actifs</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Bilan</span><span>HAUTE</span><span>À générer avec contexte</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Réactions réelles de la semaine</div>
+      <div><b>Garde-fou</b><br>Obligatoire : vérifier CPI, PPI, retail sales, taux, dollar, pétrole, or, S&amp;P 500, Nasdaq, CAC 40.</div>
+      <div><b>Angle</b><br>Bilan de semaine : ce que les actifs ont vraiment raconté.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>À générer vendredi matin avec les réactions réelles de la semaine.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>À générer selon contexte réel.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>On est vendredi 15 mai au matin. Recherche les réactions de la semaine : CPI, PPI, ventes au détail, taux US 10 ans, dollar, or, pétrole, S&amp;P 500, Nasdaq, CAC 40. Prépare le post X P13 pour Xavier Fenaux : bilan clair de ce que les actifs ont vraiment raconté. 1 200 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un tableau visuel 16:9 IVT fond clair : “Bilan de semaine”. Lignes : macro, taux, dollar, or, pétrole, S&amp;P 500, Nasdaq, CAC 40. Zone finale : “message du marché”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P13" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P13" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P13" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P13" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P13" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P13"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P13" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P14" data-cat="VIP expliqué" data-status="À adapter" data-asset="ETF défense · Guard">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P14 · Ven. 15 mai · 12:30</div>
+      <h3>Allègement : prendre une partie, laisser travailler le reste.</h3>
+      <div class="mini-meta">VIP expliqué · ETF défense · Guard</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>VIP expliqué</span><span>MOYENNE</span><span>À adapter</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>C04 · Allègement zone 11 / 11,50</div>
+      <div><b>Garde-fou</b><br>Dire allègement, pas clôture totale. Vérifier si la position est réellement close avant de parler de trade terminé.</div>
+      <div><b>Angle</b><br>Allègement : prendre une partie, laisser travailler le reste.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Gérer une position, ce n’est pas seulement entrer et sortir.
+
+Parfois, c’est prendre une partie sur une zone prévue, puis laisser le reste travailler.
+
+Exemple sur le secteur défense.
+
+La zone d’allègement était identifiée autour de 11 / 11,50.
+Quand le marché arrive dedans, le sujet n’est plus de débattre.
+
+Le sujet devient :
+
+• j’allège ce qui était prévu
+• je réduis le risque
+• je garde une partie si le thème continue
+• je ne transforme pas une bonne exposition en gourmandise
+
+C’est moins spectaculaire.
+Mais beaucoup plus professionnel.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Alléger n’est pas abandonner une idée. C’est la gérer.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P14 pour Xavier Fenaux. Sujet : gestion par allègement, exemple secteur défense Guard, zone 11 / 11,50. Dire allègement et gestion par paliers, pas sortie totale si non confirmée. Ton concret, pédagogique. 950 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un schéma 16:9 IVT fond clair. Sujet : gestion par paliers. Étapes : exposition → zone 11/11,50 → allègement → reste qui travaille. Texte minimal : “Alléger, c’est gérer”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P14" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P14" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P14" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P14" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P14" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P14"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P14" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P15" data-cat="Actions / IA" data-status="Planifié" data-asset="IA · AMD · chaîne de valeur">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P15 · Ven. 15 mai · 17:00</div>
+      <h3>L’IA, ce n’est pas une seule action. C’est une chaîne de valeur.</h3>
+      <div class="mini-meta">Actions / IA · IA · AMD · chaîne de valeur</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Actions / IA</span><span>HAUTE</span><span>Planifié</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Notifications AMD + IA</div>
+      <div><b>Garde-fou</b><br>Ne pas publier la watchlist privée. Rester sur les secteurs et la logique.</div>
+      <div><b>Angle</b><br>L’IA, ce n’est pas une seule action. C’est une chaîne de valeur.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Le thème IA ne se résume pas à une seule action qui monte.
+
+Le vrai sujet, c’est la chaîne de valeur.
+
+Semi-conducteurs.
+Mémoire.
+Data centers.
+Énergie.
+Réseaux.
+Logiciels.
+Défense.
+Robotique.
+
+Un supercycle ne se lit pas uniquement sur un graphique.
+
+Il se lit dans les dépenses, les capacités, les marges, les goulets d’étranglement et les entreprises qui exécutent vraiment.
+
+Le FOMO regarde le ticker.
+
+L’investisseur sérieux regarde l’écosystème.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Une tendance forte attire les suiveurs. Une chaîne de valeur révèle les vrais dossiers.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P15 pour Xavier Fenaux. Sujet : supercycle IA, chaîne de valeur, pas seulement Nvidia/Nasdaq. S’inspirer des notifications IA et AMD sans donner de watchlist privée. Ton marché, pédagogique, fort. 1 000 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un visuel 16:9 IVT fond clair. Cartes reliées : semi, mémoire, data centers, énergie, réseaux, logiciels, défense, robotique. Texte minimal : “L’IA, ce n’est pas une seule action”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P15" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P15" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P15" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P15" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P15" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P15"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P15" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P16" data-cat="Méthode" data-status="Planifié" data-asset="Trade terminé">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P16 · Sam. 16 mai · 09:30</div>
+      <h3>Le format gagnant pour un trade VIP terminé.</h3>
+      <div class="mini-meta">Méthode · Trade terminé</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Méthode</span><span>HAUTE</span><span>Planifié</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Règle de transformation notification → post public</div>
+      <div><b>Garde-fou</b><br>Template à remplir seulement avec données confirmées. Aucun chiffre inventé.</div>
+      <div><b>Angle</b><br>Le format gagnant pour un trade VIP terminé.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Le bon format pour partager un trade terminé n’est pas :
+“encore un beau trade”.
+
+Ça n’apprend rien.
+
+Le bon format, c’est :
+
+1. Le contexte avant le trade
+2. La zone travaillée
+3. L’entrée
+4. La taille
+5. L’invalidation
+6. La sécurisation
+7. TP1 / TP2
+8. Le résultat réel
+9. La leçon
+
+C’est ce qui fait la différence entre un post de performance et un post d’autorité.
+
+La performance attire.
+La méthode construit la confiance.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Un trade terminé doit prouver la méthode, pas juste afficher le résultat.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare un post X pour Xavier Fenaux sur le bon format de partage d’un trade VIP terminé : contexte, zone, entrée, taille, invalidation, sécurisation, TP1/TP2, résultat réel, leçon. Ton direct et stratégique. 850 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un visuel 16:9 IVT fond clair. Check-list “trade terminé” : contexte, zone, entrée, invalidation, BE, TP1, TP2, résultat, leçon. Texte minimal : “La méthode avant le résultat”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P16" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P16" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P16" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P16" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P16" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P16"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P16" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P17" data-cat="Storytelling" data-status="Planifié" data-asset="Livermore · confirmation">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P17 · Sam. 16 mai · 13:00</div>
+      <h3>Confirmation avant conviction.</h3>
+      <div class="mini-meta">Storytelling · Livermore · confirmation</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Storytelling</span><span>HAUTE</span><span>Planifié</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Notification Livermore</div>
+      <div><b>Garde-fou</b><br>Ne pas surcharger l’histoire. Rester sur la leçon.</div>
+      <div><b>Angle</b><br>Confirmation avant conviction.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>La vraie leçon de Livermore, ce n’est pas :
+“il a shorté le krach”.
+
+C’est beaucoup plus utile que ça.
+
+Il attendait que le marché confirme son scénario.
+
+Pas de conviction sans confirmation.
+Pas de taille sans plan.
+Pas d’ego au-dessus du prix.
+
+C’est valable hier.
+C’est valable aujourd’hui.
+
+Le danger, ce n’est pas d’avoir une opinion.
+
+Le danger, c’est de croire qu’une opinion mérite une position tant que le marché ne l’a pas validée.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Une opinion devient utile seulement quand elle rencontre un niveau, un signal et une invalidation.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P17 pour Xavier Fenaux. Storytelling court inspiré de Livermore : confirmation avant conviction. Ton historique mais pas Wikipédia, direct, utile. 900 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P17" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P17" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P17" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P17" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P17" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P17"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P17" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P18" data-cat="Préparation" data-status="Planifié" data-asset="Watchlist · anti-FOMO">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P18 · Sam. 16 mai · 18:30</div>
+      <h3>Une watchlist n’est pas une liste de courses. C’est un filtre anti-FOMO.</h3>
+      <div class="mini-meta">Préparation · Watchlist · anti-FOMO</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Préparation</span><span>MOYENNE</span><span>Planifié</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Notifications IA + méthode Xavier</div>
+      <div><b>Garde-fou</b><br>Ne pas donner la watchlist privée. Expliquer la méthode.</div>
+      <div><b>Angle</b><br>Une watchlist n’est pas une liste de courses. C’est un filtre anti-FOMO.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Une watchlist, ce n’est pas une liste de courses.
+
+C’est un filtre.
+
+Elle sert à éviter de courir après tout ce qui bouge.
+
+Tu sais déjà :
+
+• ce que tu surveilles
+• pourquoi tu le surveilles
+• quel niveau compte
+• quel contexte valide l’idée
+• ce qui invalide le scénario
+
+Sans ça, tu ne fais pas de sélection.
+
+Tu réagis au bruit.
+
+Et le bruit, sur les marchés, est souvent beaucoup plus convaincant que la vérité.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Une bonne watchlist réduit le bruit avant même que le marché ouvre.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P18 pour Xavier Fenaux. Sujet : une watchlist n’est pas une liste de courses, c’est un filtre anti-FOMO. Ne pas donner de watchlist privée. Ton pédagogique, direct. 850 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un visuel 16:9 IVT fond clair. À gauche : bruit du marché. Au centre : watchlist. À droite : plans clairs. Texte minimal : “Filtrer avant d’agir”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P18" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P18" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P18" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P18" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P18" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P18"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P18" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P19" data-cat="Préparation semaine" data-status="À adapter" data-asset="S&amp;P 500 · CAC 40 · pétrole · dollar">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P19 · Dim. 17 mai · 09:30</div>
+      <h3>Préparer lundi avec 4 questions, pas 40 prédictions.</h3>
+      <div class="mini-meta">Préparation semaine · S&amp;P 500 · CAC 40 · pétrole · dollar</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Préparation semaine</span><span>HAUTE</span><span>À adapter</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Bilan semaine + briefings Xavier</div>
+      <div><b>Garde-fou</b><br>Vérifier clôture vendredi, pétrole, dollar, taux, géopolitique.</div>
+      <div><b>Angle</b><br>Préparer lundi avec 4 questions, pas 40 prédictions.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Pour préparer lundi, je ne veux pas 40 prédictions.
+
+Je veux 4 questions claires :
+
+1. Les taux racontent quoi ?
+2. Le dollar confirme ou contredit ?
+3. Le pétrole ajoute ou retire du risque ?
+4. Les indices avancent ensemble ou chacun raconte son histoire ?
+
+S&amp;P 500, Nasdaq, CAC 40, or, dollar, pétrole.
+
+Le but n’est pas d’avoir une opinion sur tout.
+
+Le but, c’est d’arriver avec un cadre.
+
+Parce que sans cadre, la première bougie devient ton plan.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Le marché bouge vite. Ton cadre doit être prêt avant lui.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P19 pour Xavier Fenaux dimanche matin. Sujet : préparer lundi avec 4 questions : taux, dollar, pétrole, cohérence indices. Ton marché, structuré, pas prédictif. 900 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un visuel 16:9 IVT fond clair. 4 cartes : taux, dollar, pétrole, cohérence indices. En bas : S&amp;P 500, Nasdaq, CAC 40. Texte minimal : “Un cadre avant la bougie”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P19" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P19" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P19" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P19" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P19" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P19"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P19" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P20" data-cat="Patrimoine / cash" data-status="À adapter" data-asset="Cash · opportunité">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P20 · Dim. 17 mai · 14:30</div>
+      <h3>Le cash n’est pas toujours de la peur. Parfois, c’est une option.</h3>
+      <div class="mini-meta">Patrimoine / cash · Cash · opportunité</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Patrimoine / cash</span><span>MOYENNE</span><span>À adapter</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Briefings Xavier + contexte Berkshire à vérifier</div>
+      <div><b>Garde-fou</b><br>Si Buffett ou Berkshire est cité, vérifier les chiffres à jour.</div>
+      <div><b>Angle</b><br>Le cash n’est pas toujours de la peur. Parfois, c’est une option.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>Garder du cash n’est pas toujours un manque de courage.
+
+Parfois, c’est simplement refuser de payer n’importe quel prix.
+
+Le marché pousse souvent à confondre :
+
+• être investi
+• être intelligent
+• être actif
+
+Ce n’est pas la même chose.
+
+Il y a des moments où le cash est une attente.
+Il y a des moments où le cash est une protection.
+Il y a des moments où le cash est une option sur les erreurs des autres.
+
+Ne pas agir n’est pas forcément subir.
+
+Parfois, c’est préparer le prochain coup.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>Le cash dort quand il n’a pas de plan. Il devient puissant quand il attend une vraie opportunité.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Prépare le post X P20 pour Xavier Fenaux. Sujet : le cash n’est pas toujours de la peur, parfois c’est une option. Si Buffett/Berkshire est cité, vérifier les chiffres. Sinon rester générique. 900 caractères max + réponse courte.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block image-prompt"><div class="block-label">Prompt image / dessin</div><pre>Créer un visuel 16:9 IVT fond clair. Réserve de cash à gauche, opportunité de marché à droite, flèche “patience”. Texte minimal : “Attendre peut être une stratégie”.</pre><button class="copy" type="button">Copier</button></div>
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P20" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P20" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P20" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P20" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P20" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P20"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P20" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article>
+<article class="post-card" id="P21" data-cat="Boucle performance" data-status="À générer avec stats" data-asset="Stats X">
+  <div class="card-top">
+    <div>
+      <div class="post-id">P21 · Dim. 17 mai · 19:00</div>
+      <h3>Recycler le meilleur angle réel de la semaine.</h3>
+      <div class="mini-meta">Boucle performance · Stats X</div>
+    </div>
+    <div class="card-actions"><button class="done-btn" type="button">Programmé</button></div>
+  </div>
+  <div class="card-body">
+    <div class="badges"><span>Boucle performance</span><span>HAUTE</span><span>À générer avec stats</span></div>
+    <div class="meta-grid">
+      <div><b>Source</b><br>Stats X de la semaine</div>
+      <div><b>Garde-fou</b><br>Utiliser vues, likes, réponses, reposts, bookmarks. Ne pas décider au feeling.</div>
+      <div><b>Angle</b><br>Recycler le meilleur angle réel de la semaine.</div>
+    </div>
+    <div class="block text"><div class="block-label">Texte prêt à poster</div><pre>À générer dimanche soir selon les statistiques réelles des posts X.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block reply"><div class="block-label">Réponse à mettre sous le post</div><pre>À générer selon gagnant réel.</pre><button class="copy" type="button">Copier</button></div>
+    <div class="block prompt"><div class="block-label">Prompt unique à me donner pour ce post</div><pre>Analyse les stats des posts X de la semaine : vues, likes, réponses, reposts, bookmarks. Identifie le meilleur angle entre CAC 40, discipline, CPI, géopolitique, IA, crypto ou watchlist. Prépare une version renforcée du post gagnant pour Xavier Fenaux, 900 caractères max, avec réponse courte. Objectif : recycler ce qui marche.</pre><button class="copy" type="button">Copier</button></div>
+    
+    <details class="tracker-row"><summary>Suivi performance</summary>
+      <div class="inputs">
+        <label>Vues <input data-field="views" data-id="P21" type="number"></label>
+        <label>Likes <input data-field="likes" data-id="P21" type="number"></label>
+        <label>Réponses <input data-field="comments" data-id="P21" type="number"></label>
+        <label>Reposts <input data-field="reposts" data-id="P21" type="number"></label>
+        <label>Bookmarks <input data-field="bookmarks" data-id="P21" type="number"></label>
+        <label>Décision <select data-field="decision" data-id="P21"><option></option><option>Recycler</option><option>Garder</option><option>Couper</option><option>Tester variante</option></select></label>
+        <label>Note <textarea data-field="note" data-id="P21" placeholder="Pourquoi ça a marché ou non ?"></textarea></label>
+      </div>
+    </details>
+  </div>
+</article></section>
+</div></main>
+<script>
+const STORE_KEY = 'ivt_x_strategy_v6_tracker';
+const COLLAPSE_KEY = 'ivt_x_strategy_v6_collapsed';
+function getStore(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch(e) { return fallback; } }
+function setStore(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+async function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return; }
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px'; ta.style.top = '0';
+  document.body.appendChild(ta); ta.focus(); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+}
+document.querySelectorAll('.copy').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const pre = btn.closest('.block').querySelector('pre');
+    try {
+      await copyText(pre.innerText);
+      const old = btn.textContent; btn.textContent = 'Copié'; btn.classList.add('ok');
+      setTimeout(() => { btn.textContent = old; btn.classList.remove('ok'); }, 1200);
+    } catch(e) { alert('Copie impossible automatiquement. Sélectionne le texte manuellement.'); }
+  });
+});
+function applyCollapsed() {
+  const state = getStore(COLLAPSE_KEY, {});
+  document.querySelectorAll('.post-card').forEach(card => {
+    const is = !!state[card.id];
+    card.classList.toggle('is-collapsed', is);
+    const btn = card.querySelector('.done-btn');
+    if (btn) { btn.textContent = is ? 'Programmé ✓' : 'Programmé'; btn.classList.toggle('done', is); }
+  });
+}
+document.querySelectorAll('.done-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const card = btn.closest('.post-card');
+    const state = getStore(COLLAPSE_KEY, {});
+    state[card.id] = !state[card.id];
+    setStore(COLLAPSE_KEY, state);
+    applyCollapsed();
+  });
+});
+function collapseAll(yes) {
+  const state = {};
+  document.querySelectorAll('.post-card').forEach(card => { state[card.id] = yes; });
+  setStore(COLLAPSE_KEY, state); applyCollapsed();
+}
+function filterCards() {
+  const q = (document.getElementById('search').value || '').toLowerCase();
+  const cat = document.getElementById('catFilter').value;
+  const status = document.getElementById('statusFilter').value;
+  document.querySelectorAll('.post-card').forEach(card => {
+    const text = card.innerText.toLowerCase();
+    const okQ = !q || text.includes(q);
+    const okCat = !cat || card.dataset.cat === cat;
+    const okStatus = !status || card.dataset.status === status;
+    card.style.display = (okQ && okCat && okStatus) ? '' : 'none';
+  });
+}
+['search','catFilter','statusFilter'].forEach(id => document.getElementById(id).addEventListener('input', filterCards));
+function resetFilters() { document.getElementById('search').value=''; document.getElementById('catFilter').value=''; document.getElementById('statusFilter').value=''; filterCards(); }
+function saveTracker() {
+  const data = getStore(STORE_KEY, {});
+  document.querySelectorAll('[data-field]').forEach(el => { const id = el.dataset.id; const field = el.dataset.field; if (!data[id]) data[id] = {}; data[id][field] = el.value; });
+  setStore(STORE_KEY, data);
+}
+function loadTracker() {
+  const data = getStore(STORE_KEY, {});
+  document.querySelectorAll('[data-field]').forEach(el => { const id = el.dataset.id; const field = el.dataset.field; if (data[id] && data[id][field] !== undefined) el.value = data[id][field]; el.addEventListener('input', saveTracker); });
+}
+function csvEscape(v) { return '"' + String(v ?? '').replaceAll('"','""') + '"'; }
+function exportCSV() {
+  saveTracker();
+  const data = getStore(STORE_KEY, {});
+  const headers = ['id','date','heure','categorie','angle','views','likes','comments','reposts','bookmarks','decision','note'];
+  const rows = [headers];
+  document.querySelectorAll('.post-card').forEach(card => {
+    const id = card.id; const d = data[id] || {};
+    const dateTime = card.querySelector('.post-id').innerText.split('·').map(x=>x.trim());
+    const angle = card.querySelector('h3').innerText.trim();
+    rows.push([id, dateTime[1] || '', dateTime[2] || '', card.dataset.cat || '', angle, d.views || '', d.likes || '', d.comments || '', d.reposts || '', d.bookmarks || '', d.decision || '', d.note || '']);
+  });
+  const csv = rows.map(r => r.map(csvEscape).join(';')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'suivi_strategy_x_v6.csv'; a.click(); URL.revokeObjectURL(url);
+}
+loadTracker(); applyCollapsed();
+</script>
+</body>
+</html>
