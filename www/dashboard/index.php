@@ -24,7 +24,7 @@ $user = dashboard_current_user();
     .grid{display:grid;gap:16px}.two{grid-template-columns:1.05fr .95fr}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 18px 50px rgba(56,43,20,.1)}.panel h2{margin:0 0 12px;font-size:24px;letter-spacing:-.03em}.panel h3{margin:0 0 8px;font-size:18px}
     .next{background:linear-gradient(135deg,#fffaf0,#fff,#f5ead1);border-color:rgba(153,119,51,.38)}.task-title{font-size:28px;line-height:1.08;letter-spacing:-.035em;margin:8px 0}.meta{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.tag{border:1px solid var(--line);background:white;border-radius:999px;padding:6px 9px;color:var(--muted);font-size:12px;font-weight:900}.tag.green{color:var(--green);border-color:rgba(22,138,74,.25)}.tag.blue{color:var(--blue);border-color:rgba(21,94,239,.24)}
     .countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.countdown div{background:white;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}.countdown strong{display:block;font-size:24px}.countdown span{font-size:11px;color:var(--muted);font-weight:900;text-transform:uppercase}
-    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{border:1px solid var(--line);border-radius:999px;padding:11px 13px;background:white;min-width:210px}.post-list{display:grid;gap:12px}.post{background:white;border:1px solid var(--line);border-radius:16px;padding:15px;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}.post:hover{border-color:rgba(153,119,51,.28);box-shadow:0 14px 34px rgba(56,43,20,.1);transform:translateY(-1px)}.post-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.post-main{min-width:0}.post-actions{display:flex;align-items:flex-start;gap:8px;flex-shrink:0}.post p{margin:0;color:var(--muted)}.post details{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}.post summary{cursor:pointer;font-weight:900;color:var(--accent)}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{border:1px solid var(--line);border-radius:999px;padding:11px 13px;background:white;min-width:210px}.post-list{display:grid;gap:12px}.post{background:white;border:1px solid var(--line);border-radius:16px;padding:15px;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}.post:hover{border-color:rgba(153,119,51,.28);box-shadow:0 14px 34px rgba(56,43,20,.1);transform:translateY(-1px)}.post-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.post-main{min-width:0}.post-actions{display:flex;align-items:flex-start;gap:8px;flex-shrink:0}.post p{margin:0;color:var(--muted)}.post details{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}.post summary{cursor:pointer;font-weight:900;color:var(--accent)}.live-state{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(22,138,74,.18);background:#f0fff6;color:var(--green);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900}.live-state.off{border-color:rgba(180,35,24,.18);background:#fff5f3;color:var(--red)}.live-state::before{content:"";width:8px;height:8px;border-radius:999px;background:currentColor;box-shadow:0 0 0 5px color-mix(in srgb,currentColor 14%,transparent)}
     .prompt-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:7px}.field label{font-size:12px;font-weight:900;color:var(--accent);text-transform:uppercase;letter-spacing:.08em}.field textarea{width:100%;min-height:170px;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;resize:vertical;color:var(--ink)}.field textarea.post-text{min-height:220px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.status{font-size:13px;color:var(--muted);margin-top:8px}.status.error{color:var(--red);font-weight:900}.empty{padding:18px;border:1px dashed var(--line);border-radius:16px;color:var(--muted);background:white}.muted{color:var(--muted)}.small{font-size:13px}
     @media(max-width:960px){.two,.prompt-grid{grid-template-columns:1fr}.topbar .wrap{align-items:flex-start;flex-direction:column}.countdown{grid-template-columns:repeat(2,1fr)}.post-top{display:block}.post-actions{margin-top:12px}}
   </style>
@@ -62,6 +62,7 @@ $user = dashboard_current_user();
         <p class="muted small">Fichier stratégie : <b id="strategyFile">...</b></p>
         <p class="muted small">Mis à jour : <span id="strategyUpdated">...</span></p>
         <p class="muted small">Dashboard : <span id="lastRefresh">...</span></p>
+        <p><span class="live-state" id="liveState">Live connecté</span></p>
         <button class="btn gold" type="button" id="copyAllNext">Copier prompts de la prochaine tâche</button>
         <p class="status" id="copyAllStatus"></p>
       </aside>
@@ -79,7 +80,7 @@ $user = dashboard_current_user();
   </main>
 
   <script>
-    const state = { posts: [], next: null };
+    const state = { posts: [], next: null, strategyVersion: '', events: null };
     const months = { janvier:0, fevrier:1, février:1, mars:2, avril:3, mai:4, juin:5, juillet:6, aout:7, août:7, septembre:8, octobre:9, novembre:10, decembre:11, décembre:11 };
 
     const $ = id => document.getElementById(id);
@@ -213,10 +214,14 @@ $user = dashboard_current_user();
     }
 
     function renderFilters() {
+      const currentCat = $('category').value;
+      const currentStatus = $('status').value;
       const cats = [...new Set(state.posts.map(p => p.category).filter(Boolean))].sort();
       const statuses = [...new Set(state.posts.map(p => p.status).filter(Boolean))].sort();
       $('category').innerHTML = '<option value="">Toutes catégories</option>' + cats.map(x => `<option>${escapeHtml(x)}</option>`).join('');
       $('status').innerHTML = '<option value="">Tous statuts</option>' + statuses.map(x => `<option>${escapeHtml(x)}</option>`).join('');
+      if (cats.includes(currentCat)) $('category').value = currentCat;
+      if (statuses.includes(currentStatus)) $('status').value = currentStatus;
     }
 
     function renderPosts() {
@@ -255,12 +260,42 @@ $user = dashboard_current_user();
       const data = await res.json();
       state.posts = data.posts || [];
       state.next = findNext(state.posts);
+      state.strategyVersion = data.strategyVersion || '';
       $('strategyFile').textContent = data.strategyFile || 'Aucun fichier';
       $('strategyUpdated').textContent = data.strategyUpdatedAt ? formatDate(new Date(data.strategyUpdatedAt)) : 'Non disponible';
       $('lastRefresh').textContent = formatDate(new Date());
       renderFilters();
       renderNext();
       renderPosts();
+    }
+
+    function setLiveState(ok) {
+      const el = $('liveState');
+      el.textContent = ok ? 'Live connecté' : 'Live reconnecte...';
+      el.classList.toggle('off', !ok);
+    }
+
+    function startLiveUpdates() {
+      if (!window.EventSource) {
+        setInterval(loadStrategy, 5000);
+        return;
+      }
+
+      if (state.events) {
+        state.events.close();
+      }
+
+      const events = new EventSource('/dashboard/events.php');
+      state.events = events;
+
+      events.addEventListener('open', () => setLiveState(true));
+      events.addEventListener('error', () => setLiveState(false));
+      events.addEventListener('strategy', event => {
+        const payload = JSON.parse(event.data || '{}');
+        if (payload.version && payload.version !== state.strategyVersion) {
+          loadStrategy();
+        }
+      });
     }
 
     $('refreshBtn').addEventListener('click', loadStrategy);
@@ -275,8 +310,9 @@ $user = dashboard_current_user();
     loadStrategy().catch(error => {
       $('nextTask').innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
     });
+    startLiveUpdates();
     setInterval(renderNext, 1000);
-    setInterval(loadStrategy, 60000);
+    setInterval(loadStrategy, 30000);
   </script>
 </body>
 </html>

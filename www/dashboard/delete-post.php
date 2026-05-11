@@ -75,5 +75,6 @@ echo json_encode([
     'ok' => true,
     'deleted' => $id,
     'strategyFile' => basename($strategy),
+    'strategyVersion' => (string) (filemtime($strategy) ?: 0) . '-' . (string) (filesize($strategy) ?: 0),
     'updatedAt' => date(DATE_ATOM),
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

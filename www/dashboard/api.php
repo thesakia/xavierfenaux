@@ -105,11 +105,13 @@ function parse_strategy(string $path): array
 
 $strategy = latest_file(__DIR__ . '/strategy', ['html', 'htm']);
 $posts = $strategy ? parse_strategy($strategy) : [];
+$strategyVersion = $strategy ? ((string) (filemtime($strategy) ?: 0) . '-' . (string) (filesize($strategy) ?: 0)) : '';
 
 echo json_encode([
     'ok' => true,
     'generatedAt' => date(DATE_ATOM),
     'strategyFile' => $strategy ? basename($strategy) : null,
     'strategyUpdatedAt' => $strategy ? date(DATE_ATOM, filemtime($strategy) ?: time()) : null,
+    'strategyVersion' => $strategyVersion,
     'posts' => $posts,
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
