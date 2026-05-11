@@ -19,14 +19,14 @@ $user = dashboard_current_user();
     *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#fffaf0 0%,var(--bg) 52%,#ece4d4 100%);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.45}button,input,textarea,select{font:inherit}
     .wrap{max-width:1220px;margin:auto;padding:0 22px}.topbar{position:sticky;top:0;z-index:10;background:rgba(245,241,232,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
     .topbar .wrap{display:flex;justify-content:space-between;align-items:center;gap:14px;padding-top:12px;padding-bottom:12px}.brand{display:flex;align-items:center;gap:14px}.brand img{height:42px}.brand b{display:block}.brand span{font-size:13px;color:var(--muted)}
-    .nav{display:flex;gap:8px;flex-wrap:wrap}.btn,.pill{border:1px solid var(--line);background:white;color:var(--ink);border-radius:999px;padding:9px 12px;text-decoration:none;font-size:13px;font-weight:900;cursor:pointer}.btn.dark{background:var(--ink);color:white}.btn.gold{background:var(--accent);border-color:var(--accent);color:white}.btn.ok{background:var(--green);border-color:var(--green);color:white}
+    .nav{display:flex;gap:8px;flex-wrap:wrap}.btn,.pill{border:1px solid var(--line);background:white;color:var(--ink);border-radius:999px;padding:9px 12px;text-decoration:none;font-size:13px;font-weight:900;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}.btn:hover,.pill:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(56,43,20,.12)}.btn.dark{background:var(--ink);color:white}.btn.gold{background:var(--accent);border-color:var(--accent);color:white}.btn.ok{background:var(--green);border-color:var(--green);color:white}.btn.danger{background:#fff5f3;border-color:rgba(180,35,24,.25);color:var(--red)}.btn.danger:hover{background:var(--red);border-color:var(--red);color:white}
     header{padding:30px 0 18px}.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:900}h1{font-size:clamp(34px,5vw,58px);line-height:.98;letter-spacing:-.04em;margin:10px 0 10px}.lead{font-size:17px;color:var(--muted);max-width:760px}
     .grid{display:grid;gap:16px}.two{grid-template-columns:1.05fr .95fr}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 18px 50px rgba(56,43,20,.1)}.panel h2{margin:0 0 12px;font-size:24px;letter-spacing:-.03em}.panel h3{margin:0 0 8px;font-size:18px}
     .next{background:linear-gradient(135deg,#fffaf0,#fff,#f5ead1);border-color:rgba(153,119,51,.38)}.task-title{font-size:28px;line-height:1.08;letter-spacing:-.035em;margin:8px 0}.meta{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.tag{border:1px solid var(--line);background:white;border-radius:999px;padding:6px 9px;color:var(--muted);font-size:12px;font-weight:900}.tag.green{color:var(--green);border-color:rgba(22,138,74,.25)}.tag.blue{color:var(--blue);border-color:rgba(21,94,239,.24)}
     .countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.countdown div{background:white;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}.countdown strong{display:block;font-size:24px}.countdown span{font-size:11px;color:var(--muted);font-weight:900;text-transform:uppercase}
-    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{border:1px solid var(--line);border-radius:999px;padding:11px 13px;background:white;min-width:210px}.post-list{display:grid;gap:12px}.post{background:white;border:1px solid var(--line);border-radius:16px;padding:14px}.post-top{display:flex;justify-content:space-between;gap:12px}.post p{margin:0;color:var(--muted)}.post details{margin-top:10px}.post summary{cursor:pointer;font-weight:900;color:var(--accent)}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{border:1px solid var(--line);border-radius:999px;padding:11px 13px;background:white;min-width:210px}.post-list{display:grid;gap:12px}.post{background:white;border:1px solid var(--line);border-radius:16px;padding:15px;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}.post:hover{border-color:rgba(153,119,51,.28);box-shadow:0 14px 34px rgba(56,43,20,.1);transform:translateY(-1px)}.post-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.post-main{min-width:0}.post-actions{display:flex;align-items:flex-start;gap:8px;flex-shrink:0}.post p{margin:0;color:var(--muted)}.post details{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}.post summary{cursor:pointer;font-weight:900;color:var(--accent)}
     .prompt-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:7px}.field label{font-size:12px;font-weight:900;color:var(--accent);text-transform:uppercase;letter-spacing:.08em}.field textarea{width:100%;min-height:170px;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;resize:vertical;color:var(--ink)}.field textarea.post-text{min-height:220px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.status{font-size:13px;color:var(--muted);margin-top:8px}.status.error{color:var(--red);font-weight:900}.empty{padding:18px;border:1px dashed var(--line);border-radius:16px;color:var(--muted);background:white}.muted{color:var(--muted)}.small{font-size:13px}
-    @media(max-width:960px){.two,.prompt-grid{grid-template-columns:1fr}.topbar .wrap{align-items:flex-start;flex-direction:column}.countdown{grid-template-columns:repeat(2,1fr)}.post-top{display:block}}
+    @media(max-width:960px){.two,.prompt-grid{grid-template-columns:1fr}.topbar .wrap{align-items:flex-start;flex-direction:column}.countdown{grid-template-columns:repeat(2,1fr)}.post-top{display:block}.post-actions{margin-top:12px}}
   </style>
 </head>
 <body>
@@ -166,6 +166,10 @@ $user = dashboard_current_user();
       root.querySelectorAll('[data-action="save-prompts"]').forEach(btn => {
         btn.onclick = async () => savePrompts(btn.dataset.id, btn);
       });
+
+      root.querySelectorAll('[data-action="delete-post"]').forEach(btn => {
+        btn.onclick = async () => deletePost(btn.dataset.id, btn);
+      });
     }
 
     async function savePrompts(id, btn) {
@@ -201,6 +205,33 @@ $user = dashboard_current_user();
         setTimeout(() => btn.textContent = 'Sauvegarder prompts', 1200);
       }
       setTimeout(loadStrategy, 600);
+    }
+
+    async function deletePost(id, btn) {
+      const post = state.posts.find(item => item.id === id);
+      const label = post ? `${post.id} · ${post.title}` : id;
+      if (!confirm(`Supprimer cette ligne du plan ?\n\n${label}`)) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Suppression...';
+      const res = await fetch('/dashboard/delete-post.php', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ id })
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.ok) {
+        btn.disabled = false;
+        btn.textContent = 'Supprimer';
+        alert(data.error || 'Suppression impossible');
+        return;
+      }
+
+      state.posts = state.posts.filter(item => item.id !== id);
+      state.next = findNext(state.posts);
+      renderNext();
+      renderPosts();
     }
 
     function renderNext() {
@@ -240,12 +271,14 @@ $user = dashboard_current_user();
       $('postList').innerHTML = posts.map(post => `
         <article class="post">
           <div class="post-top">
-            <div>
+            <div class="post-main">
               <div class="meta"><span class="tag">${escapeHtml(post.id)}</span><span class="tag">${escapeHtml(post.dateLabel)} · ${escapeHtml(post.time)}</span><span class="tag">${escapeHtml(post.category)}</span></div>
               <h3>${escapeHtml(post.title)}</h3>
               <p>${escapeHtml(post.asset || '')}</p>
             </div>
-            <span class="tag">${escapeHtml(post.status)}</span>
+            <div class="post-actions">
+              <button class="btn danger" type="button" data-action="delete-post" data-id="${escapeHtml(post.id)}">Supprimer</button>
+            </div>
           </div>
           <details>
             <summary>Voir / modifier les prompts</summary>
