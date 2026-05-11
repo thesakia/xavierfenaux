@@ -146,7 +146,6 @@ $user = dashboard_current_user();
         </div>
         <div class="actions">
           <button class="btn dark" type="button" data-action="copy-prompts" data-id="${postId}">Copier prompts</button>
-          <button class="btn gold" type="button" data-action="save-prompts" data-id="${postId}">Sauvegarder prompts</button>
         </div>
         <p class="status" id="status-${prefix}-${postId}"></p>
       `;
@@ -163,48 +162,9 @@ $user = dashboard_current_user();
         };
       });
 
-      root.querySelectorAll('[data-action="save-prompts"]').forEach(btn => {
-        btn.onclick = async () => savePrompts(btn.dataset.id, btn);
-      });
-
       root.querySelectorAll('[data-action="delete-post"]').forEach(btn => {
         btn.onclick = async () => deletePost(btn.dataset.id, btn);
       });
-    }
-
-    async function savePrompts(id, btn) {
-      const scope = btn.closest('.post') || btn.closest('#nextTask') || document;
-      const prompt = scope.querySelector(`textarea[data-id="${id}"][data-kind="prompt"]`)?.value || '';
-      const imagePrompt = scope.querySelector(`textarea[data-id="${id}"][data-kind="imagePrompt"]`)?.value || '';
-      const statusNodes = document.querySelectorAll(`[id$="-${id}"].status`);
-      statusNodes.forEach(node => { node.textContent = 'Sauvegarde...'; node.classList.remove('error'); });
-
-      const res = await fetch('/dashboard/save-prompt.php', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ id, prompt, imagePrompt })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.ok) {
-        statusNodes.forEach(node => { node.textContent = data.error || 'Sauvegarde impossible'; node.classList.add('error'); });
-        return;
-      }
-
-      const post = state.posts.find(p => p.id === id);
-      if (post) {
-        post.prompt = prompt;
-        post.imagePrompt = imagePrompt;
-      }
-      if (state.next && state.next.id === id) {
-        state.next.prompt = prompt;
-        state.next.imagePrompt = imagePrompt;
-      }
-      statusNodes.forEach(node => { node.textContent = 'Prompts sauvegardés.'; node.classList.remove('error'); });
-      if (btn) {
-        btn.textContent = 'Sauvegardé';
-        setTimeout(() => btn.textContent = 'Sauvegarder prompts', 1200);
-      }
-      setTimeout(loadStrategy, 600);
     }
 
     async function deletePost(id, btn) {
