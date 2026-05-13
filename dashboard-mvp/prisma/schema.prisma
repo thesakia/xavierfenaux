@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Direction {
+  LONG
+  SHORT
+  NEUTRAL
+}
+
+enum OpportunityStatus {
+  WATCHING
+  VALIDATED
+  IGNORED
+  INVALIDATED
+  ARCHIVED
+}
+
+enum OpportunitySource {
+  TRADINGVIEW
+  NEWS
+  IVT
+  MIX
+  MANUAL
+}
+
+enum NewsCategory {
+  MACRO
+  SENTIMENT
+  RISK
+  TECHNICAL
+  OTHER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model TradingViewAlert {
+  id        String    @id @default(cuid())
+  symbol    String
+  timeframe String?
+  price     Decimal?
+  signal    String
+  direction Direction
+  indicator String?
+  message   String?
+  rawPayload Json
+  processed Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  @@index([symbol, createdAt])
+  @@index([processed, createdAt])
+}
+
+model XavierNotification {
+  id               String    @id @default(cuid())
+  rawText          String
+  symbol           String?
+  assetName        String?
+  direction        Direction @default(NEUTRAL)
+  timeframe        String?
+  zone             String?
+  invalidation     String?
+  targets          Json?
+  confidenceLevel  Int       @default(50)
+  riskNotes        String?
+  extractedSummary String?
+  createdAt        DateTime  @default(now())
+
+  @@index([symbol, createdAt])
+}
+
+model MarketNews {
+  id              String       @id @default(cuid())
+  title           String
+  source          String
+  url             String?
+  publishedAt     DateTime
+  summary         String?
+  relatedAssets   Json
+  importanceScore Int          @default(50)
+  category        NewsCategory @default(OTHER)
+  createdAt       DateTime     @default(now())
+
+  @@unique([source, title, publishedAt])
+  @@index([publishedAt])
+}
+
+model MarketContext {
+  id              String       @id @default(cuid())
+  title           String
+  summary         String
+  relatedAssets   Json
+  category        NewsCategory @default(OTHER)
+  importanceScore Int          @default(50)
+  createdAt       DateTime     @default(now())
+}
+
+model Opportunity {
+  id                 String            @id @default(cuid())
+  symbol             String
+  assetName          String?
+  direction          Direction
+  entryZone          String
+  invalidation       String
+  targets            Json
+  score              Int               @default(0)
+  status             OpportunityStatus @default(WATCHING)
+  source             OpportunitySource
+  summary            String
+  riskNotes          String?
+  aiReasoningSummary String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  costLogs CostLog[]
+
+  @@index([status, score, createdAt])
+  @@index([symbol, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  message   String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([action, createdAt])
+}
+
+model CostLog {
+  id                   String       @id @default(cuid())
+  agent                String
+  model                String
+  inputTokens          Int          @default(0)
+  outputTokens         Int          @default(0)
+  estimatedCost        Decimal      @default(0)
+  relatedOpportunityId String?
+  opportunity          Opportunity? @relation(fields: [relatedOpportunityId], references: [id], onDelete: SetNull)
+  createdAt            DateTime     @default(now())
+
+  @@index([agent, createdAt])
+  @@index([relatedOpportunityId])
+}
