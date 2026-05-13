@@ -35,3 +35,8 @@ jobs:
             ./ root@76.13.48.6:/var/www/xavierfenaux/
           ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new \
             root@76.13.48.6 "chown -R www-data:www-data /var/www/xavierfenaux/www/dashboard/strategy; chmod 775 /var/www/xavierfenaux/www/dashboard/strategy; find /var/www/xavierfenaux/www/dashboard/strategy -type f -name '*.html' -exec chmod 664 {} \;; printf '%s\n' '$GITHUB_SHA' > /var/www/xavierfenaux/.deploy-revision"
+
+      - name: Restart dashboard MVP
+        run: |
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new \
+            root@76.13.48.6 "if [ -f /var/www/xavierfenaux/dashboard-mvp/.env ]; then cd /var/www/xavierfenaux/dashboard-mvp && docker compose up -d --build; fi"
