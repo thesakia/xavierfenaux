@@ -57,6 +57,9 @@ type MacroEvent = {
 };
 
 type ButtonTone = "primary" | "neutral" | "danger" | "success";
+type MarketGroup = "Indices" | "Actions" | "Crypto" | "Forex" | "Matieres premieres" | "Taux" | "Autres";
+
+const marketOrder: MarketGroup[] = ["Indices", "Actions", "Crypto", "Forex", "Matieres premieres", "Taux", "Autres"];
 
 const statusLabels: Record<OpportunityStatus, string> = {
   WATCHING: "a surveiller",
@@ -118,6 +121,12 @@ function variationClass(value: string | null) {
   return number > 0 ? "border-green-500/30 bg-green-500/10 text-green-300" : "border-red-500/30 bg-red-500/10 text-red-300";
 }
 
+function normalizeMarketGroup(category?: string | null): MarketGroup {
+  if (category === "Europe" || category === "Etats-Unis") return "Indices";
+  if (marketOrder.includes(category as MarketGroup)) return category as MarketGroup;
+  return "Autres";
+}
+
 function readableJsonList(value: unknown) {
   if (Array.isArray(value)) return value.filter((item) => typeof item === "string") as string[];
   return [];
@@ -168,7 +177,6 @@ export function DashboardClient({
   latestScan: DashboardScanRun | null;
 }) {
   const router = useRouter();
-  const [selectedId, setSelectedId] = useState(opportunities[0]?.id ?? "");
   const [brief, setBrief] = useState("");
   const [batchText, setBatchText] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -190,12 +198,27 @@ export function DashboardClient({
       .catch(() => setMacroMessage("Agenda macro indisponible."));
   }, []);
 
-  const selected = useMemo(
-    () => opportunities.find((opportunity) => opportunity.id === selectedId) ?? opportunities[0],
-    [opportunities, selectedId],
-  );
+  const opportunityBySymbol = useMemo(() => {
+    const map = new Map<string, DashboardOpportunity>();
+    for (const opportunity of opportunities) {
+      if (!map.has(opportunity.symbol)) map.set(opportunity.symbol, opportunity);
+    }
+    return map;
+  }, [opportunities]);
 
-  const priorityRadar = useMemo(() => latestScan?.radarItems?.slice(0, 16) ?? [], [latestScan]);
+  const radarGroups = useMemo(
+    () =>
+      marketOrder
+        .map((market) => ({
+          market,
+          items: (latestScan?.radarItems ?? [])
+            .filter((item) => normalizeMarketGroup(item.category) === market)
+            .sort((a, b) => b.score - a.score || a.priority - b.priority)
+            .slice(0, 3),
+        }))
+        .filter((group) => group.items.length > 0),
+    [latestScan],
+  );
 
   async function runAction(name: string, action: () => Promise<string | null>) {
     setBusyAction(name);
@@ -413,212 +436,155 @@ export function DashboardClient({
 
         <div className="panel p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="section-title">Actifs a cibler ce matin</h2>
+            <h2 className="section-title">Radar du jour - TOP3 par marche</h2>
             <span className="text-xs text-slate-500">
               {latestScan ? new Date(latestScan.createdAt).toLocaleString("fr-FR") : "aucun scan"}
             </span>
           </div>
           {latestScan?.summary ? <p className="mb-3 text-sm leading-6 text-slate-300">{latestScan.summary}</p> : null}
-          <div className="max-h-[520px] space-y-2 overflow-auto pr-1">
-            {priorityRadar.length ? (
-              priorityRadar.map((item) => {
-                const reasons = readableJsonList(item.reasons);
-                const missing = readableJsonList(item.missingData);
-
-                return (
-                  <div
-                    key={item.id}
-                    className={`rounded-md border p-3 ${
-                      item.priority === 1
-                        ? "border-violetx/40 bg-violetx/10"
-                        : item.priority === 2
-                          ? "border-white/10 bg-ink"
-                          : "border-slate-700/60 bg-slate-950/40"
-                    }`}
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div>
-                        <strong className="text-white">{item.assetName ?? item.symbol}</strong>
-                        <span className="ml-2 text-xs text-slate-500">
-                          P{item.priority} - score {item.score}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className={`rounded-md border px-2 py-1 text-xs ${variationClass(item.variationPct)}`}>
-                          {item.variationPct ? `${Number(item.variationPct).toFixed(2)}%` : "var. n/a"}
-                        </span>
-                        <span className="rounded-md border border-white/10 px-2 py-1 text-xs text-slate-300">
-                          {directionLabels[item.direction]}
-                        </span>
-                      </div>
-                    </div>
-
-                    <p className="mt-2 text-sm leading-6 text-slate-300">
-                      {item.xavierContext ??
-                        item.newsContext ??
-                        item.briefContext ??
-                        "Contexte a surveiller, donnees encore incompletes."}
-                    </p>
-
-                    <div className="mt-3 grid gap-2 text-xs text-slate-400 md:grid-cols-3">
-                      <span>
-                        Zone: <b className="text-slate-200">{item.knownZone ?? "-"}</b>
-                      </span>
-                      <span>
-                        Proximite:{" "}
-                        <b className="text-slate-200">
-                          {item.zoneProximityPct ? `${Number(item.zoneProximityPct).toFixed(2)}%` : "-"}
-                        </b>
-                      </span>
-                      <span>
-                        Invalidation: <b className="text-red-200">{item.invalidation ?? "-"}</b>
-                      </span>
-                    </div>
-
-                    {reasons.length ? (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {reasons.slice(0, 3).map((reason) => (
-                          <span key={reason} className="rounded-md border border-violetx/30 bg-violetx/10 px-2 py-1 text-xs text-violet-100">
-                            {reason}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    {missing.length ? (
-                      <p className="mt-3 flex items-start gap-2 text-xs text-amber-200">
-                        <AlertTriangle size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
-                        Manque: {missing.join(", ")}
-                      </p>
-                    ) : null}
+          <div className="max-h-[720px] space-y-4 overflow-auto pr-1">
+            {radarGroups.length ? (
+              radarGroups.map((group) => (
+                <div key={group.market}>
+                  <div className="mb-2 flex items-center justify-between">
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-200">
+                      {group.market}
+                    </h3>
+                    <span className="text-xs text-slate-500">TOP {group.items.length}</span>
                   </div>
-                );
-              })
+                  <div className="space-y-2">
+                    {group.items.map((item, index) => {
+                      const opportunity = opportunityBySymbol.get(item.symbol);
+                      const reasons = readableJsonList(item.reasons);
+                      const missing = readableJsonList(item.missingData);
+                      const targetsText = opportunity ? formatTargets(opportunity.targets) : formatTargets(item.targets);
+                      const cardStatus = opportunity ? statusLabels[opportunity.status] : item.status === "setup_candidate" ? "setup a surveiller" : "contexte";
+
+                      return (
+                        <div
+                          key={item.id}
+                          className={`rounded-md border p-3 ${
+                            index === 0
+                              ? "border-violetx/50 bg-violetx/10"
+                              : index === 1
+                                ? "border-white/10 bg-ink"
+                                : "border-slate-700/60 bg-slate-950/40"
+                          }`}
+                        >
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="rounded-md bg-violetx/20 px-2 py-1 text-xs font-semibold text-violet-100">
+                                  #{index + 1}
+                                </span>
+                                <strong className="text-white">{item.assetName ?? item.symbol}</strong>
+                                <span className="text-xs text-slate-500">score {item.score}</span>
+                              </div>
+                              <p className="mt-1 text-xs text-slate-500">
+                                {opportunity ? sourceLabels[opportunity.source] : "analyse radar"} - {cardStatus}
+                              </p>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className={`rounded-md border px-2 py-1 text-xs ${variationClass(item.variationPct)}`}>
+                                {item.variationPct ? `${Number(item.variationPct).toFixed(2)}%` : "var. n/a"}
+                              </span>
+                              <span className="rounded-md border border-white/10 px-2 py-1 text-xs text-slate-300">
+                                {directionLabels[opportunity?.direction ?? item.direction]}
+                              </span>
+                              <span className={`rounded-md border px-2 py-1 text-xs ${opportunity ? statusClass(opportunity.status) : "border-white/10 bg-white/5 text-slate-300"}`}>
+                                {cardStatus}
+                              </span>
+                            </div>
+                          </div>
+
+                          <p className="mt-3 text-sm leading-6 text-slate-300">
+                            {opportunity?.summary ??
+                              item.xavierContext ??
+                              item.briefContext ??
+                              item.newsContext ??
+                              "Contexte a surveiller, donnees encore incompletes."}
+                          </p>
+
+                          <div className="mt-3 grid gap-2 text-xs text-slate-400 md:grid-cols-4">
+                            <span>
+                              Zone: <b className="text-slate-200">{opportunity?.entryZone ?? item.knownZone ?? "-"}</b>
+                            </span>
+                            <span>
+                              Invalidation: <b className="text-red-200">{opportunity?.invalidation ?? item.invalidation ?? "-"}</b>
+                            </span>
+                            <span>
+                              Objectifs: <b className="text-slate-200">{targetsText}</b>
+                            </span>
+                            <span>
+                              Proximite:{" "}
+                              <b className="text-slate-200">
+                                {item.zoneProximityPct ? `${Number(item.zoneProximityPct).toFixed(2)}%` : "-"}
+                              </b>
+                            </span>
+                          </div>
+
+                          {opportunity?.riskNotes ?? item.riskNotes ? (
+                            <p className="mt-3 rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-100">
+                              {opportunity?.riskNotes ?? item.riskNotes}
+                            </p>
+                          ) : null}
+
+                          {reasons.length ? (
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              {reasons.slice(0, 4).map((reason) => (
+                                <span key={reason} className="rounded-md border border-violetx/30 bg-violetx/10 px-2 py-1 text-xs text-violet-100">
+                                  {reason}
+                                </span>
+                              ))}
+                            </div>
+                          ) : null}
+
+                          {missing.length ? (
+                            <p className="mt-3 flex items-start gap-2 text-xs text-amber-200">
+                              <AlertTriangle size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
+                              Manque: {missing.join(", ")}
+                            </p>
+                          ) : null}
+
+                          {opportunity ? (
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              <ActionButton
+                                tone="success"
+                                icon={<Check size={16} aria-hidden="true" />}
+                                busy={busyAction === "status-VALIDATED"}
+                                onClick={() => updateStatus(opportunity.id, "VALIDATED")}
+                              >
+                                Valider
+                              </ActionButton>
+                              <ActionButton
+                                icon={<X size={16} aria-hidden="true" />}
+                                busy={busyAction === "status-IGNORED"}
+                                onClick={() => updateStatus(opportunity.id, "IGNORED")}
+                              >
+                                Ignorer
+                              </ActionButton>
+                              <ActionButton
+                                icon={<Archive size={16} aria-hidden="true" />}
+                                busy={busyAction === "status-ARCHIVED"}
+                                onClick={() => updateStatus(opportunity.id, "ARCHIVED")}
+                              >
+                                Archiver
+                              </ActionButton>
+                            </div>
+                          ) : null}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
             ) : (
               <p className="rounded-md border border-white/10 bg-ink p-3 text-sm text-slate-400">
-                Clique sur Preparer la seance pour generer la short-list du matin.
+                Clique sur Preparer la seance pour generer le TOP3 par marche.
               </p>
             )}
           </div>
         </div>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-[1fr_360px]">
-        <div className="panel overflow-hidden">
-          <div className="grid grid-cols-[1fr_0.7fr_1fr_1fr_0.55fr_0.85fr] gap-3 border-b border-white/10 px-4 py-3 text-xs uppercase tracking-wide text-slate-500">
-            <span>Setup a surveiller</span>
-            <span>Direction</span>
-            <span>Zone</span>
-            <span>Invalidation</span>
-            <span>Score</span>
-            <span>Statut</span>
-          </div>
-          <div className="max-h-[520px] overflow-auto">
-            {opportunities.length === 0 ? (
-              <div className="px-4 py-12 text-center text-slate-400">Aucun setup a surveiller pour le moment.</div>
-            ) : (
-              opportunities.map((opportunity) => (
-                <button
-                  key={opportunity.id}
-                  type="button"
-                  onClick={() => setSelectedId(opportunity.id)}
-                  className={`grid w-full grid-cols-[1fr_0.7fr_1fr_1fr_0.55fr_0.85fr] gap-3 border-b border-white/5 px-4 py-3 text-left text-sm transition hover:bg-white/[0.03] ${
-                    selected?.id === opportunity.id ? "bg-violetx/10" : ""
-                  }`}
-                >
-                  <span>
-                    <strong className="block text-white">{opportunity.assetName ?? opportunity.symbol}</strong>
-                    <span className="text-xs text-slate-500">
-                      {sourceLabels[opportunity.source]} - {new Date(opportunity.createdAt).toLocaleString("fr-FR")}
-                    </span>
-                  </span>
-                  <span className="text-slate-300">{directionLabels[opportunity.direction]}</span>
-                  <span className="text-slate-300">{opportunity.entryZone}</span>
-                  <span className="text-red-300">{opportunity.invalidation}</span>
-                  <span className="font-semibold text-white">{opportunity.score}</span>
-                  <span>
-                    <span className={`rounded-md border px-2 py-1 text-xs ${statusClass(opportunity.status)}`}>
-                      {statusLabels[opportunity.status]}
-                    </span>
-                  </span>
-                </button>
-              ))
-            )}
-          </div>
-        </div>
-
-        <aside className="panel p-4">
-          {selected ? (
-            <>
-              <div className="mb-4 flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Fiche setup</p>
-                  <h2 className="mt-1 text-xl font-semibold text-white">{selected.assetName ?? selected.symbol}</h2>
-                </div>
-                <span className="rounded-md bg-violetx/20 px-2 py-1 text-sm font-semibold text-violet-100">
-                  {selected.score}
-                </span>
-              </div>
-              <div className="space-y-3 text-sm">
-                <p className="leading-6 text-slate-200">{selected.summary}</p>
-                <dl className="grid grid-cols-2 gap-3">
-                  <div>
-                    <dt className="text-xs text-slate-500">Zone</dt>
-                    <dd className="mt-1 text-white">{selected.entryZone}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-slate-500">Objectifs theoriques</dt>
-                    <dd className="mt-1 text-white">{formatTargets(selected.targets)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-slate-500">Invalidation</dt>
-                    <dd className="mt-1 text-red-300">{selected.invalidation}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-slate-500">Source</dt>
-                    <dd className="mt-1 text-white">{sourceLabels[selected.source]}</dd>
-                  </div>
-                </dl>
-                {selected.riskNotes ? (
-                  <div className="rounded-md border border-red-500/20 bg-red-500/10 p-3 text-red-100">
-                    {selected.riskNotes}
-                  </div>
-                ) : null}
-                {selected.aiReasoningSummary ? (
-                  <p className="rounded-md border border-white/10 bg-ink p-3 text-slate-300">
-                    {selected.aiReasoningSummary}
-                  </p>
-                ) : null}
-              </div>
-              <div className="mt-5 grid grid-cols-3 gap-2">
-                <ActionButton
-                  tone="success"
-                  icon={<Check size={16} aria-hidden="true" />}
-                  busy={busyAction === "status-VALIDATED"}
-                  onClick={() => updateStatus(selected.id, "VALIDATED")}
-                >
-                  Valider
-                </ActionButton>
-                <ActionButton
-                  icon={<X size={16} aria-hidden="true" />}
-                  busy={busyAction === "status-IGNORED"}
-                  onClick={() => updateStatus(selected.id, "IGNORED")}
-                >
-                  Ignorer
-                </ActionButton>
-                <ActionButton
-                  icon={<Archive size={16} aria-hidden="true" />}
-                  busy={busyAction === "status-ARCHIVED"}
-                  onClick={() => updateStatus(selected.id, "ARCHIVED")}
-                >
-                  Archiver
-                </ActionButton>
-              </div>
-            </>
-          ) : (
-            <div className="grid min-h-48 place-items-center text-sm text-slate-500">Selectionne un setup.</div>
-          )}
-        </aside>
       </section>
     </main>
   );

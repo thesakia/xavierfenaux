@@ -155,6 +155,8 @@ export async function scanMarket(input: ScanInput) {
     if (invalidation) score += 15;
     if (targets.length) score += 10;
     if (proximity !== null && proximity <= 2) score += 15;
+    if (Math.abs(quote?.variationPct ?? 0) >= 1) score += 8;
+    if (Math.abs(quote?.variationPct ?? 0) >= 2) score += 5;
     if (!invalidation) score -= 10;
     score = Math.max(0, Math.min(100, score));
 

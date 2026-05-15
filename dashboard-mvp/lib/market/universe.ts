@@ -1,26 +1,43 @@
 export type AssetDefinition = {
   symbol: string;
   assetName: string;
-  category: "Europe" | "Etats-Unis" | "Autres";
+  category: "Indices" | "Actions" | "Crypto" | "Forex" | "Matieres premieres" | "Taux" | "Autres";
   aliases: string[];
 };
 
 export const defaultUniverse: AssetDefinition[] = [
-  { symbol: "CAC40", assetName: "CAC 40", category: "Europe", aliases: ["CAC", "CAC40", "PX1", "FRA40"] },
-  { symbol: "DAX", assetName: "DAX", category: "Europe", aliases: ["DAX", "GER40"] },
-  { symbol: "STOXX50", assetName: "Euro Stoxx 50", category: "Europe", aliases: ["STOXX", "STOXX50", "EU50"] },
-  { symbol: "FTSE", assetName: "FTSE 100", category: "Europe", aliases: ["FTSE", "UK100"] },
-  { symbol: "SP500", assetName: "S&P 500", category: "Etats-Unis", aliases: ["SP500", "S&P500", "ES", "US500"] },
-  { symbol: "NASDAQ", assetName: "Nasdaq", category: "Etats-Unis", aliases: ["NASDAQ", "NDX", "NAS100", "NQ"] },
-  { symbol: "DOWJONES", assetName: "Dow Jones", category: "Etats-Unis", aliases: ["DOW", "DOWJONES", "DJI", "US30"] },
-  { symbol: "RUSSELL", assetName: "Russell 2000", category: "Etats-Unis", aliases: ["RUSSELL", "RTY", "US2000"] },
-  { symbol: "NIKKEI", assetName: "Nikkei", category: "Autres", aliases: ["NIKKEI", "JP225"] },
-  { symbol: "EURUSD", assetName: "EURUSD", category: "Autres", aliases: ["EURUSD", "EUR/USD"] },
-  { symbol: "GOLD", assetName: "Gold", category: "Autres", aliases: ["GOLD", "XAUUSD", "OR"] },
-  { symbol: "BRENT", assetName: "Brent", category: "Autres", aliases: ["BRENT", "OIL", "UKOIL"] },
-  { symbol: "BTC", assetName: "Bitcoin", category: "Autres", aliases: ["BTC", "BTCUSD", "BTCUSDT", "BITCOIN"] },
-  { symbol: "ETH", assetName: "Ethereum", category: "Autres", aliases: ["ETH", "ETHUSD", "ETHUSDT", "ETHEREUM"] },
-  { symbol: "US10Y", assetName: "Taux 10 ans US", category: "Etats-Unis", aliases: ["US10Y", "10 ANS US", "10Y", "TNOTE"] },
+  { symbol: "CAC40", assetName: "CAC 40", category: "Indices", aliases: ["CAC", "CAC40", "PX1", "FRA40"] },
+  { symbol: "DAX", assetName: "DAX", category: "Indices", aliases: ["DAX", "GER40"] },
+  { symbol: "STOXX50", assetName: "Euro Stoxx 50", category: "Indices", aliases: ["STOXX", "STOXX50", "EU50"] },
+  { symbol: "FTSE", assetName: "FTSE 100", category: "Indices", aliases: ["FTSE", "UK100"] },
+  { symbol: "SP500", assetName: "S&P 500", category: "Indices", aliases: ["SP500", "S&P500", "ES", "US500"] },
+  { symbol: "NASDAQ", assetName: "Nasdaq", category: "Indices", aliases: ["NASDAQ", "NDX", "NAS100", "NQ"] },
+  { symbol: "DOWJONES", assetName: "Dow Jones", category: "Indices", aliases: ["DOW", "DOWJONES", "DJI", "US30"] },
+  { symbol: "RUSSELL", assetName: "Russell 2000", category: "Indices", aliases: ["RUSSELL", "RTY", "US2000"] },
+  { symbol: "NIKKEI", assetName: "Nikkei", category: "Indices", aliases: ["NIKKEI", "JP225"] },
+  { symbol: "AAPL", assetName: "Apple", category: "Actions", aliases: ["AAPL", "APPLE"] },
+  { symbol: "MSFT", assetName: "Microsoft", category: "Actions", aliases: ["MSFT", "MICROSOFT"] },
+  { symbol: "NVDA", assetName: "Nvidia", category: "Actions", aliases: ["NVDA", "NVIDIA"] },
+  { symbol: "TSLA", assetName: "Tesla", category: "Actions", aliases: ["TSLA", "TESLA"] },
+  { symbol: "AMZN", assetName: "Amazon", category: "Actions", aliases: ["AMZN", "AMAZON"] },
+  { symbol: "META", assetName: "Meta", category: "Actions", aliases: ["META", "FACEBOOK"] },
+  { symbol: "GOOGL", assetName: "Alphabet", category: "Actions", aliases: ["GOOGL", "GOOGLE", "ALPHABET"] },
+  { symbol: "LVMH", assetName: "LVMH", category: "Actions", aliases: ["LVMH", "MC.PA"] },
+  { symbol: "TTE", assetName: "TotalEnergies", category: "Actions", aliases: ["TTE", "TOTAL", "TOTALENERGIES"] },
+  { symbol: "BTC", assetName: "Bitcoin", category: "Crypto", aliases: ["BTC", "BTCUSD", "BTCUSDT", "BITCOIN"] },
+  { symbol: "ETH", assetName: "Ethereum", category: "Crypto", aliases: ["ETH", "ETHUSD", "ETHUSDT", "ETHEREUM"] },
+  { symbol: "SOL", assetName: "Solana", category: "Crypto", aliases: ["SOL", "SOLUSD", "SOLUSDT", "SOLANA"] },
+  { symbol: "BNB", assetName: "BNB", category: "Crypto", aliases: ["BNB", "BNBUSD", "BNBUSDT"] },
+  { symbol: "XRP", assetName: "XRP", category: "Crypto", aliases: ["XRP", "XRPUSD", "XRPUSDT", "RIPPLE"] },
+  { symbol: "EURUSD", assetName: "EURUSD", category: "Forex", aliases: ["EURUSD", "EUR/USD"] },
+  { symbol: "GBPUSD", assetName: "GBPUSD", category: "Forex", aliases: ["GBPUSD", "GBP/USD", "CABLE"] },
+  { symbol: "USDJPY", assetName: "USDJPY", category: "Forex", aliases: ["USDJPY", "USD/JPY"] },
+  { symbol: "GOLD", assetName: "Gold", category: "Matieres premieres", aliases: ["GOLD", "XAUUSD", "OR"] },
+  { symbol: "SILVER", assetName: "Silver", category: "Matieres premieres", aliases: ["SILVER", "XAGUSD", "ARGENT"] },
+  { symbol: "BRENT", assetName: "Brent", category: "Matieres premieres", aliases: ["BRENT", "OIL", "UKOIL"] },
+  { symbol: "WTI", assetName: "WTI", category: "Matieres premieres", aliases: ["WTI", "USOIL"] },
+  { symbol: "US10Y", assetName: "Taux 10 ans US", category: "Taux", aliases: ["US10Y", "10 ANS US", "10Y", "TNOTE"] },
+  { symbol: "DE10Y", assetName: "Taux 10 ans Allemagne", category: "Taux", aliases: ["DE10Y", "BUND", "10 ANS ALLEMAGNE"] },
 ];
 
 export function normalizeSymbol(input: string) {
