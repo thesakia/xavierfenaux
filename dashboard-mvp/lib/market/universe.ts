@@ -54,9 +54,21 @@ export function findAssetDefinition(input: string) {
   return defaultUniverse.find((asset) => asset.symbol === symbol);
 }
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function aliasMatches(upperText: string, alias: string) {
+  const upperAlias = alias.toUpperCase();
+  if (upperAlias.length <= 3) {
+    return new RegExp(`(^|[^A-Z0-9])${escapeRegExp(upperAlias)}([^A-Z0-9]|$)`).test(upperText);
+  }
+  return upperText.includes(upperAlias);
+}
+
 export function extractSymbolsFromText(text: string) {
   const upper = text.toUpperCase();
   return defaultUniverse
-    .filter((asset) => asset.aliases.some((alias) => upper.includes(alias)))
+    .filter((asset) => asset.aliases.some((alias) => aliasMatches(upper, alias)))
     .map((asset) => asset.symbol);
 }
