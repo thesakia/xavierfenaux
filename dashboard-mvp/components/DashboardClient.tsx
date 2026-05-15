@@ -132,6 +132,24 @@ function readableJsonList(value: unknown) {
   return [];
 }
 
+function readableNewsSources(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return [];
+  const news = (value as { news?: unknown }).news;
+  if (!Array.isArray(news)) return [];
+
+  return news
+    .map((item) => {
+      if (!item || typeof item !== "object" || Array.isArray(item)) return null;
+      const source = item as { title?: unknown; source?: unknown; url?: unknown };
+      return {
+        title: typeof source.title === "string" ? source.title : null,
+        source: typeof source.source === "string" ? source.source : null,
+        url: typeof source.url === "string" ? source.url : null,
+      };
+    })
+    .filter((item): item is { title: string | null; source: string | null; url: string | null } => Boolean(item));
+}
+
 function actionToneClass(tone: ButtonTone) {
   if (tone === "primary") return "primary-btn animated-btn";
   if (tone === "success") return "action-green animated-btn";
@@ -181,6 +199,7 @@ export function DashboardClient({
   const [batchText, setBatchText] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [busyAction, setBusyAction] = useState<string | null>(null);
+  const [openRadarId, setOpenRadarId] = useState<string | null>(null);
   const [macroEvents, setMacroEvents] = useState<MacroEvent[]>([]);
   const [macroMessage, setMacroMessage] = useState("Chargement macro...");
   const [isPending, startTransition] = useTransition();
@@ -457,19 +476,27 @@ export function DashboardClient({
                       const opportunity = opportunityBySymbol.get(item.symbol);
                       const reasons = readableJsonList(item.reasons);
                       const missing = readableJsonList(item.missingData);
+                      const newsSources = readableNewsSources(item.sources);
                       const targetsText = opportunity ? formatTargets(opportunity.targets) : formatTargets(item.targets);
                       const cardStatus = opportunity ? statusLabels[opportunity.status] : item.status === "setup_candidate" ? "setup a surveiller" : "contexte";
+                      const isOpen = openRadarId === item.id;
 
                       return (
                         <div
                           key={item.id}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => setOpenRadarId(isOpen ? null : item.id)}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") setOpenRadarId(isOpen ? null : item.id);
+                          }}
                           className={`rounded-md border p-3 ${
                             index === 0
                               ? "border-violetx/50 bg-violetx/10"
                               : index === 1
                                 ? "border-white/10 bg-ink"
                                 : "border-slate-700/60 bg-slate-950/40"
-                          }`}
+                          } cursor-pointer outline-none transition hover:border-violetx/50 focus:border-violetx/70`}
                         >
                           <div className="flex flex-wrap items-start justify-between gap-3">
                             <div>
@@ -493,6 +520,9 @@ export function DashboardClient({
                               </span>
                               <span className={`rounded-md border px-2 py-1 text-xs ${opportunity ? statusClass(opportunity.status) : "border-white/10 bg-white/5 text-slate-300"}`}>
                                 {cardStatus}
+                              </span>
+                              <span className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs text-slate-300">
+                                {isOpen ? "Masquer" : "Pourquoi celui-ci"}
                               </span>
                             </div>
                           </div>
@@ -546,8 +576,65 @@ export function DashboardClient({
                             </p>
                           ) : null}
 
+                          {isOpen ? (
+                            <div className="mt-4 grid gap-3 border-t border-white/10 pt-4 text-sm md:grid-cols-3">
+                              <div className="rounded-md border border-white/10 bg-ink p-3">
+                                <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-200">
+                                  Pourquoi celui-ci
+                                </h4>
+                                <ul className="space-y-2 text-slate-300">
+                                  {(reasons.length ? reasons : ["Contexte detecte, mais criteres encore incomplets."]).map((reason) => (
+                                    <li key={reason}>{reason}</li>
+                                  ))}
+                                </ul>
+                              </div>
+
+                              <div className="rounded-md border border-white/10 bg-ink p-3">
+                                <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-200">
+                                  Actus / contexte
+                                </h4>
+                                {item.newsContext ? <p className="leading-6 text-slate-300">{item.newsContext}</p> : null}
+                                {newsSources.length ? (
+                                  <div className="mt-2 space-y-2">
+                                    {newsSources.slice(0, 3).map((source, sourceIndex) => (
+                                      <p key={`${source.title}-${sourceIndex}`} className="text-xs text-slate-400">
+                                        {source.title ?? "News marche"} {source.source ? `- ${source.source}` : ""}
+                                      </p>
+                                    ))}
+                                  </div>
+                                ) : !item.newsContext ? (
+                                  <p className="text-slate-400">Pas de news specifique exploitable pour ce scan.</p>
+                                ) : null}
+                              </div>
+
+                              <div className="rounded-md border border-white/10 bg-ink p-3">
+                                <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-200">
+                                  Analyse tech
+                                </h4>
+                                <dl className="space-y-2 text-slate-300">
+                                  <div className="flex justify-between gap-3">
+                                    <dt className="text-slate-500">Cours</dt>
+                                    <dd>{item.currentPrice ?? "-"}</dd>
+                                  </div>
+                                  <div className="flex justify-between gap-3">
+                                    <dt className="text-slate-500">Zone</dt>
+                                    <dd>{opportunity?.entryZone ?? item.knownZone ?? "-"}</dd>
+                                  </div>
+                                  <div className="flex justify-between gap-3">
+                                    <dt className="text-slate-500">Invalidation</dt>
+                                    <dd className="text-red-200">{opportunity?.invalidation ?? item.invalidation ?? "-"}</dd>
+                                  </div>
+                                  <div className="flex justify-between gap-3">
+                                    <dt className="text-slate-500">Objectifs</dt>
+                                    <dd>{targetsText}</dd>
+                                  </div>
+                                </dl>
+                              </div>
+                            </div>
+                          ) : null}
+
                           {opportunity ? (
-                            <div className="mt-3 flex flex-wrap gap-2">
+                            <div className="mt-3 flex flex-wrap gap-2" onClick={(event) => event.stopPropagation()}>
                               <ActionButton
                                 tone="success"
                                 icon={<Check size={16} aria-hidden="true" />}
