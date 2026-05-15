@@ -3,6 +3,7 @@ import { Direction } from "@prisma/client";
 import { prisma } from "@/lib/db/prisma";
 import { auditLog } from "@/lib/db/audit";
 import { parseNotificationsBatch } from "@/lib/market/notificationParser";
+import { storePrepMemory } from "@/lib/market/prepMemory";
 import { jsonError, requireApiSession } from "@/lib/security/api";
 
 export const runtime = "nodejs";
@@ -17,6 +18,7 @@ export async function POST(request: NextRequest) {
 
   const parsed = parseNotificationsBatch(content);
   const created = [];
+  const relatedAssets = [];
 
   for (const item of parsed) {
     const notification = await prisma.xavierNotification.create({
@@ -35,7 +37,14 @@ export async function POST(request: NextRequest) {
       },
     });
     created.push(notification.id);
+    if (item.symbol) relatedAssets.push(item.symbol);
   }
+
+  await storePrepMemory({
+    kind: "xavier_import",
+    rawText: content,
+    relatedAssets,
+  });
 
   await auditLog("notifications_batch_imported", "Batch Xavier / IVT notifications imported", {
     count: created.length,

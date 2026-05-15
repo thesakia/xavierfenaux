@@ -231,7 +231,7 @@ export function DashboardClient({
 
       if (!response.ok) return "Preparation refusee.";
       refreshDashboard();
-      return "Preparation de seance terminee. OpenAI n'a pas ete declenche.";
+      return "Preparation de seance terminee. Brief et imports memorises. OpenAI n'a pas ete declenche.";
     });
   }
 
@@ -254,7 +254,7 @@ export function DashboardClient({
       });
 
       if (!response.ok) return "Import Xavier / IVT refuse.";
-      return "Notifications Xavier / IVT importees.";
+      return "Notifications Xavier / IVT importees et memorisees.";
     });
   }
 
@@ -328,7 +328,7 @@ export function DashboardClient({
         <div className="panel p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
             <h2 className="section-title">Brief du matin</h2>
-            <span className="text-xs text-slate-500">croise avec news + notifications</span>
+            <span className="text-xs text-slate-500">memorise puis croise avec news + imports</span>
           </div>
           <textarea
             value={brief}
@@ -337,7 +337,7 @@ export function DashboardClient({
               saveLocal("xf:brief", event.target.value);
             }}
             className="min-h-44 w-full rounded-md border border-white/10 bg-ink px-3 py-2 text-sm leading-6 text-slate-100 outline-none ring-violetx/60 focus:ring-2"
-            placeholder="Colle ici le contexte du matin : macro attendue, biais general, niveaux importants, actifs a surveiller."
+            placeholder="Colle ici le contexte du matin : macro attendue, biais general, niveaux importants, actifs a surveiller. Il servira aussi aux prochains scans."
           />
         </div>
 
@@ -378,7 +378,7 @@ export function DashboardClient({
         <div className="panel p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
             <h2 className="section-title">Import Xavier / CSV</h2>
-            <span className="text-xs text-slate-500">optionnel mais utile</span>
+            <span className="text-xs text-slate-500">alimente la memoire des scans</span>
           </div>
           <textarea
             value={batchText}

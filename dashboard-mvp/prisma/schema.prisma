@@ -106,6 +106,18 @@ model MarketContext {
   createdAt       DateTime     @default(now())
 }
 
+model MarketPrepMemory {
+  id            String   @id @default(cuid())
+  kind          String
+  rawText       String
+  summary       String?
+  relatedAssets Json
+  createdAt     DateTime @default(now())
+
+  @@index([kind, createdAt])
+  @@index([createdAt])
+}
+
 model WatchedAsset {
   id             String   @id @default(cuid())
   symbol         String   @unique
