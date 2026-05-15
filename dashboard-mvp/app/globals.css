@@ -75,4 +75,43 @@ select {
   .action-muted {
     @apply inline-flex items-center justify-center gap-2 rounded-md border border-white/10 px-3 py-2 text-sm text-slate-200;
   }
+
+  .action-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100;
+  }
+}
+
+.animated-btn {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    opacity 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.animated-btn:hover:not(:disabled) {
+  box-shadow: 0 0 0 1px rgba(111, 79, 242, 0.24), 0 12px 28px rgba(2, 6, 23, 0.34);
+}
+
+.animated-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.animated-btn.is-loading::after {
+  animation: button-shimmer 1s linear infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-100%);
+}
+
+@keyframes button-shimmer {
+  to {
+    transform: translateX(100%);
+  }
 }
