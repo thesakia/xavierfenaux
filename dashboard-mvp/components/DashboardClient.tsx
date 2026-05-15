@@ -11,6 +11,8 @@ import {
   Newspaper,
   RefreshCcw,
   Save,
+  TrendingDown,
+  TrendingUp,
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
@@ -42,6 +44,7 @@ type Polarity = {
 type AssetRow = {
   asset: string;
   currentPrice: string;
+  variationPct: string;
   shortZone: string;
   mediumZone: string;
   longZone: string;
@@ -114,6 +117,7 @@ const defaultAssets: AssetRow[] = [
 ].map((asset) => ({
   asset,
   currentPrice: "",
+  variationPct: "",
   shortZone: "",
   mediumZone: "",
   longZone: "",
@@ -194,6 +198,12 @@ function scoreAsset(row: AssetRow) {
   return score;
 }
 
+function variationClass(value: string) {
+  const number = Number(value.replace(",", "."));
+  if (!Number.isFinite(number) || number === 0) return "border-slate-500/30 bg-slate-500/10 text-slate-300";
+  return number > 0 ? "border-green-500/30 bg-green-500/10 text-green-300" : "border-red-500/30 bg-red-500/10 text-red-300";
+}
+
 function todayLabel() {
   return new Intl.DateTimeFormat("fr-FR", {
     weekday: "long",
@@ -257,6 +267,18 @@ export function DashboardClient({ opportunities }: { opportunities: DashboardOpp
         .filter((asset) => asset.proximity !== null && asset.proximity <= 2),
     [sortedAssets],
   );
+
+  const movers = useMemo(
+    () =>
+      [...assets]
+        .map((asset) => ({ ...asset, variation: Number(asset.variationPct.replace(",", ".")) }))
+        .filter((asset) => Number.isFinite(asset.variation))
+        .sort((a, b) => b.variation - a.variation),
+    [assets],
+  );
+
+  const topMovers = movers.filter((asset) => asset.variation > 0).slice(0, 5);
+  const flopMovers = [...movers].reverse().filter((asset) => asset.variation < 0).slice(0, 5);
 
   const sizerDistance = Math.abs(sizer.invalidation - sizer.entry);
   const riskEuros = (sizer.capital * sizer.riskPct) / 100 / sizer.fraction;
@@ -325,6 +347,25 @@ export function DashboardClient({ opportunities }: { opportunities: DashboardOpp
     setMessage(response.ok ? "Scan news ajoute a la file." : "Scan news refuse.");
   }
 
+  async function simulateWatchlist() {
+    setMessage(null);
+    const response = await fetch("/api/tradingview/simulate-watchlist", { method: "POST" });
+    setMessage(response.ok ? "Watchlist simulee injectee." : "Simulation refusee.");
+    if (response.ok) {
+      const simulatedRows: Record<string, Partial<AssetRow>> = {
+        CAC40: { currentPrice: "8248", variationPct: "-0.82", shortZone: "8200/8300", mmStatus: "PROCHE", planStatus: "OUI", dailyZone: "Resistance daily", dailyProximity: "PROCHE" },
+        DAX: { currentPrice: "23840", variationPct: "0.34", shortZone: "23750/23900", mmStatus: "PROCHE", planStatus: "NON", dailyZone: "Zone haute", dailyProximity: "PROCHE" },
+        EURUSD: { currentPrice: "1.1742", variationPct: "-0.21", shortZone: "1.1740/1.1760", mmStatus: "OUI", planStatus: "OUI", dailyZone: "Seuil H1 CPI", dailyProximity: "DANS" },
+        Nasdaq: { currentPrice: "21320", variationPct: "1.08", shortZone: "21250/21400", mmStatus: "PROCHE", planStatus: "NON", dailyZone: "Zone tech", dailyProximity: "PROCHE" },
+        Gold: { currentPrice: "3294", variationPct: "0.76", shortZone: "3275/3300", mmStatus: "OUI", planStatus: "OUI", dailyZone: "Support weekly", dailyProximity: "DANS" },
+      };
+      const nextAssets = assets.map((asset) => ({ ...asset, ...(simulatedRows[asset.asset] ?? {}) }));
+      setAssets(nextAssets);
+      saveLocal("xf:assets", nextAssets);
+      startTransition(() => router.refresh());
+    }
+  }
+
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
     window.location.href = "/dashboard/login";
@@ -342,6 +383,10 @@ export function DashboardClient({ opportunities }: { opportunities: DashboardOpp
           <button onClick={scanNews} className="toolbar-btn">
             <Newspaper size={16} aria-hidden="true" />
             Scan news
+          </button>
+          <button onClick={simulateWatchlist} className="toolbar-btn">
+            <Bell size={16} aria-hidden="true" />
+            Simuler watchlist
           </button>
           <button onClick={() => persistBoard()} className="toolbar-btn">
             <Save size={16} aria-hidden="true" />
@@ -484,6 +529,7 @@ export function DashboardClient({ opportunities }: { opportunities: DashboardOpp
                 <tr>
                   <th className="table-head">Actif</th>
                   <th className="table-head">Cours</th>
+                  <th className="table-head">Var.</th>
                   <th className="table-head">Zone CT</th>
                   <th className="table-head">Zone MT</th>
                   <th className="table-head">Zone LT</th>
@@ -505,6 +551,9 @@ export function DashboardClient({ opportunities }: { opportunities: DashboardOpp
                       </td>
                       <td className="table-cell">
                         <input className="field table-input" value={asset.currentPrice} onChange={(event) => updateAsset(asset.asset, { currentPrice: event.target.value })} />
+                      </td>
+                      <td className="table-cell">
+                        <input className={`field table-input ${variationClass(asset.variationPct)}`} value={asset.variationPct} onChange={(event) => updateAsset(asset.asset, { variationPct: event.target.value })} placeholder="%" />
                       </td>
                       <td className="table-cell">
                         <input className="field table-input" value={asset.shortZone} onChange={(event) => updateAsset(asset.asset, { shortZone: event.target.value })} placeholder="8200/8300" />
@@ -547,7 +596,41 @@ export function DashboardClient({ opportunities }: { opportunities: DashboardOpp
         </div>
       </section>
 
-      <section className="mb-5 grid gap-4 xl:grid-cols-[0.85fr_1.15fr]">
+      <section className="mb-5 grid gap-4 xl:grid-cols-[0.65fr_0.85fr_1.15fr]">
+        <div className="panel p-4">
+          <h2 className="section-title mb-3">Top / Flop</h2>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+            <div>
+              <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-green-300">
+                <TrendingUp size={16} aria-hidden="true" />
+                Top
+              </div>
+              <div className="space-y-2">
+                {topMovers.length ? topMovers.map((asset) => (
+                  <div key={asset.asset} className="flex items-center justify-between rounded-md border border-green-500/20 bg-green-500/10 px-3 py-2 text-sm">
+                    <span className="font-semibold text-white">{asset.asset}</span>
+                    <span className="font-mono text-green-300">+{asset.variation.toFixed(2)}%</span>
+                  </div>
+                )) : <p className="text-sm text-slate-500">Renseigne les variations.</p>}
+              </div>
+            </div>
+            <div>
+              <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-red-300">
+                <TrendingDown size={16} aria-hidden="true" />
+                Flop
+              </div>
+              <div className="space-y-2">
+                {flopMovers.length ? flopMovers.map((asset) => (
+                  <div key={asset.asset} className="flex items-center justify-between rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm">
+                    <span className="font-semibold text-white">{asset.asset}</span>
+                    <span className="font-mono text-red-300">{asset.variation.toFixed(2)}%</span>
+                  </div>
+                )) : <p className="text-sm text-slate-500">Renseigne les variations.</p>}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="panel p-4">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="section-title">Position sizer</h2>
