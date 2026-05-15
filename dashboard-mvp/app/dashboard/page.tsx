@@ -8,6 +8,11 @@ export default async function DashboardPage() {
   await requireDashboardSession();
 
   const opportunities = await prisma.opportunity.findMany({
+    where: {
+      source: {
+        not: "TRADINGVIEW",
+      },
+    },
     orderBy: [{ status: "asc" }, { score: "desc" }, { createdAt: "desc" }],
     take: 100,
   });
