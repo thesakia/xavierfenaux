@@ -1,6 +1,6 @@
 "use client";
 
-import type { Direction, Opportunity, OpportunitySource, OpportunityStatus } from "@prisma/client";
+import type { Direction, GeneratedRadarItem, MarketScanRun, Opportunity, OpportunitySource, OpportunityStatus } from "@prisma/client";
 import {
   Archive,
   Bell,
@@ -22,6 +22,22 @@ type DashboardOpportunity = Omit<Opportunity, "targets" | "createdAt" | "updated
   targets: unknown;
   createdAt: string;
   updatedAt: string;
+};
+
+type DashboardRadarItem = Omit<
+  GeneratedRadarItem,
+  "createdAt" | "updatedAt" | "currentPrice" | "variationPct" | "zoneProximityPct"
+> & {
+  createdAt: string;
+  updatedAt: string;
+  currentPrice: string | null;
+  variationPct: string | null;
+  zoneProximityPct: string | null;
+};
+
+type DashboardScanRun = Omit<MarketScanRun, "createdAt"> & {
+  createdAt: string;
+  radarItems: DashboardRadarItem[];
 };
 
 type MacroEvent = {
@@ -212,10 +228,17 @@ function todayLabel() {
   }).format(new Date());
 }
 
-export function DashboardClient({ opportunities }: { opportunities: DashboardOpportunity[] }) {
+export function DashboardClient({
+  opportunities,
+  latestScan,
+}: {
+  opportunities: DashboardOpportunity[];
+  latestScan: DashboardScanRun | null;
+}) {
   const router = useRouter();
   const [selectedId, setSelectedId] = useState(opportunities[0]?.id ?? "");
   const [rawText, setRawText] = useState("");
+  const [batchText, setBatchText] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [brief, setBrief] = useState("");
@@ -347,6 +370,37 @@ export function DashboardClient({ opportunities }: { opportunities: DashboardOpp
     setMessage(response.ok ? "Scan news ajoute a la file." : "Scan news refuse.");
   }
 
+  async function prepareMorning() {
+    setMessage(null);
+    const response = await fetch("/api/market/scan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        brief,
+        notifications: batchText,
+        triggerOpenAI: false,
+      }),
+    });
+
+    if (!response.ok) {
+      setMessage("Preparation refusee.");
+      return;
+    }
+
+    setMessage("Preparation de seance terminee.");
+    startTransition(() => router.refresh());
+  }
+
+  async function importBatch() {
+    setMessage(null);
+    const response = await fetch("/api/notifications/batch-import", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: batchText }),
+    });
+    setMessage(response.ok ? "Notifications importees." : "Import batch refuse.");
+  }
+
   async function simulateWatchlist() {
     setMessage(null);
     const response = await fetch("/api/tradingview/simulate-watchlist", { method: "POST" });
@@ -383,6 +437,10 @@ export function DashboardClient({ opportunities }: { opportunities: DashboardOpp
           <button onClick={scanNews} className="toolbar-btn">
             <Newspaper size={16} aria-hidden="true" />
             Scan news
+          </button>
+          <button onClick={prepareMorning} className="toolbar-btn border-violetx/60 text-violet-100">
+            <RefreshCcw size={16} aria-hidden="true" />
+            Preparer la seance
           </button>
           <button onClick={simulateWatchlist} className="toolbar-btn">
             <Bell size={16} aria-hidden="true" />
@@ -592,6 +650,78 @@ export function DashboardClient({ opportunities }: { opportunities: DashboardOpp
                 })}
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-5 grid gap-4 xl:grid-cols-[0.8fr_1.2fr]">
+        <div className="panel p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="section-title">Import CSV / multi-notifs</h2>
+            <span className="text-xs text-slate-500">utilise par Preparer la seance</span>
+          </div>
+          <textarea
+            value={batchText}
+            onChange={(event) => setBatchText(event.target.value)}
+            className="min-h-36 w-full rounded-md border border-white/10 bg-ink px-3 py-2 text-sm leading-6 text-slate-100 outline-none ring-violetx/60 focus:ring-2"
+            placeholder={"EURUSD : si CPI > 3.7% + impulsion baissiere H1 sous 1.1740, invalidation 1.1810, TP1 1.1680\nCAC 40 : zone 8200/8300, invalidation 8370, TP1 7990, TP2 7600"}
+          />
+          <div className="mt-3 flex gap-2">
+            <button onClick={importBatch} className="primary-btn" disabled={!batchText.trim()}>
+              <Download size={16} aria-hidden="true" />
+              Importer
+            </button>
+            <button onClick={prepareMorning} className="toolbar-btn">
+              Preparer avec ces infos
+            </button>
+          </div>
+        </div>
+
+        <div className="panel p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="section-title">Actifs a cibler ce matin</h2>
+            <span className="text-xs text-slate-500">
+              {latestScan ? new Date(latestScan.createdAt).toLocaleString("fr-FR") : "aucun scan"}
+            </span>
+          </div>
+          {latestScan?.summary ? <p className="mb-3 text-sm text-slate-300">{latestScan.summary}</p> : null}
+          <div className="max-h-96 space-y-2 overflow-auto">
+            {latestScan?.radarItems?.length ? (
+              latestScan.radarItems.slice(0, 12).map((item) => (
+                <div
+                  key={item.id}
+                  className={`rounded-md border p-3 ${
+                    item.priority === 1
+                      ? "border-violetx/40 bg-violetx/10"
+                      : item.priority === 2
+                        ? "border-white/10 bg-ink"
+                        : "border-slate-700/60 bg-slate-950/40"
+                  }`}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <strong className="text-white">{item.assetName ?? item.symbol}</strong>
+                      <span className="ml-2 text-xs text-slate-500">P{item.priority} - score {item.score}</span>
+                    </div>
+                    <span className={`rounded-md border px-2 py-1 text-xs ${variationClass(item.variationPct ?? "")}`}>
+                      {item.variationPct ? `${Number(item.variationPct).toFixed(2)}%` : "var. n/a"}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-300">
+                    {item.newsContext ?? item.xavierContext ?? "Contexte a surveiller, donnees encore incompletes."}
+                  </p>
+                  <div className="mt-2 grid gap-2 text-xs text-slate-400 md:grid-cols-3">
+                    <span>Zone: <b className="text-slate-200">{item.knownZone ?? "-"}</b></span>
+                    <span>Proximite: <b className="text-slate-200">{item.zoneProximityPct ? `${Number(item.zoneProximityPct).toFixed(2)}%` : "-"}</b></span>
+                    <span>Invalidation: <b className="text-red-200">{item.invalidation ?? "-"}</b></span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="rounded-md border border-white/10 bg-ink p-3 text-sm text-slate-400">
+                Clique sur Preparer la seance pour generer la short-list du matin.
+              </p>
+            )}
           </div>
         </div>
       </section>

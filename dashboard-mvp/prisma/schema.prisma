@@ -106,6 +106,71 @@ model MarketContext {
   createdAt       DateTime     @default(now())
 }
 
+model WatchedAsset {
+  id             String   @id @default(cuid())
+  symbol         String   @unique
+  assetName      String?
+  category       String?
+  currentPrice   Decimal?
+  variationPct   Decimal?
+  shortZone      String?
+  mediumZone     String?
+  longZone       String?
+  invalidation   String?
+  targets        Json?
+  technicalNotes String?
+  macroNotes     String?
+  lastPriceAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([category, symbol])
+}
+
+model GeneratedRadarItem {
+  id               String   @id @default(cuid())
+  scanRunId        String?
+  symbol           String
+  assetName        String?
+  category         String?
+  currentPrice     Decimal?
+  variationPct     Decimal?
+  direction        Direction @default(NEUTRAL)
+  priority         Int      @default(3)
+  score            Int      @default(0)
+  status           String   @default("context")
+  knownZone        String?
+  zoneProximityPct Decimal?
+  invalidation     String?
+  targets          Json?
+  newsContext      String?
+  xavierContext    String?
+  briefContext     String?
+  reasons          Json
+  missingData      Json
+  riskNotes        String?
+  sources          Json
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  scanRun MarketScanRun? @relation(fields: [scanRunId], references: [id], onDelete: SetNull)
+
+  @@index([scanRunId, priority, score])
+  @@index([symbol, createdAt])
+}
+
+model MarketScanRun {
+  id                 String   @id @default(cuid())
+  status             String   @default("completed")
+  summary            String?
+  usedOpenAI         Boolean  @default(false)
+  createdRadarItems  Int      @default(0)
+  createdOpportunities Int    @default(0)
+  createdAt          DateTime @default(now())
+
+  radarItems GeneratedRadarItem[]
+}
+
 model Opportunity {
   id                 String            @id @default(cuid())
   symbol             String
