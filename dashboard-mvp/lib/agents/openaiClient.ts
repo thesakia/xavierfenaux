@@ -32,14 +32,30 @@ function estimateCost(inputTokens: number, outputTokens: number) {
 export async function runJsonAgent<T>(args: JsonAgentArgs): Promise<T | null> {
   if (!client) return null;
 
-  const response = await client.chat.completions.create({
-    model: args.model,
-    response_format: { type: "json_object" },
-    messages: [
-      { role: "system", content: args.system },
-      { role: "user", content: args.user },
-    ],
-  });
+  let response;
+
+  try {
+    response = await client.chat.completions.create({
+      model: args.model,
+      response_format: { type: "json_object" },
+      messages: [
+        { role: "system", content: args.system },
+        { role: "user", content: args.user },
+      ],
+    });
+  } catch (error) {
+    await prisma.auditLog.create({
+      data: {
+        action: "ai_error",
+        message: `${args.agent} failed`,
+        metadata: {
+          model: args.model,
+          error: error instanceof Error ? error.message : "Unknown OpenAI error",
+        },
+      },
+    });
+    return null;
+  }
 
   const inputTokens = response.usage?.prompt_tokens ?? 0;
   const outputTokens = response.usage?.completion_tokens ?? 0;
