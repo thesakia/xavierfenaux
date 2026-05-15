@@ -61,6 +61,67 @@ type MarketGroup = "Indices" | "Actions" | "Crypto" | "Forex" | "Matieres premie
 
 const marketOrder: MarketGroup[] = ["Indices", "Actions", "Crypto", "Forex", "Matieres premieres", "Taux", "Autres"];
 
+const marketThemes: Record<
+  MarketGroup,
+  {
+    border: string;
+    band: string;
+    badge: string;
+    title: string;
+    top: string;
+  }
+> = {
+  Indices: {
+    border: "border-violetx/40",
+    band: "bg-violetx/10",
+    badge: "border-violetx/35 bg-violetx/15 text-violet-100",
+    title: "text-violet-100",
+    top: "bg-violetx text-white",
+  },
+  Actions: {
+    border: "border-sky-400/35",
+    band: "bg-sky-400/10",
+    badge: "border-sky-400/30 bg-sky-400/10 text-sky-100",
+    title: "text-sky-100",
+    top: "bg-sky-500 text-white",
+  },
+  Crypto: {
+    border: "border-amber-400/35",
+    band: "bg-amber-400/10",
+    badge: "border-amber-400/30 bg-amber-400/10 text-amber-100",
+    title: "text-amber-100",
+    top: "bg-amber-500 text-slate-950",
+  },
+  Forex: {
+    border: "border-emerald-400/35",
+    band: "bg-emerald-400/10",
+    badge: "border-emerald-400/30 bg-emerald-400/10 text-emerald-100",
+    title: "text-emerald-100",
+    top: "bg-emerald-500 text-slate-950",
+  },
+  "Matieres premieres": {
+    border: "border-red-400/35",
+    band: "bg-red-400/10",
+    badge: "border-red-400/30 bg-red-400/10 text-red-100",
+    title: "text-red-100",
+    top: "bg-red-500 text-white",
+  },
+  Taux: {
+    border: "border-cyan-400/35",
+    band: "bg-cyan-400/10",
+    badge: "border-cyan-400/30 bg-cyan-400/10 text-cyan-100",
+    title: "text-cyan-100",
+    top: "bg-cyan-500 text-slate-950",
+  },
+  Autres: {
+    border: "border-slate-400/30",
+    band: "bg-slate-400/10",
+    badge: "border-slate-400/25 bg-slate-400/10 text-slate-200",
+    title: "text-slate-100",
+    top: "bg-slate-500 text-white",
+  },
+};
+
 const statusLabels: Record<OpportunityStatus, string> = {
   WATCHING: "a surveiller",
   VALIDATED: "valide",
@@ -125,6 +186,19 @@ function normalizeMarketGroup(category?: string | null): MarketGroup {
   if (category === "Europe" || category === "Etats-Unis") return "Indices";
   if (marketOrder.includes(category as MarketGroup)) return category as MarketGroup;
   return "Autres";
+}
+
+function hasSpecificMonitoringContext(item: DashboardRadarItem) {
+  const hasNews = Boolean(item.newsContext?.trim());
+  const hasTechnicalContext = Boolean(
+    item.xavierContext?.trim() ||
+      item.knownZone?.trim() ||
+      item.invalidation?.trim() ||
+      item.zoneProximityPct ||
+      (Array.isArray(item.targets) && item.targets.length > 0),
+  );
+
+  return hasNews || hasTechnicalContext;
 }
 
 function readableJsonList(value: unknown) {
@@ -232,6 +306,7 @@ export function DashboardClient({
           market,
           items: (latestScan?.radarItems ?? [])
             .filter((item) => normalizeMarketGroup(item.category) === market)
+            .filter(hasSpecificMonitoringContext)
             .sort((a, b) => b.score - a.score || a.priority - b.priority)
             .slice(0, 3),
         }))
@@ -454,8 +529,14 @@ export function DashboardClient({
         </div>
 
         <div className="panel p-4">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="section-title">Radar du jour - TOP3 par marche</h2>
+          <div className="mb-4 flex flex-col gap-2 border-b border-white/10 pb-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-violet-300">Une seule liste a regarder</p>
+              <h2 className="mt-1 text-2xl font-semibold text-white">Radar du jour</h2>
+              <p className="mt-1 text-sm text-slate-400">
+                TOP3 par marche, uniquement avec contexte news ou zone technique.
+              </p>
+            </div>
             <span className="text-xs text-slate-500">
               {latestScan ? new Date(latestScan.createdAt).toLocaleString("fr-FR") : "aucun scan"}
             </span>
@@ -464,12 +545,17 @@ export function DashboardClient({
           <div className="max-h-[720px] space-y-4 overflow-auto pr-1">
             {radarGroups.length ? (
               radarGroups.map((group) => (
-                <div key={group.market}>
-                  <div className="mb-2 flex items-center justify-between">
-                    <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-200">
+                <div
+                  key={group.market}
+                  className={`rounded-lg border ${marketThemes[group.market].border} ${marketThemes[group.market].band} p-3`}
+                >
+                  <div className="mb-3 flex items-center justify-between">
+                    <h3 className={`text-lg font-semibold ${marketThemes[group.market].title}`}>
                       {group.market}
                     </h3>
-                    <span className="text-xs text-slate-500">TOP {group.items.length}</span>
+                    <span className={`rounded-md border px-2 py-1 text-xs font-semibold ${marketThemes[group.market].badge}`}>
+                      TOP {group.items.length}
+                    </span>
                   </div>
                   <div className="space-y-2">
                     {group.items.map((item, index) => {
@@ -490,9 +576,9 @@ export function DashboardClient({
                           onKeyDown={(event) => {
                             if (event.key === "Enter" || event.key === " ") setOpenRadarId(isOpen ? null : item.id);
                           }}
-                          className={`rounded-md border p-3 ${
+                          className={`rounded-md border-l-4 p-3 ${
                             index === 0
-                              ? "border-violetx/50 bg-violetx/10"
+                              ? `${marketThemes[group.market].border} bg-white/[0.045]`
                               : index === 1
                                 ? "border-white/10 bg-ink"
                                 : "border-slate-700/60 bg-slate-950/40"
@@ -501,7 +587,7 @@ export function DashboardClient({
                           <div className="flex flex-wrap items-start justify-between gap-3">
                             <div>
                               <div className="flex flex-wrap items-center gap-2">
-                                <span className="rounded-md bg-violetx/20 px-2 py-1 text-xs font-semibold text-violet-100">
+                                <span className={`rounded-md px-2 py-1 text-xs font-semibold ${index === 0 ? marketThemes[group.market].top : marketThemes[group.market].badge}`}>
                                   #{index + 1}
                                 </span>
                                 <strong className="text-white">{item.assetName ?? item.symbol}</strong>
