@@ -21,7 +21,7 @@ import {
   X,
 } from "lucide-react";
 import type { ReactNode } from "react";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { Fragment, useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 type DashboardOpportunity = Omit<Opportunity, "targets" | "createdAt" | "updatedAt"> & {
@@ -222,6 +222,25 @@ function readableNewsSources(value: unknown) {
       };
     })
     .filter((item): item is { title: string | null; source: string | null; url: string | null } => Boolean(item));
+}
+
+function shortenText(value: string | null | undefined, limit = 180) {
+  const text = value?.replace(/\s+/g, " ").trim();
+  if (!text) return "-";
+  return text.length > limit ? `${text.slice(0, limit)}...` : text;
+}
+
+function whyText(item: DashboardRadarItem, opportunity: DashboardOpportunity | undefined, reasons: string[]) {
+  return shortenText(
+    opportunity?.summary ?? item.xavierContext ?? item.newsContext ?? item.briefContext ?? reasons.slice(0, 2).join(" / "),
+    190,
+  );
+}
+
+function directionClass(direction: Direction) {
+  if (direction === "LONG") return "border-green-500/30 bg-green-500/10 text-green-300";
+  if (direction === "SHORT") return "border-red-500/30 bg-red-500/10 text-red-300";
+  return "border-slate-500/30 bg-slate-500/10 text-slate-300";
 }
 
 function actionToneClass(tone: ButtonTone) {
@@ -557,197 +576,186 @@ export function DashboardClient({
                       TOP {group.items.length}
                     </span>
                   </div>
-                  <div className="space-y-2">
-                    {group.items.map((item, index) => {
-                      const opportunity = opportunityBySymbol.get(item.symbol);
-                      const reasons = readableJsonList(item.reasons);
-                      const missing = readableJsonList(item.missingData);
-                      const newsSources = readableNewsSources(item.sources);
-                      const targetsText = opportunity ? formatTargets(opportunity.targets) : formatTargets(item.targets);
-                      const cardStatus = opportunity ? statusLabels[opportunity.status] : item.status === "setup_candidate" ? "setup a surveiller" : "contexte";
-                      const isOpen = openRadarId === item.id;
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[980px] border-separate border-spacing-0 text-sm">
+                      <thead>
+                        <tr className="text-left text-xs uppercase tracking-[0.14em] text-slate-500">
+                          <th className="border-b border-white/10 px-3 py-2">TOP</th>
+                          <th className="border-b border-white/10 px-3 py-2">Actif</th>
+                          <th className="border-b border-white/10 px-3 py-2">Biais</th>
+                          <th className="border-b border-white/10 px-3 py-2">Pourquoi</th>
+                          <th className="border-b border-white/10 px-3 py-2">Niveaux</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {group.items.map((item, index) => {
+                          const opportunity = opportunityBySymbol.get(item.symbol);
+                          const direction = opportunity?.direction ?? item.direction;
+                          const reasons = readableJsonList(item.reasons);
+                          const missing = readableJsonList(item.missingData);
+                          const newsSources = readableNewsSources(item.sources);
+                          const targetsText = opportunity ? formatTargets(opportunity.targets) : formatTargets(item.targets);
+                          const cardStatus = opportunity
+                            ? statusLabels[opportunity.status]
+                            : item.status === "setup_candidate"
+                              ? "setup a surveiller"
+                              : "contexte";
+                          const isOpen = openRadarId === item.id;
 
-                      return (
-                        <div
-                          key={item.id}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => setOpenRadarId(isOpen ? null : item.id)}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter" || event.key === " ") setOpenRadarId(isOpen ? null : item.id);
-                          }}
-                          className={`rounded-md border-l-4 p-3 ${
-                            index === 0
-                              ? `${marketThemes[group.market].border} bg-white/[0.045]`
-                              : index === 1
-                                ? "border-white/10 bg-ink"
-                                : "border-slate-700/60 bg-slate-950/40"
-                          } cursor-pointer outline-none transition hover:border-violetx/50 focus:border-violetx/70`}
-                        >
-                          <div className="flex flex-wrap items-start justify-between gap-3">
-                            <div>
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className={`rounded-md px-2 py-1 text-xs font-semibold ${index === 0 ? marketThemes[group.market].top : marketThemes[group.market].badge}`}>
-                                  #{index + 1}
-                                </span>
-                                <strong className="text-white">{item.assetName ?? item.symbol}</strong>
-                                <span className="text-xs text-slate-500">score {item.score}</span>
-                              </div>
-                              <p className="mt-1 text-xs text-slate-500">
-                                {opportunity ? sourceLabels[opportunity.source] : "analyse radar"} - {cardStatus}
-                              </p>
-                            </div>
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className={`rounded-md border px-2 py-1 text-xs ${variationClass(item.variationPct)}`}>
-                                {item.variationPct ? `${Number(item.variationPct).toFixed(2)}%` : "var. n/a"}
-                              </span>
-                              <span className="rounded-md border border-white/10 px-2 py-1 text-xs text-slate-300">
-                                {directionLabels[opportunity?.direction ?? item.direction]}
-                              </span>
-                              <span className={`rounded-md border px-2 py-1 text-xs ${opportunity ? statusClass(opportunity.status) : "border-white/10 bg-white/5 text-slate-300"}`}>
-                                {cardStatus}
-                              </span>
-                              <span className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs text-slate-300">
-                                {isOpen ? "Masquer" : "Pourquoi celui-ci"}
-                              </span>
-                            </div>
-                          </div>
-
-                          <p className="mt-3 text-sm leading-6 text-slate-300">
-                            {opportunity?.summary ??
-                              item.xavierContext ??
-                              item.briefContext ??
-                              item.newsContext ??
-                              "Contexte a surveiller, donnees encore incompletes."}
-                          </p>
-
-                          <div className="mt-3 grid gap-2 text-xs text-slate-400 md:grid-cols-4">
-                            <span>
-                              Zone: <b className="text-slate-200">{opportunity?.entryZone ?? item.knownZone ?? "-"}</b>
-                            </span>
-                            <span>
-                              Invalidation: <b className="text-red-200">{opportunity?.invalidation ?? item.invalidation ?? "-"}</b>
-                            </span>
-                            <span>
-                              Objectifs: <b className="text-slate-200">{targetsText}</b>
-                            </span>
-                            <span>
-                              Proximite:{" "}
-                              <b className="text-slate-200">
-                                {item.zoneProximityPct ? `${Number(item.zoneProximityPct).toFixed(2)}%` : "-"}
-                              </b>
-                            </span>
-                          </div>
-
-                          {opportunity?.riskNotes ?? item.riskNotes ? (
-                            <p className="mt-3 rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-100">
-                              {opportunity?.riskNotes ?? item.riskNotes}
-                            </p>
-                          ) : null}
-
-                          {reasons.length ? (
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              {reasons.slice(0, 4).map((reason) => (
-                                <span key={reason} className="rounded-md border border-violetx/30 bg-violetx/10 px-2 py-1 text-xs text-violet-100">
-                                  {reason}
-                                </span>
-                              ))}
-                            </div>
-                          ) : null}
-
-                          {missing.length ? (
-                            <p className="mt-3 flex items-start gap-2 text-xs text-amber-200">
-                              <AlertTriangle size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
-                              Manque: {missing.join(", ")}
-                            </p>
-                          ) : null}
-
-                          {isOpen ? (
-                            <div className="mt-4 grid gap-3 border-t border-white/10 pt-4 text-sm md:grid-cols-3">
-                              <div className="rounded-md border border-white/10 bg-ink p-3">
-                                <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-200">
-                                  Pourquoi celui-ci
-                                </h4>
-                                <ul className="space-y-2 text-slate-300">
-                                  {(reasons.length ? reasons : ["Contexte detecte, mais criteres encore incomplets."]).map((reason) => (
-                                    <li key={reason}>{reason}</li>
-                                  ))}
-                                </ul>
-                              </div>
-
-                              <div className="rounded-md border border-white/10 bg-ink p-3">
-                                <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-200">
-                                  Actus / contexte
-                                </h4>
-                                {item.newsContext ? <p className="leading-6 text-slate-300">{item.newsContext}</p> : null}
-                                {newsSources.length ? (
-                                  <div className="mt-2 space-y-2">
-                                    {newsSources.slice(0, 3).map((source, sourceIndex) => (
-                                      <p key={`${source.title}-${sourceIndex}`} className="text-xs text-slate-400">
-                                        {source.title ?? "News marche"} {source.source ? `- ${source.source}` : ""}
-                                      </p>
-                                    ))}
-                                  </div>
-                                ) : !item.newsContext ? (
-                                  <p className="text-slate-400">Pas de news specifique exploitable pour ce scan.</p>
-                                ) : null}
-                              </div>
-
-                              <div className="rounded-md border border-white/10 bg-ink p-3">
-                                <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-200">
-                                  Analyse tech
-                                </h4>
-                                <dl className="space-y-2 text-slate-300">
-                                  <div className="flex justify-between gap-3">
-                                    <dt className="text-slate-500">Cours</dt>
-                                    <dd>{item.currentPrice ?? "-"}</dd>
-                                  </div>
-                                  <div className="flex justify-between gap-3">
-                                    <dt className="text-slate-500">Zone</dt>
-                                    <dd>{opportunity?.entryZone ?? item.knownZone ?? "-"}</dd>
-                                  </div>
-                                  <div className="flex justify-between gap-3">
-                                    <dt className="text-slate-500">Invalidation</dt>
-                                    <dd className="text-red-200">{opportunity?.invalidation ?? item.invalidation ?? "-"}</dd>
-                                  </div>
-                                  <div className="flex justify-between gap-3">
-                                    <dt className="text-slate-500">Objectifs</dt>
-                                    <dd>{targetsText}</dd>
-                                  </div>
-                                </dl>
-                              </div>
-                            </div>
-                          ) : null}
-
-                          {opportunity ? (
-                            <div className="mt-3 flex flex-wrap gap-2" onClick={(event) => event.stopPropagation()}>
-                              <ActionButton
-                                tone="success"
-                                icon={<Check size={16} aria-hidden="true" />}
-                                busy={busyAction === "status-VALIDATED"}
-                                onClick={() => updateStatus(opportunity.id, "VALIDATED")}
+                          return (
+                            <Fragment key={item.id}>
+                              <tr
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => setOpenRadarId(isOpen ? null : item.id)}
+                                onKeyDown={(event) => {
+                                  if (event.key === "Enter" || event.key === " ") setOpenRadarId(isOpen ? null : item.id);
+                                }}
+                                className={`cursor-pointer outline-none transition hover:bg-white/[0.04] ${
+                                  isOpen ? "bg-white/[0.05]" : index === 0 ? "bg-white/[0.035]" : ""
+                                }`}
                               >
-                                Valider
-                              </ActionButton>
-                              <ActionButton
-                                icon={<X size={16} aria-hidden="true" />}
-                                busy={busyAction === "status-IGNORED"}
-                                onClick={() => updateStatus(opportunity.id, "IGNORED")}
-                              >
-                                Ignorer
-                              </ActionButton>
-                              <ActionButton
-                                icon={<Archive size={16} aria-hidden="true" />}
-                                busy={busyAction === "status-ARCHIVED"}
-                                onClick={() => updateStatus(opportunity.id, "ARCHIVED")}
-                              >
-                                Archiver
-                              </ActionButton>
-                            </div>
-                          ) : null}
-                        </div>
-                      );
-                    })}
+                                <td className="border-b border-white/5 px-3 py-3 align-top">
+                                  <span
+                                    className={`inline-flex min-w-9 justify-center rounded-md px-2 py-1 text-xs font-semibold ${
+                                      index === 0 ? marketThemes[group.market].top : marketThemes[group.market].badge
+                                    }`}
+                                  >
+                                    #{index + 1}
+                                  </span>
+                                </td>
+                                <td className="border-b border-white/5 px-3 py-3 align-top">
+                                  <strong className="block text-white">{item.assetName ?? item.symbol}</strong>
+                                  <div className="mt-1 flex flex-wrap gap-2">
+                                    <span className="text-xs text-slate-500">score {item.score}</span>
+                                    <span className={`rounded-md border px-2 py-0.5 text-xs ${variationClass(item.variationPct)}`}>
+                                      {item.variationPct ? `${Number(item.variationPct).toFixed(2)}%` : "var. n/a"}
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="border-b border-white/5 px-3 py-3 align-top">
+                                  <span className={`rounded-md border px-2 py-1 text-xs font-semibold ${directionClass(direction)}`}>
+                                    {directionLabels[direction]}
+                                  </span>
+                                  <span className={`mt-2 block w-fit rounded-md border px-2 py-1 text-xs ${opportunity ? statusClass(opportunity.status) : "border-white/10 bg-white/5 text-slate-300"}`}>
+                                    {cardStatus}
+                                  </span>
+                                </td>
+                                <td className="border-b border-white/5 px-3 py-3 align-top text-slate-300">
+                                  <p className="leading-6">{whyText(item, opportunity, reasons)}</p>
+                                  <span className="mt-2 inline-block text-xs text-violet-200">
+                                    {isOpen ? "Masquer le detail" : "Cliquer pour le detail"}
+                                  </span>
+                                </td>
+                                <td className="border-b border-white/5 px-3 py-3 align-top">
+                                  <dl className="grid gap-1 text-xs text-slate-400">
+                                    <div>
+                                      Zone: <b className="text-slate-200">{opportunity?.entryZone ?? item.knownZone ?? "-"}</b>
+                                    </div>
+                                    <div>
+                                      Invalidation:{" "}
+                                      <b className="text-red-200">{opportunity?.invalidation ?? item.invalidation ?? "-"}</b>
+                                    </div>
+                                    <div>
+                                      Objectifs: <b className="text-slate-200">{targetsText}</b>
+                                    </div>
+                                  </dl>
+                                </td>
+                              </tr>
+
+                              {isOpen ? (
+                                <tr>
+                                  <td colSpan={5} className="border-b border-white/10 bg-slate-950/50 px-3 py-4">
+                                    <div className="grid gap-3 text-sm md:grid-cols-3">
+                                      <div className="rounded-md border border-white/10 bg-ink p-3">
+                                        <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-200">
+                                          Pourquoi celui-ci
+                                        </h4>
+                                        <ul className="space-y-2 text-slate-300">
+                                          {(reasons.length ? reasons : ["Contexte detecte, mais criteres encore incomplets."]).map((reason) => (
+                                            <li key={reason}>{reason}</li>
+                                          ))}
+                                        </ul>
+                                        {missing.length ? (
+                                          <p className="mt-3 flex items-start gap-2 text-xs text-amber-200">
+                                            <AlertTriangle size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
+                                            Manque: {missing.join(", ")}
+                                          </p>
+                                        ) : null}
+                                      </div>
+
+                                      <div className="rounded-md border border-white/10 bg-ink p-3">
+                                        <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-200">
+                                          Actus / contexte
+                                        </h4>
+                                        {item.newsContext ? <p className="leading-6 text-slate-300">{item.newsContext}</p> : null}
+                                        {newsSources.length ? (
+                                          <div className="mt-2 space-y-2">
+                                            {newsSources.slice(0, 3).map((source, sourceIndex) => (
+                                              <p key={`${source.title}-${sourceIndex}`} className="text-xs text-slate-400">
+                                                {source.title ?? "News marche"} {source.source ? `- ${source.source}` : ""}
+                                              </p>
+                                            ))}
+                                          </div>
+                                        ) : !item.newsContext ? (
+                                          <p className="text-slate-400">Pas de news specifique exploitable pour ce scan.</p>
+                                        ) : null}
+                                      </div>
+
+                                      <div className="rounded-md border border-white/10 bg-ink p-3">
+                                        <h4 className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-violet-200">
+                                          Analyse tech
+                                        </h4>
+                                        <dl className="space-y-2 text-slate-300">
+                                          <div className="flex justify-between gap-3">
+                                            <dt className="text-slate-500">Cours</dt>
+                                            <dd>{item.currentPrice ?? "-"}</dd>
+                                          </div>
+                                          <div className="flex justify-between gap-3">
+                                            <dt className="text-slate-500">Proximite</dt>
+                                            <dd>{item.zoneProximityPct ? `${Number(item.zoneProximityPct).toFixed(2)}%` : "-"}</dd>
+                                          </div>
+                                          <div className="flex justify-between gap-3">
+                                            <dt className="text-slate-500">Risque</dt>
+                                            <dd className="text-red-200">{opportunity?.riskNotes ?? item.riskNotes ?? "-"}</dd>
+                                          </div>
+                                        </dl>
+                                        {opportunity ? (
+                                          <div className="mt-3 flex flex-wrap gap-2" onClick={(event) => event.stopPropagation()}>
+                                            <ActionButton
+                                              tone="success"
+                                              icon={<Check size={16} aria-hidden="true" />}
+                                              busy={busyAction === "status-VALIDATED"}
+                                              onClick={() => updateStatus(opportunity.id, "VALIDATED")}
+                                            >
+                                              Valider
+                                            </ActionButton>
+                                            <ActionButton
+                                              icon={<X size={16} aria-hidden="true" />}
+                                              busy={busyAction === "status-IGNORED"}
+                                              onClick={() => updateStatus(opportunity.id, "IGNORED")}
+                                            >
+                                              Ignorer
+                                            </ActionButton>
+                                            <ActionButton
+                                              icon={<Archive size={16} aria-hidden="true" />}
+                                              busy={busyAction === "status-ARCHIVED"}
+                                              onClick={() => updateStatus(opportunity.id, "ARCHIVED")}
+                                            >
+                                              Archiver
+                                            </ActionButton>
+                                          </div>
+                                        ) : null}
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ) : null}
+                            </Fragment>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               ))
