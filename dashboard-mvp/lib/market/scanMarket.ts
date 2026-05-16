@@ -363,11 +363,16 @@ export async function scanMarket(input: ScanInput) {
     }
   }
 
+  const importedMethodExamples = recentPrepMemory.filter((memory) => memory.kind === "xavier_import").length;
+  const memorySummary = useXavierAssetMemory
+    ? `Memoire active: ${recentPrepMemory.length} brief/import(s), ${recentNotifications.length} notification(s) Xavier / IVT.`
+    : `Memoire methode: ${importedMethodExamples} import(s) d'exemples utilises comme filtre interne, pas comme selection d'actifs.`;
+
   await prisma.marketScanRun.update({
     where: { id: run.id },
     data: {
       status: "completed",
-      summary: `${createdRadarItems.length} actifs analyses, ${createdOpportunities} setup(s) a surveiller cree(s). Memoire recente: ${recentPrepMemory.length} brief/import(s), ${recentNotifications.length} notification(s) Xavier / IVT.`,
+      summary: `${createdRadarItems.length} actifs analyses, ${createdOpportunities} setup(s) a surveiller cree(s). ${memorySummary}`,
       createdRadarItems: createdRadarItems.length,
       createdOpportunities,
     },
@@ -379,7 +384,8 @@ export async function scanMarket(input: ScanInput) {
     createdOpportunities,
     usedOpenAI: allowOpenAI,
     prepMemoryItems: recentPrepMemory.length,
-    xavierNotifications: recentNotifications.length,
+    xavierNotifications: useXavierAssetMemory ? recentNotifications.length : 0,
+    xavierMethodExamples: importedMethodExamples,
   });
 
   return {
