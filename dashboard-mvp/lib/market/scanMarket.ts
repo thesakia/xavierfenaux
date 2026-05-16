@@ -94,9 +94,9 @@ export async function scanMarket(input: ScanInput) {
     orderBy: { createdAt: "desc" },
     take: 100,
   });
-  const memorySymbols = recentPrepMemory
-    .filter((memory) => useXavierAssetMemory || memory.kind !== "xavier_import")
-    .flatMap((memory) => (Array.isArray(memory.relatedAssets) ? memory.relatedAssets.map(String) : []));
+  const memorySymbols = useXavierAssetMemory
+    ? recentPrepMemory.flatMap((memory) => (Array.isArray(memory.relatedAssets) ? memory.relatedAssets.map(String) : []))
+    : [];
   const historicalNotificationSymbols = useXavierAssetMemory
     ? recentNotifications.flatMap((item) => (item.symbol ? [item.symbol] : []))
     : [];
@@ -139,7 +139,7 @@ export async function scanMarket(input: ScanInput) {
     const symbolPrepMemory = prepMemoryForSymbol(symbol, recentPrepMemory).filter(
       (memory) => memory.kind !== "xavier_method" && (useXavierAssetMemory || memory.kind !== "xavier_import"),
     );
-    const briefMemory = symbolPrepMemory.find((memory) => memory.kind === "brief");
+    const briefMemory = input.brief ? null : symbolPrepMemory.find((memory) => memory.kind === "brief");
     const importMemory = useXavierAssetMemory ? symbolPrepMemory.find((memory) => memory.kind === "xavier_import") : null;
     const news = symbolNewsContext(symbol, recentNews);
     const zone = notification?.zone ?? watched?.shortZone ?? watched?.mediumZone ?? watched?.longZone ?? null;
@@ -188,10 +188,7 @@ export async function scanMarket(input: ScanInput) {
       price: quote?.price,
       variationPct: quote?.variationPct,
       newsContext: news[0]?.summary ?? news[0]?.title,
-      briefContext:
-        input.brief && extractSymbolsFromText(input.brief).includes(symbol)
-          ? input.brief.slice(0, 800)
-          : briefMemory?.summary,
+      briefContext: input.brief && extractSymbolsFromText(input.brief).includes(symbol) ? input.brief.slice(0, 800) : briefMemory?.summary,
       knownZone: zone,
       invalidation,
       targets,
@@ -206,10 +203,7 @@ export async function scanMarket(input: ScanInput) {
       price: quote?.price,
       variationPct: quote?.variationPct,
       newsContext: news[0]?.summary ?? news[0]?.title,
-      briefContext:
-        input.brief && extractSymbolsFromText(input.brief).includes(symbol)
-          ? input.brief.slice(0, 800)
-          : briefMemory?.summary,
+      briefContext: input.brief && extractSymbolsFromText(input.brief).includes(symbol) ? input.brief.slice(0, 800) : briefMemory?.summary,
       knownZone: zone,
       invalidation,
       targets,
@@ -269,10 +263,7 @@ export async function scanMarket(input: ScanInput) {
         targets,
         newsContext: news[0]?.summary ?? news[0]?.title,
         xavierContext: notification?.extractedSummary ?? importMemory?.summary,
-        briefContext:
-          input.brief && extractSymbolsFromText(input.brief).includes(symbol)
-            ? input.brief.slice(0, 800)
-            : briefMemory?.summary,
+        briefContext: input.brief && extractSymbolsFromText(input.brief).includes(symbol) ? input.brief.slice(0, 800) : briefMemory?.summary,
         reasons,
         missingData,
         riskNotes: methodReview.riskNotes || (invalidation ? "Risque encadre par une invalidation connue." : "Risque incomplet: invalidation manquante."),

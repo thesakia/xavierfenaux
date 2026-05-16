@@ -56,6 +56,7 @@ export function prepMemoryForSymbol(
   return memories.filter((memory) => {
     const assets = Array.isArray(memory.relatedAssets) ? memory.relatedAssets.map(String).join(" ").toUpperCase() : "";
     const text = `${memory.rawText} ${memory.summary ?? ""}`.toUpperCase();
-    return assets.split(/\s+/).includes(symbol.toUpperCase()) || assetMatchesText(symbol, text);
+    const exactAssetMatch = memory.kind !== "brief" && assets.split(/\s+/).includes(symbol.toUpperCase());
+    return exactAssetMatch || assetMatchesText(symbol, text);
   });
 }
