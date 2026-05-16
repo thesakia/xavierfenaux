@@ -43,6 +43,12 @@ function priorityFromScore(score: number) {
   return 3;
 }
 
+function formatVariation(value?: number | null) {
+  if (!Number.isFinite(value ?? NaN)) return null;
+  const number = Number(value);
+  return `${number > 0 ? "+" : ""}${number.toFixed(2)}%`;
+}
+
 export async function scanMarket(input: ScanInput) {
   const allowOpenAI = process.env.ENABLE_OPENAI_MARKET_SCAN === "true" && input.triggerOpenAI === true;
   const useXavierAssetMemory = input.useXavierAssetMemory === true;
@@ -147,22 +153,32 @@ export async function scanMarket(input: ScanInput) {
     const notificationTargets = Array.isArray(notification?.targets) ? notification.targets.map(String) : [];
     const targets = notificationTargets.length ? notificationTargets : Array.isArray(watched?.targets) ? watched?.targets.map(String) : [];
     const proximity = proximityPct(quote?.price, zone);
+    const leadNews = news[0];
+    const leadNewsContext = leadNews?.summary ?? leadNews?.title;
+    const symbolInCurrentBrief = Boolean(input.brief && extractSymbolsFromText(input.brief).includes(symbol));
     const reasons = [];
     const missingData = [];
 
-    if (news.length) reasons.push(`${news.length} news liee(s) a l'actif.`);
+    if (leadNews) {
+      reasons.push(`News: ${leadNews.title}${leadNews.source ? ` (${leadNews.source})` : ""}.`);
+    }
+    if (news.length > 1) reasons.push(`${news.length} news recentes recoupent cet actif.`);
     if (useXavierAssetMemory && currentNotification) reasons.push("Notification Xavier / IVT ajoutee au scan.");
     else if (useXavierAssetMemory && historicalNotification) reasons.push("Memoire Xavier / IVT recente reprise.");
-    if (briefMemory) reasons.push("Actif mentionne dans un brief recent.");
+    if (symbolInCurrentBrief) reasons.push("Brief: actif relie au contexte marche du jour.");
+    else if (briefMemory) reasons.push("Brief: actif relie a un contexte marche recent.");
     if (importMemory && !currentNotification) reasons.push("Actif deja present dans un import recent.");
-    if (zone) reasons.push("Zone connue.");
+    if (zone) reasons.push(`Cadre: zone connue ${zone}.`);
     else missingData.push("zone");
-    if (invalidation) reasons.push("Invalidation connue.");
+    if (invalidation) reasons.push(`Risque: invalidation connue ${invalidation}.`);
     else missingData.push("invalidation");
-    if (targets.length) reasons.push("Objectifs theoriques connus.");
+    if (targets.length) reasons.push(`Objectifs theoriques: ${targets.join(" / ")}.`);
     else missingData.push("objectifs");
-    if (proximity !== null && proximity <= 2) reasons.push("Prix a moins de 2% d'une zone.");
-    if (Math.abs(quote?.variationPct ?? 0) >= 1) reasons.push("Variation jour significative.");
+    if (proximity !== null && proximity <= 2) reasons.push(`Prix: a ${proximity.toFixed(2)}% d'une zone suivie.`);
+    const variation = formatVariation(quote?.variationPct);
+    if (variation && Math.abs(quote?.variationPct ?? 0) >= 1) {
+      reasons.push(`Reaction prix: ${definition?.assetName ?? symbol} varie de ${variation} sur le dernier cours disponible.`);
+    }
 
     let score = 0;
     if (news.length) score += Math.min(20, news.length * 8);
@@ -187,8 +203,8 @@ export async function scanMarket(input: ScanInput) {
       score,
       price: quote?.price,
       variationPct: quote?.variationPct,
-      newsContext: news[0]?.summary ?? news[0]?.title,
-      briefContext: input.brief && extractSymbolsFromText(input.brief).includes(symbol) ? input.brief.slice(0, 800) : briefMemory?.summary,
+      newsContext: leadNewsContext,
+      briefContext: symbolInCurrentBrief ? input.brief?.slice(0, 800) : briefMemory?.summary,
       knownZone: zone,
       invalidation,
       targets,
@@ -202,8 +218,8 @@ export async function scanMarket(input: ScanInput) {
       score,
       price: quote?.price,
       variationPct: quote?.variationPct,
-      newsContext: news[0]?.summary ?? news[0]?.title,
-      briefContext: input.brief && extractSymbolsFromText(input.brief).includes(symbol) ? input.brief.slice(0, 800) : briefMemory?.summary,
+      newsContext: leadNewsContext,
+      briefContext: symbolInCurrentBrief ? input.brief?.slice(0, 800) : briefMemory?.summary,
       knownZone: zone,
       invalidation,
       targets,
@@ -228,7 +244,7 @@ export async function scanMarket(input: ScanInput) {
         shortZone: notification?.zone ?? watched?.shortZone,
         invalidation: notification?.invalidation ?? watched?.invalidation,
         targets: targets.length ? targets : Prisma.JsonNull,
-        macroNotes: news[0]?.summary ?? watched?.macroNotes,
+        macroNotes: leadNewsContext ?? watched?.macroNotes,
         lastPriceAt: quote?.timestamp,
       },
       create: {
@@ -240,7 +256,7 @@ export async function scanMarket(input: ScanInput) {
         shortZone: notification?.zone,
         invalidation: notification?.invalidation,
         targets,
-        macroNotes: news[0]?.summary,
+        macroNotes: leadNewsContext,
         lastPriceAt: quote?.timestamp,
       },
     });
@@ -261,9 +277,9 @@ export async function scanMarket(input: ScanInput) {
         zoneProximityPct: proximity,
         invalidation,
         targets,
-        newsContext: news[0]?.summary ?? news[0]?.title,
+        newsContext: leadNewsContext,
         xavierContext: notification?.extractedSummary ?? importMemory?.summary,
-        briefContext: input.brief && extractSymbolsFromText(input.brief).includes(symbol) ? input.brief.slice(0, 800) : briefMemory?.summary,
+        briefContext: symbolInCurrentBrief ? input.brief?.slice(0, 800) : briefMemory?.summary,
         reasons,
         missingData,
         riskNotes: methodReview.riskNotes || (invalidation ? "Risque encadre par une invalidation connue." : "Risque incomplet: invalidation manquante."),

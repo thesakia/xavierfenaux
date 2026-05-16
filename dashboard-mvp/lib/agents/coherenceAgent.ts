@@ -8,6 +8,10 @@ function fallbackCoherence(input: CoherenceReviewInput): CoherenceReview {
   const hasZone = Boolean(input.knownZone?.trim());
   const hasTargets = input.targets.length > 0;
   const score = input.score + input.methodReview.scoreAdjustment;
+  const driver = input.newsContext?.trim() || input.briefContext?.trim();
+  const summary = driver
+    ? `${input.assetName ?? input.symbol}: ${driver.replace(/\s+/g, " ").slice(0, 220)}`
+    : `${input.assetName ?? input.symbol}: contexte insuffisant.`;
 
   if (!hasNewsOrBrief) {
     return {
@@ -26,7 +30,7 @@ function fallbackCoherence(input: CoherenceReviewInput): CoherenceReview {
       status: "setup_candidate",
       priority: 1,
       scoreAdjustment: input.methodReview.scoreAdjustment,
-      summary: `${input.assetName ?? input.symbol}: driver marche coherent avec reaction prix et cadre de risque a surveiller.`,
+      summary,
     };
   }
 
@@ -35,7 +39,7 @@ function fallbackCoherence(input: CoherenceReviewInput): CoherenceReview {
     status: "context",
     priority: score >= 50 ? 2 : 3,
     scoreAdjustment: input.methodReview.scoreAdjustment,
-    summary: `${input.assetName ?? input.symbol}: contexte interessant, mais cadre incomplet pour parler de setup.`,
+    summary,
   };
 }
 

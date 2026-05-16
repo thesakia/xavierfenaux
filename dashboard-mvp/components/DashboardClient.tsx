@@ -278,11 +278,15 @@ function shortenText(value: string | null | undefined, limit = 180) {
   return text.length > limit ? `${text.slice(0, limit)}...` : text;
 }
 
-function whyText(item: DashboardRadarItem, opportunity: DashboardOpportunity | undefined, reasons: string[]) {
-  return shortenText(
-    opportunity?.summary ?? item.xavierContext ?? item.newsContext ?? item.briefContext ?? reasons.slice(0, 2).join(" / "),
-    190,
+function whyText(item: DashboardRadarItem, reasons: string[]) {
+  const concreteReason = reasons.find(
+    (reason) =>
+      reason.startsWith("News:") ||
+      reason.startsWith("Brief:") ||
+      reason.startsWith("Reaction prix:") ||
+      reason.startsWith("Réaction prix:"),
   );
+  return shortenText(item.newsContext ?? item.briefContext ?? concreteReason ?? reasons.slice(0, 2).join(" / "), 220);
 }
 
 function directionClass(direction: Direction) {
@@ -682,7 +686,7 @@ export function DashboardClient({
                                   </span>
                                 </td>
                                 <td className="border-b border-white/5 px-3 py-3 align-top text-slate-300">
-                                  <p className="leading-6">{whyText(item, opportunity, reasons)}</p>
+                                  <p className="leading-6">{whyText(item, reasons)}</p>
                                   <span className="mt-2 inline-block text-xs text-violet-200">
                                     {isOpen ? "Masquer le detail" : "Cliquer pour le detail"}
                                   </span>
