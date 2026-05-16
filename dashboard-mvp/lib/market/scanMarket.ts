@@ -58,6 +58,22 @@ function formatVariation(value?: number | null) {
   return `${number > 0 ? "+" : ""}${number.toFixed(2)}%`;
 }
 
+function learnedXavierContext(memories: Awaited<ReturnType<typeof getRecentPrepMemory>>) {
+  const examples = memories
+    .filter((memory) => memory.kind === "xavier_import")
+    .slice(0, 20)
+    .map((memory, index) => `${index + 1}. ${memory.summary ?? memory.rawText}`)
+    .join("\n");
+
+  if (!examples) return null;
+
+  return [
+    "Exemples historiques Xavier a utiliser uniquement pour ajuster le filtre interne.",
+    "Ne pas utiliser les actifs cites dans ces exemples comme candidats du radar.",
+    examples,
+  ].join("\n");
+}
+
 export async function scanMarket(input: ScanInput) {
   const allowOpenAI = process.env.ENABLE_OPENAI_MARKET_SCAN === "true" && input.triggerOpenAI === true;
   const useXavierAssetMemory = input.useXavierAssetMemory === true;
@@ -115,10 +131,7 @@ export async function scanMarket(input: ScanInput) {
   const historicalNotificationSymbols = useXavierAssetMemory
     ? recentNotifications.flatMap((item) => (item.symbol ? [item.symbol] : []))
     : [];
-  const methodContext =
-    input.methodContext ??
-    recentPrepMemory.find((memory) => memory.kind === "xavier_method")?.rawText ??
-    null;
+  const methodContext = input.methodContext ?? learnedXavierContext(recentPrepMemory);
 
   const symbols = Array.from(
     new Set([

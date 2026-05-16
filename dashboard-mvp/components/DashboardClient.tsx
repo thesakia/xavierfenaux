@@ -18,6 +18,7 @@ import {
   Newspaper,
   RefreshCcw,
   Search,
+  Upload,
   X,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -405,22 +406,38 @@ export function DashboardClient({
   async function prepareMorning() {
     await runAction("prepare", async () => {
       saveLocal("xf:brief", brief);
-      saveLocal("xf:batchText", batchText);
 
       const response = await fetch("/api/market/scan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            brief,
-            methodContext: batchText,
-            triggerOpenAI: false,
-            useXavierAssetMemory: false,
-          }),
+        body: JSON.stringify({
+          brief,
+          triggerOpenAI: false,
+          useXavierAssetMemory: false,
+        }),
       });
 
       if (!response.ok) return "Preparation refusee.";
       refreshDashboard();
-      return "Preparation de seance terminee. Brief et methode Xavier memorises. Les actifs sont selectionnes par les news et les cours.";
+      return "Preparation de seance terminee. Les actifs sont selectionnes par les news, les cours et le filtre interne Xavier.";
+    });
+  }
+
+  async function importXavierMemory() {
+    await runAction("import-learning", async () => {
+      const content = batchText.trim();
+      if (!content) return "Import vide: colle un CSV ou des notifications Xavier avant d'importer.";
+      saveLocal("xf:batchText", content);
+
+      const response = await fetch("/api/notifications/batch-import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+
+      if (!response.ok) return "Import refuse.";
+      const payload = (await response.json()) as { count?: number };
+      return `${payload.count ?? 0} exemples memorises. Ils ajustent le filtre Xavier sans choisir les actifs du radar.`;
     });
   }
 
@@ -550,8 +567,8 @@ export function DashboardClient({
       <section className="mb-5 grid gap-4 xl:grid-cols-[0.85fr_1.15fr]">
         <div className="panel p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="section-title">Methode Xavier</h2>
-            <span className="text-xs text-slate-500">filtre la selection, ne choisit pas les actifs</span>
+            <h2 className="section-title">Memoire Xavier</h2>
+            <span className="text-xs text-slate-500">exemples pour ajuster le filtre interne</span>
           </div>
           <textarea
             value={batchText}
@@ -561,17 +578,34 @@ export function DashboardClient({
             }}
             className="min-h-52 w-full rounded-md border border-white/10 bg-ink px-3 py-2 text-sm leading-6 text-slate-100 outline-none ring-violetx/60 focus:ring-2"
             placeholder={
-              "Colle ici la methode ou les principes Xavier a appliquer au scan : driver clair, reaction prix, zone, invalidation, timing, pas de FOMO. Les actifs cites ici ne seront pas selectionnes automatiquement."
+              "Colle ici un CSV ou des notifications historiques Xavier. Ces exemples servent a apprendre le style de filtre: driver clair, reaction prix, zone, invalidation, timing. Les actifs cites ici ne sont pas selectionnes automatiquement."
             }
           />
           <div className="mt-3 flex flex-wrap gap-2">
+            <label className={`${actionToneClass("neutral")} cursor-pointer`}>
+              <Upload size={16} aria-hidden="true" />
+              <span>Charger CSV / txt</span>
+              <input
+                type="file"
+                accept=".csv,.txt,text/csv,text/plain"
+                className="sr-only"
+                onChange={async (event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) return;
+                  const content = await file.text();
+                  setBatchText(content);
+                  saveLocal("xf:batchText", content);
+                  event.target.value = "";
+                }}
+              />
+            </label>
             <ActionButton
               tone="primary"
-              icon={<Search size={16} aria-hidden="true" />}
-              busy={busyAction === "prepare"}
-              onClick={prepareMorning}
+              icon={<Upload size={16} aria-hidden="true" />}
+              busy={busyAction === "import-learning"}
+              onClick={importXavierMemory}
             >
-              Preparer avec ces infos
+              Importer dans la memoire
             </ActionButton>
           </div>
         </div>

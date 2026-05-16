@@ -46,9 +46,14 @@ export async function POST(request: NextRequest) {
     relatedAssets,
   });
 
-  await auditLog("notifications_batch_imported", "Batch Xavier / IVT notifications imported", {
+  await auditLog("notifications_batch_imported", "Xavier examples imported for method memory", {
     count: created.length,
   });
 
-  return NextResponse.json({ ok: true, count: created.length, ids: created });
+  return NextResponse.json({
+    ok: true,
+    count: created.length,
+    ids: created,
+    purpose: "method_memory_only",
+  });
 }
