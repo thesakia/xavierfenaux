@@ -147,7 +147,7 @@ const directionLabels: Record<Direction, string> = {
 
 const radarAgents = [
   {
-    name: "Nina News",
+    name: "Noah News",
     role: "Agent veille",
     image: "/api/agent-images/agent-news.png",
     mission: "Recupere les news du jour et de la veille, puis isole les vrais drivers de marche.",
@@ -168,7 +168,7 @@ const radarAgents = [
     accent: "border-violetx/35 bg-violetx/10 text-violet-100",
   },
   {
-    name: "Cora Radar",
+    name: "Corentin Radar",
     role: "Agent coherence",
     image: "/api/agent-images/agent-coherence-radar.png",
     mission: "Recoupe tout et ne laisse passer que les actifs coherents pour le TOP3.",
