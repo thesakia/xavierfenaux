@@ -145,6 +145,37 @@ const directionLabels: Record<Direction, string> = {
   NEUTRAL: "neutre",
 };
 
+const radarAgents = [
+  {
+    name: "Nina News",
+    role: "Agent veille",
+    image: "/agents/agent-news.png",
+    mission: "Recupere les news du jour et de la veille, puis isole les vrais drivers de marche.",
+    accent: "border-sky-400/30 bg-sky-400/10 text-sky-100",
+  },
+  {
+    name: "Mako Marche",
+    role: "Agent prix",
+    image: "/agents/agent-marche.png",
+    mission: "Croise les actus avec les cours actuels pour reperer les reactions utiles.",
+    accent: "border-emerald-400/30 bg-emerald-400/10 text-emerald-100",
+  },
+  {
+    name: "Xav Methode",
+    role: "Agent filtre",
+    image: "/agents/agent-methode-xavier.png",
+    mission: "Applique driver, zone, invalidation et timing sans choisir un actif parce qu'il a ete cite.",
+    accent: "border-violetx/35 bg-violetx/10 text-violet-100",
+  },
+  {
+    name: "Cora Radar",
+    role: "Agent coherence",
+    image: "/agents/agent-coherence-radar.png",
+    mission: "Recoupe tout et ne laisse passer que les actifs coherents pour le TOP3.",
+    accent: "border-amber-400/35 bg-amber-400/10 text-amber-100",
+  },
+];
+
 type AssetTradingViewMeta = {
   mnemonic: string;
   tradingViewSymbol: string;
@@ -515,7 +546,7 @@ export function DashboardClient({
       ) : null}
 
       <section className="mx-auto mb-5 grid w-full max-w-[1500px] gap-4">
-        <div className="panel order-2 p-4">
+        <div className="panel order-3 p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
             <h2 className="section-title">Memoire Xavier</h2>
             <span className="text-xs text-slate-500">exemples pour ajuster le filtre interne</span>
@@ -809,6 +840,39 @@ export function DashboardClient({
                 Clique sur Preparer la seance pour generer le TOP3 par marche.
               </p>
             )}
+          </div>
+        </div>
+
+        <div className="panel order-2 p-4">
+          <div className="mb-4 flex flex-col gap-1 border-b border-white/10 pb-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-violet-300">Agents du radar</p>
+              <h2 className="mt-1 text-xl font-semibold text-white">La chaine de decision</h2>
+            </div>
+            <span className="text-xs text-slate-500">news - prix - methode - coherence</span>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {radarAgents.map((agent) => (
+              <article key={agent.name} className="rounded-md border border-white/10 bg-ink p-3">
+                <div className="overflow-hidden rounded-md border border-white/10 bg-slate-950">
+                  <img
+                    src={agent.image}
+                    alt={`${agent.name}, ${agent.role}`}
+                    className="aspect-square w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="mt-3 flex items-start justify-between gap-2">
+                  <div>
+                    <h3 className="text-base font-semibold text-white">{agent.name}</h3>
+                    <span className={`mt-1 inline-flex rounded-md border px-2 py-0.5 text-xs font-semibold ${agent.accent}`}>
+                      {agent.role}
+                    </span>
+                  </div>
+                </div>
+                <p className="mt-3 text-sm leading-6 text-slate-300">{agent.mission}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
