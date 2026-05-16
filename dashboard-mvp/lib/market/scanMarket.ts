@@ -68,8 +68,8 @@ function learnedXavierContext(memories: Awaited<ReturnType<typeof getRecentPrepM
   if (!examples) return null;
 
   return [
-    "Exemples historiques Xavier a utiliser uniquement pour ajuster le filtre interne.",
-    "Ne pas utiliser les actifs cites dans ces exemples comme candidats du radar.",
+    "Exemples historiques Xavier à utiliser uniquement pour ajuster le filtre interne.",
+    "Ne pas utiliser les actifs cités dans ces exemples comme candidats du radar.",
     examples,
   ].join("\n");
 }
@@ -158,7 +158,7 @@ export async function scanMarket(input: ScanInput) {
     data: {
       status: "running",
       usedOpenAI: allowOpenAI,
-      summary: "Scan marche lance.",
+      summary: "Scan marché lancé.",
     },
   });
 
@@ -193,19 +193,19 @@ export async function scanMarket(input: ScanInput) {
     if (leadNews) {
       reasons.push(`News: ${leadNews.title}${leadNews.source ? ` (${leadNews.source})` : ""}.`);
     }
-    if (news.length > 1) reasons.push(`${news.length} news recentes recoupent cet actif.`);
-    if (useXavierAssetMemory && currentNotification) reasons.push("Notification Xavier / IVT ajoutee au scan.");
-    else if (useXavierAssetMemory && historicalNotification) reasons.push("Memoire Xavier / IVT recente reprise.");
-    if (symbolInCurrentBrief) reasons.push("Brief: actif relie au contexte marche du jour.");
-    else if (briefMemory) reasons.push("Brief: actif relie a un contexte marche recent.");
-    if (importMemory && !currentNotification) reasons.push("Actif deja present dans un import recent.");
+    if (news.length > 1) reasons.push(`${news.length} news récentes recoupent cet actif.`);
+    if (useXavierAssetMemory && currentNotification) reasons.push("Notification Xavier / IVT ajoutée au scan.");
+    else if (useXavierAssetMemory && historicalNotification) reasons.push("Mémoire Xavier / IVT récente reprise.");
+    if (symbolInCurrentBrief) reasons.push("Brief: actif relié au contexte marché du jour.");
+    else if (briefMemory) reasons.push("Brief: actif relié à un contexte marché récent.");
+    if (importMemory && !currentNotification) reasons.push("Actif déjà présent dans un import récent.");
     if (zone) reasons.push(`Cadre: zone connue ${zone}.`);
     else missingData.push("zone");
     if (invalidation) reasons.push(`Risque: invalidation connue ${invalidation}.`);
     else missingData.push("invalidation");
-    if (targets.length) reasons.push(`Objectifs theoriques: ${targets.join(" / ")}.`);
+    if (targets.length) reasons.push(`Objectifs théoriques: ${targets.join(" / ")}.`);
     else missingData.push("objectifs");
-    if (proximity !== null && proximity <= 2) reasons.push(`Prix: a ${proximity.toFixed(2)}% d'une zone suivie.`);
+    if (proximity !== null && proximity <= 2) reasons.push(`Prix: à ${proximity.toFixed(2)}% d'une zone suivie.`);
     const variation = formatVariation(quote?.variationPct);
     if (variation && Math.abs(quote?.variationPct ?? 0) >= 1) {
       reasons.push(`Reaction prix: ${definition?.assetName ?? symbol} varie de ${variation} sur le dernier cours disponible.`);
@@ -313,7 +313,7 @@ export async function scanMarket(input: ScanInput) {
         briefContext: symbolBriefContext ?? briefMemory?.summary,
         reasons,
         missingData,
-        riskNotes: methodReview.riskNotes || (invalidation ? "Risque encadre par une invalidation connue." : "Risque incomplet: invalidation manquante."),
+        riskNotes: methodReview.riskNotes || (invalidation ? "Risque encadré par une invalidation connue." : "Risque incomplet: invalidation manquante."),
         sources: {
           quote: quote?.source ?? "none",
           news: news.slice(0, 5).map((item) => ({ title: item.title, source: item.source, url: item.url })),
@@ -365,14 +365,14 @@ export async function scanMarket(input: ScanInput) {
 
   const importedMethodExamples = recentPrepMemory.filter((memory) => memory.kind === "xavier_import").length;
   const memorySummary = useXavierAssetMemory
-    ? `Memoire active: ${recentPrepMemory.length} brief/import(s), ${recentNotifications.length} notification(s) Xavier / IVT.`
-    : `Memoire methode: ${importedMethodExamples} import(s) d'exemples utilises comme filtre interne, pas comme selection d'actifs.`;
+    ? `Mémoire active: ${recentPrepMemory.length} brief/import(s), ${recentNotifications.length} notification(s) Xavier / IVT.`
+    : `Mémoire méthode: ${importedMethodExamples} import(s) d'exemples utilisés comme filtre interne, pas comme sélection d'actifs.`;
 
   await prisma.marketScanRun.update({
     where: { id: run.id },
     data: {
       status: "completed",
-      summary: `${createdRadarItems.length} actifs analyses, ${createdOpportunities} setup(s) a surveiller cree(s). ${memorySummary}`,
+      summary: `${createdRadarItems.length} actifs analysés, ${createdOpportunities} setup(s) à surveiller créé(s). ${memorySummary}`,
       createdRadarItems: createdRadarItems.length,
       createdOpportunities,
     },

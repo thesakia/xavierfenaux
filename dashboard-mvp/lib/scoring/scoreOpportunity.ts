@@ -40,16 +40,16 @@ export function scoreOpportunity(input: ScoreInput) {
 
   if (hasTargets(input.targets)) {
     score += 10;
-    reasons.push("Objectifs theoriques clairs.");
+    reasons.push("Objectifs théoriques clairs.");
   }
 
   const ageHours = input.createdAt ? (Date.now() - input.createdAt.getTime()) / 3_600_000 : 0;
   if (ageHours <= 24) {
     score += 10;
-    reasons.push("Donnees recentes.");
+    reasons.push("Données récentes.");
   } else if (ageHours <= 72) {
     score += 5;
-    reasons.push("Donnees encore exploitables.");
+    reasons.push("Données encore exploitables.");
   }
 
   const penalty = Math.min(20, Math.max(0, input.riskPenalty ?? 0));

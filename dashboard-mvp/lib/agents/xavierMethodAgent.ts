@@ -20,14 +20,14 @@ function fallbackReview(input: XavierMethodReviewInput): XavierMethodReview {
 
   const passesMethod = hasMarketDriver && (hasRiskFrame || hasZone || isMoving);
   const methodNotes = passesMethod
-    ? "Contexte exploitable avec driver marche et cadre de risque a verifier avant action."
-    : "Ne remonte pas assez selon la methode: il manque un driver marche ou un cadre de risque clair.";
+    ? "Contexte exploitable avec driver marché et cadre de risque à vérifier avant action."
+    : "Ne remonte pas assez selon la méthode: il manque un driver marché ou un cadre de risque clair.";
 
   return {
     scoreAdjustment,
     passesMethod,
     methodNotes,
-    riskNotes: hasRiskFrame ? "Invalidation ou niveau de risque present." : "Risque incomplet: invalidation a definir.",
+    riskNotes: hasRiskFrame ? "Invalidation ou niveau de risque présent." : "Risque incomplet: invalidation à définir.",
   };
 }
 
@@ -43,9 +43,9 @@ export async function reviewWithXavierMethod(input: XavierMethodReviewInput): Pr
     model: getLightModel(),
     system: `${compliantVocabularyInstruction}
 Mission:
-- appliquer la methode d'action de Xavier comme filtre, sans utiliser ses notifications pour choisir un actif
-- verifier driver d'actualite, reaction du prix, zone, invalidation, objectifs theoriques et risque
-- ne jamais remonter un actif uniquement parce qu'il a ete cite dans une note Xavier
+- appliquer la méthode d'action de Xavier comme filtre, sans utiliser ses notifications pour choisir un actif
+- vérifier driver d'actualité, réaction du prix, zone, invalidation, objectifs théoriques et risque
+- ne jamais remonter un actif uniquement parce qu'il a été cité dans une note Xavier
 - retourner un JSON strict avec scoreAdjustment, passesMethod, methodNotes, riskNotes`,
     user: JSON.stringify(input),
   });

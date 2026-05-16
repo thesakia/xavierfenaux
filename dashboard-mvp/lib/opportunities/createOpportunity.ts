@@ -56,7 +56,7 @@ async function persistCandidate(
       score: scored.score,
       status: OpportunityStatus.WATCHING,
       source: candidate.source ?? OpportunitySource.MIX,
-      summary: candidate.summary || "Setup a surveiller. Contexte a confirmer.",
+      summary: candidate.summary || "Setup à surveiller. Contexte à confirmer.",
       riskNotes: candidate.riskNotes,
       aiReasoningSummary: candidate.aiReasoningSummary || scored.reasons.join(" "),
     },
@@ -96,9 +96,9 @@ export async function createOpportunityFromTradingViewAlert(alertId: string) {
       invalidation: notification.invalidation,
       targets: Array.isArray(notification.targets) ? notification.targets.map(String) : [],
       source: OpportunitySource.MIX,
-      summary: notification.extractedSummary || alert.message || "Setup a surveiller.",
+      summary: notification.extractedSummary || alert.message || "Setup à surveiller.",
       riskNotes: notification.riskNotes,
-      aiReasoningSummary: "Convergence entre une alerte TradingView recente et une notification IVT structuree.",
+      aiReasoningSummary: "Convergence entre une alerte TradingView récente et une notification IVT structurée.",
     };
   }
 
@@ -149,11 +149,11 @@ export async function createOpportunityFromNotification(notificationId: string) 
     invalidation: notification.invalidation,
     targets: Array.isArray(notification.targets) ? notification.targets.map(String) : [],
     source: alert ? OpportunitySource.MIX : OpportunitySource.IVT,
-    summary: notification.extractedSummary || "Setup a surveiller issu d'une notification IVT.",
+    summary: notification.extractedSummary || "Setup à surveiller issu d'une notification IVT.",
     riskNotes: notification.riskNotes,
     aiReasoningSummary: alert
-      ? "Notification IVT rapprochee d'une alerte TradingView recente."
-      : "Notification IVT structuree, sans autre convergence recente detectee.",
+      ? "Notification IVT rapprochée d'une alerte TradingView récente."
+      : "Notification IVT structurée, sans autre convergence récente détectée.",
   };
 
   candidate = await reviewOpportunityRisk(candidate);

@@ -14,7 +14,7 @@ class MockNewsProvider implements NewsProvider {
   async scan(): Promise<NewsItem[]> {
     return [
       {
-        title: "Mock marche: volatilite surveillee sur indices et crypto",
+        title: "Mock marché: volatilité surveillée sur indices et crypto",
         source: "mock",
         publishedAt: new Date(),
         summary:
@@ -45,7 +45,7 @@ class HttpNewsProvider implements NewsProvider {
 
     const payload = (await response.json()) as { articles?: Array<Record<string, unknown>> };
     return (payload.articles ?? []).map((article) => ({
-      title: String(article.title ?? "Actualite marche"),
+      title: String(article.title ?? "Actualité marché"),
       source: String(article.source ?? article.provider ?? "external"),
       url: article.url ? String(article.url) : null,
       publishedAt: article.publishedAt ? new Date(String(article.publishedAt)) : new Date(),

@@ -78,8 +78,8 @@ export async function buildOpportunityCandidate(input: unknown): Promise<Opportu
     system: `${compliantVocabularyInstruction}
 Mission:
 - croiser alertes TradingView, notifications IVT et contexte news
-- generer une opportunite candidate seulement si la convergence est claire
-- refuser si les donnees sont insuffisantes
+- générer une opportunité candidate seulement si la convergence est claire
+- refuser si les données sont insuffisantes
 - retourner un JSON strict avec accepted, refusalReason, symbol, assetName, direction, entryZone, invalidation, targets, source, summary, riskNotes, aiReasoningSummary`,
     user: JSON.stringify(input),
   });
@@ -90,7 +90,7 @@ Mission:
 
   if (!result.accepted) return result;
   if (!result.symbol || !result.entryZone || !result.invalidation || !result.targets?.length) {
-    return { accepted: false, refusalReason: "Donnees insuffisantes pour creer un setup a surveiller." };
+    return { accepted: false, refusalReason: "Données insuffisantes pour créer un setup à surveiller." };
   }
 
   return {

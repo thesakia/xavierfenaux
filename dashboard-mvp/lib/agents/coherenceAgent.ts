@@ -20,7 +20,7 @@ function fallbackCoherence(input: CoherenceReviewInput): CoherenceReview {
       priority: 3,
       scoreAdjustment: -20,
       summary: `${input.assetName ?? input.symbol}: pas de driver news ou brief assez clair pour le radar du jour.`,
-      refusalReason: "Actif non retenu: selection non justifiee par les news du jour ou de la veille.",
+      refusalReason: "Actif non retenu: sélection non justifiée par les news du jour ou de la veille.",
     };
   }
 
@@ -55,9 +55,9 @@ export async function reviewCoherence(input: CoherenceReviewInput): Promise<Cohe
     model: getLightModel(),
     system: `${compliantVocabularyInstruction}
 Mission:
-- recouper news, reaction des cours et methode Xavier
+- recouper news, réaction des cours et méthode Xavier
 - decider si l'actif merite d'apparaitre dans le radar du jour
-- refuser si l'actif est seulement cite dans une note Xavier sans driver news ou reaction coherente
+- refuser si l'actif est seulement cité dans une note Xavier sans driver news ou réaction cohérente
 - status doit etre setup_candidate, context ou watch_only
 - retourner un JSON strict avec display, status, priority, scoreAdjustment, summary, refusalReason`,
     user: JSON.stringify(input),

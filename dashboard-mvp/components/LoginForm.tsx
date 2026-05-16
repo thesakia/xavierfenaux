@@ -23,7 +23,7 @@ export function LoginForm() {
     setPending(false);
 
     if (!response.ok) {
-      setError("Acces refuse.");
+      setError("Accès refusé.");
       return;
     }
 

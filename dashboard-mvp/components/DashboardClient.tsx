@@ -62,6 +62,16 @@ type MarketGroup = "Indices" | "Actions" | "Crypto" | "Forex" | "Matieres premie
 
 const marketOrder: MarketGroup[] = ["Indices", "Actions", "Crypto", "Forex", "Matieres premieres", "Taux", "Autres"];
 
+const marketLabels: Record<MarketGroup, string> = {
+  Indices: "Indices",
+  Actions: "Actions",
+  Crypto: "Crypto",
+  Forex: "Forex",
+  "Matieres premieres": "Matières premières",
+  Taux: "Taux",
+  Autres: "Autres",
+};
+
 const marketThemes: Record<
   MarketGroup,
   {
@@ -124,11 +134,11 @@ const marketThemes: Record<
 };
 
 const statusLabels: Record<OpportunityStatus, string> = {
-  WATCHING: "a surveiller",
-  VALIDATED: "valide",
-  IGNORED: "ignore",
-  INVALIDATED: "invalide",
-  ARCHIVED: "archive",
+  WATCHING: "à surveiller",
+  VALIDATED: "validé",
+  IGNORED: "ignoré",
+  INVALIDATED: "invalidé",
+  ARCHIVED: "archivé",
 };
 
 const sourceLabels: Record<OpportunitySource, string> = {
@@ -150,28 +160,28 @@ const radarAgents = [
     name: "Noah News",
     role: "Agent veille",
     image: "/api/agent-images/agent-news.png",
-    mission: "Recupere les news du jour et de la veille, puis isole les vrais drivers de marche.",
+    mission: "Récupère les news du jour et de la veille, puis isole les vrais drivers de marché.",
     accent: "border-sky-400/30 bg-sky-400/10 text-sky-100",
   },
   {
-    name: "Mako Marche",
+    name: "Mako Marché",
     role: "Agent prix",
     image: "/api/agent-images/agent-marche.png",
-    mission: "Croise les actus avec les cours actuels pour reperer les reactions utiles.",
+    mission: "Croise les actus avec les cours actuels pour repérer les réactions utiles.",
     accent: "border-emerald-400/30 bg-emerald-400/10 text-emerald-100",
   },
   {
-    name: "Xav Methode",
+    name: "Xav Méthode",
     role: "Agent filtre",
     image: "/api/agent-images/agent-methode-xavier.png",
-    mission: "Applique driver, zone, invalidation et timing sans choisir un actif parce qu'il a ete cite.",
+    mission: "Applique driver, zone, invalidation et timing sans choisir un actif parce qu'il a été cité.",
     accent: "border-violetx/35 bg-violetx/10 text-violet-100",
   },
   {
     name: "Corentin Radar",
-    role: "Agent coherence",
+    role: "Agent cohérence",
     image: "/api/agent-images/agent-coherence-radar.png",
-    mission: "Recoupe tout et ne laisse passer que les actifs coherents pour le TOP3.",
+    mission: "Recoupe tout et ne laisse passer que les actifs cohérents pour le TOP3.",
     accent: "border-amber-400/35 bg-amber-400/10 text-amber-100",
   },
 ];
@@ -448,16 +458,16 @@ export function DashboardClient({
         }),
       });
 
-      if (!response.ok) return "Preparation refusee.";
+      if (!response.ok) return "Préparation refusée.";
       refreshDashboard();
-      return "Preparation de seance terminee. Les actifs sont selectionnes par les news, les cours et le filtre interne Xavier.";
+      return "Préparation de séance terminée. Les actifs sont sélectionnés par les news, les cours et le filtre interne Xavier.";
     });
   }
 
   async function importXavierMemory() {
     await runAction("import-learning", async () => {
       const content = batchText.trim();
-      if (!content) return "Import vide: colle un CSV ou des notifications Xavier avant d'importer.";
+      if (!content) return "Import vide : colle un CSV ou des notifications Xavier avant d'importer.";
       saveLocal("xf:batchText", content);
 
       const response = await fetch("/api/notifications/batch-import", {
@@ -466,16 +476,16 @@ export function DashboardClient({
         body: JSON.stringify({ content }),
       });
 
-      if (!response.ok) return "Import refuse.";
+      if (!response.ok) return "Import refusé.";
       const payload = (await response.json()) as { count?: number };
-      return `${payload.count ?? 0} exemples memorises. Ils ajustent le filtre Xavier sans choisir les actifs du radar.`;
+      return `${payload.count ?? 0} exemples mémorisés. Ils ajustent le filtre Xavier sans choisir les actifs du radar.`;
     });
   }
 
   async function scanNews() {
     await runAction("news", async () => {
       const response = await fetch("/api/news/scan", { method: "POST" });
-      return response.ok ? "Scan news ajoute a la file." : "Scan news refuse.";
+      return response.ok ? "Scan news ajouté à la file." : "Scan news refusé.";
     });
   }
 
@@ -487,9 +497,9 @@ export function DashboardClient({
         body: JSON.stringify({ id, status }),
       });
 
-      if (!response.ok) return "Statut non modifie.";
+      if (!response.ok) return "Statut non modifié.";
       refreshDashboard();
-      return "Statut mis a jour.";
+      return "Statut mis à jour.";
     });
   }
 
@@ -506,7 +516,7 @@ export function DashboardClient({
       <header className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-5 xl:flex-row xl:items-center xl:justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.28em] text-violet-300">Xavier Fenaux</p>
-          <h1 className="mt-2 text-2xl font-semibold text-white md:text-3xl">Preparation de seance</h1>
+          <h1 className="mt-2 text-2xl font-semibold text-white md:text-3xl">Préparation de séance</h1>
           <p className="mt-1 text-sm capitalize text-slate-400">{todayLabel()}</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -517,7 +527,7 @@ export function DashboardClient({
             onClick={prepareMorning}
             className="min-w-48"
           >
-            Preparer la seance
+            Préparer la séance
           </ActionButton>
           <ActionButton
             icon={<Newspaper size={16} aria-hidden="true" />}
@@ -548,7 +558,7 @@ export function DashboardClient({
       <section className="mx-auto mb-5 grid w-full max-w-[1500px] gap-4">
         <div className="panel order-3 p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="section-title">Memoire Xavier</h2>
+            <h2 className="section-title">Mémoire Xavier</h2>
             <span className="text-xs text-slate-500">exemples pour ajuster le filtre interne</span>
           </div>
           <textarea
@@ -559,7 +569,7 @@ export function DashboardClient({
             }}
             className="min-h-52 w-full rounded-md border border-white/10 bg-ink px-3 py-2 text-sm leading-6 text-slate-100 outline-none ring-violetx/60 focus:ring-2"
             placeholder={
-              "Colle ici un CSV ou des notifications historiques Xavier. Ces exemples servent a apprendre le style de filtre: driver clair, reaction prix, zone, invalidation, timing. Les actifs cites ici ne sont pas selectionnes automatiquement."
+              "Colle ici un CSV ou des notifications historiques Xavier. Ces exemples servent à apprendre le style de filtre : driver clair, réaction prix, zone, invalidation, timing. Les actifs cités ici ne sont pas sélectionnés automatiquement."
             }
           />
           <div className="mt-3 flex flex-wrap gap-2">
@@ -586,7 +596,7 @@ export function DashboardClient({
               busy={busyAction === "import-learning"}
               onClick={importXavierMemory}
             >
-              Importer dans la memoire
+              Importer dans la mémoire
             </ActionButton>
           </div>
         </div>
@@ -594,10 +604,10 @@ export function DashboardClient({
         <div className="panel order-1 p-4 shadow-[0_0_0_1px_rgba(139,92,246,0.22),0_24px_80px_rgba(15,23,42,0.45)]">
           <div className="mb-4 flex flex-col gap-3 border-b border-violetx/30 pb-4 text-center md:flex-row md:items-end md:justify-between md:text-left">
             <div>
-              <p className="text-xs uppercase tracking-[0.22em] text-violet-300">Une seule liste a regarder</p>
+              <p className="text-xs uppercase tracking-[0.22em] text-violet-300">Une seule liste à regarder</p>
               <h2 className="mt-1 text-3xl font-semibold text-white md:text-4xl">Radar du jour</h2>
               <p className="mt-1 text-sm text-slate-400">
-                TOP3 par marche, uniquement avec contexte news ou zone technique.
+                TOP3 par marché, uniquement avec contexte news ou zone technique.
               </p>
             </div>
             <span className="text-xs text-slate-500">
@@ -614,7 +624,7 @@ export function DashboardClient({
                 >
                   <div className="mb-3 flex items-center justify-between">
                     <h3 className={`text-lg font-semibold ${marketThemes[group.market].title}`}>
-                      {group.market}
+                      {marketLabels[group.market]}
                     </h3>
                     <span className={`rounded-md border px-2 py-1 text-xs font-semibold ${marketThemes[group.market].badge}`}>
                       TOP {group.items.length}
@@ -643,7 +653,7 @@ export function DashboardClient({
                           const cardStatus = opportunity
                             ? statusLabels[opportunity.status]
                             : item.status === "setup_candidate"
-                              ? "setup a surveiller"
+                              ? "setup à surveiller"
                               : "contexte";
                           const isOpen = openRadarId === item.id;
 
@@ -703,7 +713,7 @@ export function DashboardClient({
                                 <td className="border-b border-white/5 px-3 py-3 align-top text-slate-300">
                                   <p className="leading-6">{whyText(item, reasons)}</p>
                                   <span className="mt-2 inline-block text-xs text-violet-200">
-                                    {isOpen ? "Masquer le detail" : "Cliquer pour le detail"}
+                                    {isOpen ? "Masquer le détail" : "Cliquer pour le détail"}
                                   </span>
                                 </td>
                                 <td className="border-b border-white/5 px-3 py-3 align-top">
@@ -731,7 +741,7 @@ export function DashboardClient({
                                           Pourquoi celui-ci
                                         </h4>
                                         <ul className="space-y-2 text-slate-300">
-                                          {(reasons.length ? reasons : ["Contexte detecte, mais criteres encore incomplets."]).map((reason) => (
+                                          {(reasons.length ? reasons : ["Contexte détecté, mais critères encore incomplets."]).map((reason) => (
                                             <li key={reason}>{reason}</li>
                                           ))}
                                         </ul>
@@ -752,12 +762,12 @@ export function DashboardClient({
                                           <div className="mt-2 space-y-2">
                                             {newsSources.slice(0, 3).map((source, sourceIndex) => (
                                               <p key={`${source.title}-${sourceIndex}`} className="text-xs text-slate-400">
-                                                {source.title ?? "News marche"} {source.source ? `- ${source.source}` : ""}
+                                                {source.title ?? "News marché"} {source.source ? `- ${source.source}` : ""}
                                               </p>
                                             ))}
                                           </div>
                                         ) : !item.newsContext ? (
-                                          <p className="text-slate-400">Pas de news specifique exploitable pour ce scan.</p>
+                                          <p className="text-slate-400">Pas de news spécifique exploitable pour ce scan.</p>
                                         ) : null}
                                       </div>
 
@@ -788,7 +798,7 @@ export function DashboardClient({
                                             </dd>
                                           </div>
                                           <div className="flex justify-between gap-3">
-                                            <dt className="text-slate-500">Proximite</dt>
+                                            <dt className="text-slate-500">Proximité</dt>
                                             <dd>{item.zoneProximityPct ? `${Number(item.zoneProximityPct).toFixed(2)}%` : "-"}</dd>
                                           </div>
                                           <div className="flex justify-between gap-3">
@@ -837,7 +847,7 @@ export function DashboardClient({
               ))
             ) : (
               <p className="rounded-md border border-white/10 bg-ink p-3 text-sm text-slate-400">
-                Clique sur Preparer la seance pour generer le TOP3 par marche.
+                Clique sur Préparer la séance pour générer le TOP3 par marché.
               </p>
             )}
           </div>
@@ -847,9 +857,9 @@ export function DashboardClient({
           <div className="mb-4 flex flex-col gap-1 border-b border-white/10 pb-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-xs uppercase tracking-[0.22em] text-violet-300">Agents du radar</p>
-              <h2 className="mt-1 text-xl font-semibold text-white">La chaine de decision</h2>
+              <h2 className="mt-1 text-xl font-semibold text-white">La chaîne de décision</h2>
             </div>
-            <span className="text-xs text-slate-500">news - prix - methode - coherence</span>
+            <span className="text-xs text-slate-500">news - prix - méthode - cohérence</span>
           </div>
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             {radarAgents.map((agent) => (
@@ -881,7 +891,7 @@ export function DashboardClient({
         <div className="panel p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
             <h2 className="section-title">Brief du matin</h2>
-            <span className="text-xs text-slate-500">memorise puis croise avec news + imports</span>
+            <span className="text-xs text-slate-500">mémorisé puis croisé avec news + imports</span>
           </div>
           <textarea
             value={brief}
@@ -890,14 +900,14 @@ export function DashboardClient({
               saveLocal("xf:brief", event.target.value);
             }}
             className="min-h-44 w-full rounded-md border border-white/10 bg-ink px-3 py-2 text-sm leading-6 text-slate-100 outline-none ring-violetx/60 focus:ring-2"
-            placeholder="Colle ici le contexte du matin : macro attendue, biais general, niveaux importants, actifs a surveiller. Il servira aussi aux prochains scans."
+            placeholder="Colle ici le contexte du matin : macro attendue, biais général, niveaux importants, actifs à surveiller. Il servira aussi aux prochains scans."
           />
         </div>
 
         <div className="panel p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
             <h2 className="section-title">Agenda macro</h2>
-            <span className="text-xs text-slate-500">evenements du jour</span>
+            <span className="text-xs text-slate-500">événements du jour</span>
           </div>
           <div className="max-h-52 space-y-2 overflow-auto pr-1">
             {macroEvents.length ? (

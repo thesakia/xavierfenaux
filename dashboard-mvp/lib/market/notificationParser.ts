@@ -50,7 +50,7 @@ export function parseNotificationDeterministic(rawText: string): ParsedNotificat
     targets,
     timeframe,
     confidenceLevel: zone || invalidation ? 70 : 45,
-    riskNotes: invalidation ? "Invalidation detectee dans la notification." : "Invalidation non detectee.",
+    riskNotes: invalidation ? "Invalidation détectée dans la notification." : "Invalidation non détectée.",
     extractedSummary: rawText,
   };
 }

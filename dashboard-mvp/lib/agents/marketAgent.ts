@@ -24,7 +24,7 @@ export async function analyzeMarketNews(news: MarketNewsInput): Promise<MarketCo
     model: getLightModel(),
     system: `${compliantVocabularyInstruction}
 Mission:
-- resumer les actualites marche sans inventer de donnees
+- résumer les actualités marché sans inventer de données
 - identifier les actifs concernes
 - classer en MACRO, SENTIMENT, RISK, TECHNICAL ou OTHER
 - retourner un JSON strict avec title, summary, relatedAssets, category, importanceScore`,
