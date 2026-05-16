@@ -12,6 +12,7 @@ import {
   AlertTriangle,
   Archive,
   Check,
+  ExternalLink,
   Loader2,
   LogOut,
   Newspaper,
@@ -142,6 +143,54 @@ const directionLabels: Record<Direction, string> = {
   SHORT: "short",
   NEUTRAL: "neutre",
 };
+
+type AssetTradingViewMeta = {
+  mnemonic: string;
+  tradingViewSymbol: string;
+};
+
+const assetTradingViewMeta: Record<string, AssetTradingViewMeta> = {
+  CAC40: { mnemonic: "PX1", tradingViewSymbol: "EURONEXT:PX1" },
+  DAX: { mnemonic: "DAX", tradingViewSymbol: "XETR:DAX" },
+  STOXX50: { mnemonic: "SX5E", tradingViewSymbol: "TVC:SX5E" },
+  FTSE: { mnemonic: "UKX", tradingViewSymbol: "TVC:UKX" },
+  SP500: { mnemonic: "SPX", tradingViewSymbol: "TVC:SPX" },
+  NASDAQ: { mnemonic: "NDX", tradingViewSymbol: "NASDAQ:NDX" },
+  DOWJONES: { mnemonic: "DJI", tradingViewSymbol: "TVC:DJI" },
+  RUSSELL: { mnemonic: "RUT", tradingViewSymbol: "TVC:RUT" },
+  NIKKEI: { mnemonic: "NI225", tradingViewSymbol: "TVC:NI225" },
+  AAPL: { mnemonic: "AAPL", tradingViewSymbol: "NASDAQ:AAPL" },
+  MSFT: { mnemonic: "MSFT", tradingViewSymbol: "NASDAQ:MSFT" },
+  NVDA: { mnemonic: "NVDA", tradingViewSymbol: "NASDAQ:NVDA" },
+  TSLA: { mnemonic: "TSLA", tradingViewSymbol: "NASDAQ:TSLA" },
+  AMZN: { mnemonic: "AMZN", tradingViewSymbol: "NASDAQ:AMZN" },
+  META: { mnemonic: "META", tradingViewSymbol: "NASDAQ:META" },
+  GOOGL: { mnemonic: "GOOGL", tradingViewSymbol: "NASDAQ:GOOGL" },
+  LVMH: { mnemonic: "MC", tradingViewSymbol: "EURONEXT:MC" },
+  TTE: { mnemonic: "TTE", tradingViewSymbol: "EURONEXT:TTE" },
+  BTC: { mnemonic: "BTCUSDT", tradingViewSymbol: "BINANCE:BTCUSDT" },
+  ETH: { mnemonic: "ETHUSDT", tradingViewSymbol: "BINANCE:ETHUSDT" },
+  SOL: { mnemonic: "SOLUSDT", tradingViewSymbol: "BINANCE:SOLUSDT" },
+  BNB: { mnemonic: "BNBUSDT", tradingViewSymbol: "BINANCE:BNBUSDT" },
+  XRP: { mnemonic: "XRPUSDT", tradingViewSymbol: "BINANCE:XRPUSDT" },
+  EURUSD: { mnemonic: "EURUSD", tradingViewSymbol: "FX_IDC:EURUSD" },
+  GBPUSD: { mnemonic: "GBPUSD", tradingViewSymbol: "FX_IDC:GBPUSD" },
+  USDJPY: { mnemonic: "USDJPY", tradingViewSymbol: "FX_IDC:USDJPY" },
+  GOLD: { mnemonic: "XAUUSD", tradingViewSymbol: "OANDA:XAUUSD" },
+  SILVER: { mnemonic: "XAGUSD", tradingViewSymbol: "OANDA:XAGUSD" },
+  BRENT: { mnemonic: "UKOIL", tradingViewSymbol: "TVC:UKOIL" },
+  WTI: { mnemonic: "USOIL", tradingViewSymbol: "TVC:USOIL" },
+  US10Y: { mnemonic: "US10Y", tradingViewSymbol: "TVC:US10Y" },
+  DE10Y: { mnemonic: "DE10Y", tradingViewSymbol: "TVC:DE10Y" },
+};
+
+function getTradingViewMeta(symbol: string): AssetTradingViewMeta {
+  return assetTradingViewMeta[symbol] ?? { mnemonic: symbol, tradingViewSymbol: symbol };
+}
+
+function tradingViewUrl(symbol: string) {
+  return `https://www.tradingview.com/chart/?symbol=${encodeURIComponent(getTradingViewMeta(symbol).tradingViewSymbol)}`;
+}
 
 function loadLocal(key: string) {
   if (typeof window === "undefined") return "";
@@ -566,6 +615,7 @@ export function DashboardClient({
                       <tbody>
                         {group.items.map((item, index) => {
                           const opportunity = opportunityBySymbol.get(item.symbol);
+                          const tradingViewMeta = getTradingViewMeta(item.symbol);
                           const direction = opportunity?.direction ?? item.direction;
                           const reasons = readableJsonList(item.reasons);
                           const missing = readableJsonList(item.missingData);
@@ -603,10 +653,24 @@ export function DashboardClient({
                                 <td className="border-b border-white/5 px-3 py-3 align-top">
                                   <strong className="block text-white">{item.assetName ?? item.symbol}</strong>
                                   <div className="mt-1 flex flex-wrap gap-2">
+                                    <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-xs text-slate-200">
+                                      {tradingViewMeta.mnemonic}
+                                    </span>
                                     <span className="text-xs text-slate-500">score {item.score}</span>
                                     <span className={`rounded-md border px-2 py-0.5 text-xs ${variationClass(item.variationPct)}`}>
                                       {item.variationPct ? `${Number(item.variationPct).toFixed(2)}%` : "var. n/a"}
                                     </span>
+                                    <a
+                                      href={tradingViewUrl(item.symbol)}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      onClick={(event) => event.stopPropagation()}
+                                      className="inline-flex items-center gap-1 rounded-md border border-violetx/40 bg-violetx/10 px-2 py-0.5 text-xs font-semibold text-violet-100 transition hover:bg-violetx/20"
+                                      title={`Ouvrir ${tradingViewMeta.tradingViewSymbol} dans TradingView`}
+                                    >
+                                      TradingView
+                                      <ExternalLink size={12} aria-hidden="true" />
+                                    </a>
                                   </div>
                                 </td>
                                 <td className="border-b border-white/5 px-3 py-3 align-top">
@@ -686,6 +750,23 @@ export function DashboardClient({
                                           <div className="flex justify-between gap-3">
                                             <dt className="text-slate-500">Cours</dt>
                                             <dd>{item.currentPrice ?? "-"}</dd>
+                                          </div>
+                                          <div className="flex justify-between gap-3">
+                                            <dt className="text-slate-500">Mnémo</dt>
+                                            <dd className="font-mono">{tradingViewMeta.mnemonic}</dd>
+                                          </div>
+                                          <div className="flex justify-between gap-3">
+                                            <dt className="text-slate-500">TradingView</dt>
+                                            <dd>
+                                              <a
+                                                href={tradingViewUrl(item.symbol)}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="text-violet-200 underline-offset-4 hover:underline"
+                                              >
+                                                {tradingViewMeta.tradingViewSymbol}
+                                              </a>
+                                            </dd>
                                           </div>
                                           <div className="flex justify-between gap-3">
                                             <dt className="text-slate-500">Proximite</dt>
