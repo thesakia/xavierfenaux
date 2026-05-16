@@ -11,13 +11,17 @@ export async function POST(request: NextRequest) {
   const body = (await request.json()) as {
     brief?: string;
     notifications?: string;
+    methodContext?: string;
     triggerOpenAI?: boolean;
+    useXavierAssetMemory?: boolean;
   };
 
   const result = await scanMarket({
     brief: body.brief,
     notifications: body.notifications,
+    methodContext: body.methodContext,
     triggerOpenAI: body.triggerOpenAI === true,
+    useXavierAssetMemory: body.useXavierAssetMemory === true,
   });
 
   return NextResponse.json({ ok: true, result });

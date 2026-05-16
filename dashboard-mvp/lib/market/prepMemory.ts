@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db/prisma";
 import { extractSymbolsFromText, findAssetDefinition } from "@/lib/market/universe";
 
-export type PrepMemoryKind = "brief" | "xavier_import" | "market_scan";
+export type PrepMemoryKind = "brief" | "xavier_import" | "xavier_method" | "market_scan";
 
 type PrepMemoryInput = {
   kind: PrepMemoryKind;
@@ -29,7 +29,8 @@ export async function storePrepMemory(input: PrepMemoryInput) {
   const rawText = input.rawText?.trim();
   if (!rawText) return null;
 
-  const relatedAssets = Array.from(new Set([...(input.relatedAssets ?? []), ...uniqueSymbolsFromText(rawText)]));
+  const extractedAssets = input.kind === "xavier_method" ? [] : uniqueSymbolsFromText(rawText);
+  const relatedAssets = Array.from(new Set([...(input.relatedAssets ?? []), ...extractedAssets]));
 
   return prisma.marketPrepMemory.create({
     data: {

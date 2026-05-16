@@ -12,7 +12,6 @@ import {
   AlertTriangle,
   Archive,
   Check,
-  Download,
   Loader2,
   LogOut,
   Newspaper,
@@ -358,16 +357,17 @@ export function DashboardClient({
       const response = await fetch("/api/market/scan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          brief,
-          notifications: batchText,
-          triggerOpenAI: false,
-        }),
+          body: JSON.stringify({
+            brief,
+            methodContext: batchText,
+            triggerOpenAI: false,
+            useXavierAssetMemory: false,
+          }),
       });
 
       if (!response.ok) return "Preparation refusee.";
       refreshDashboard();
-      return "Preparation de seance terminee. Brief et imports memorises. OpenAI n'a pas ete declenche.";
+      return "Preparation de seance terminee. Brief et methode Xavier memorises. Les actifs sont selectionnes par les news et les cours.";
     });
   }
 
@@ -375,22 +375,6 @@ export function DashboardClient({
     await runAction("news", async () => {
       const response = await fetch("/api/news/scan", { method: "POST" });
       return response.ok ? "Scan news ajoute a la file." : "Scan news refuse.";
-    });
-  }
-
-  async function importBatch() {
-    await runAction("import", async () => {
-      const content = batchText.trim();
-      if (!content) return "Import vide.";
-
-      const response = await fetch("/api/notifications/batch-import", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
-      });
-
-      if (!response.ok) return "Import Xavier / IVT refuse.";
-      return "Notifications Xavier / IVT importees et memorisees.";
     });
   }
 
@@ -513,8 +497,8 @@ export function DashboardClient({
       <section className="mb-5 grid gap-4 xl:grid-cols-[0.85fr_1.15fr]">
         <div className="panel p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="section-title">Import Xavier / CSV</h2>
-            <span className="text-xs text-slate-500">alimente la memoire des scans</span>
+            <h2 className="section-title">Methode Xavier</h2>
+            <span className="text-xs text-slate-500">filtre la selection, ne choisit pas les actifs</span>
           </div>
           <textarea
             value={batchText}
@@ -524,20 +508,12 @@ export function DashboardClient({
             }}
             className="min-h-52 w-full rounded-md border border-white/10 bg-ink px-3 py-2 text-sm leading-6 text-slate-100 outline-none ring-violetx/60 focus:ring-2"
             placeholder={
-              "CAC 40 : zone 8200/8300, invalidation 8370, TP1 7990, TP2 7600. Attendre confirmation.\nEURUSD : CPI > 3.7%, zone 1.1740/1.1760, invalidation 1.1810, objectif theorique 1.1680."
+              "Colle ici la methode ou les principes Xavier a appliquer au scan : driver clair, reaction prix, zone, invalidation, timing, pas de FOMO. Les actifs cites ici ne seront pas selectionnes automatiquement."
             }
           />
           <div className="mt-3 flex flex-wrap gap-2">
             <ActionButton
               tone="primary"
-              icon={<Download size={16} aria-hidden="true" />}
-              busy={busyAction === "import"}
-              disabled={!batchText.trim()}
-              onClick={importBatch}
-            >
-              Importer
-            </ActionButton>
-            <ActionButton
               icon={<Search size={16} aria-hidden="true" />}
               busy={busyAction === "prepare"}
               onClick={prepareMorning}

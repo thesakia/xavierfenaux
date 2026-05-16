@@ -6,11 +6,15 @@ import { defaultQuoteUniverse, getMarketQuotes } from "@/lib/market/priceProvide
 import { parseNotificationsBatch } from "@/lib/market/notificationParser";
 import { getRecentPrepMemory, prepMemoryForSymbol, storePrepMemory } from "@/lib/market/prepMemory";
 import { scoreOpportunity } from "@/lib/scoring/scoreOpportunity";
+import { reviewWithXavierMethod } from "@/lib/agents/xavierMethodAgent";
+import { reviewCoherence } from "@/lib/agents/coherenceAgent";
 
 type ScanInput = {
   brief?: string;
   notifications?: string;
+  methodContext?: string;
   triggerOpenAI?: boolean;
+  useXavierAssetMemory?: boolean;
 };
 
 function parseZone(zone?: string | null) {
@@ -43,9 +47,10 @@ function priorityFromScore(score: number) {
 
 export async function scanMarket(input: ScanInput) {
   const allowOpenAI = process.env.ENABLE_OPENAI_MARKET_SCAN === "true" && input.triggerOpenAI === true;
+  const useXavierAssetMemory = input.useXavierAssetMemory === true;
   const parsedNotifications = input.notifications ? parseNotificationsBatch(input.notifications) : [];
   const briefSymbols = input.brief ? extractSymbolsFromText(input.brief) : [];
-  const notificationSymbols = parsedNotifications.flatMap((item) => (item.symbol ? [item.symbol] : []));
+  const notificationSymbols = useXavierAssetMemory ? parsedNotifications.flatMap((item) => (item.symbol ? [item.symbol] : [])) : [];
 
   await storePrepMemory({
     kind: "brief",
@@ -56,25 +61,33 @@ export async function scanMarket(input: ScanInput) {
   await storePrepMemory({
     kind: "xavier_import",
     rawText: input.notifications,
-    relatedAssets: notificationSymbols,
+    relatedAssets: useXavierAssetMemory ? notificationSymbols : [],
   });
 
-  for (const parsed of parsedNotifications) {
-    await prisma.xavierNotification.create({
-      data: {
-        rawText: parsed.rawText,
-        symbol: parsed.symbol,
-        assetName: parsed.assetName,
-        direction: parsed.direction,
-        timeframe: parsed.timeframe,
-        zone: parsed.zone,
-        invalidation: parsed.invalidation,
-        targets: parsed.targets,
-        confidenceLevel: parsed.confidenceLevel,
-        riskNotes: parsed.riskNotes,
-        extractedSummary: parsed.extractedSummary,
-      },
-    });
+  await storePrepMemory({
+    kind: "xavier_method",
+    rawText: input.methodContext,
+    relatedAssets: [],
+  });
+
+  if (useXavierAssetMemory) {
+    for (const parsed of parsedNotifications) {
+      await prisma.xavierNotification.create({
+        data: {
+          rawText: parsed.rawText,
+          symbol: parsed.symbol,
+          assetName: parsed.assetName,
+          direction: parsed.direction,
+          timeframe: parsed.timeframe,
+          zone: parsed.zone,
+          invalidation: parsed.invalidation,
+          targets: parsed.targets,
+          confidenceLevel: parsed.confidenceLevel,
+          riskNotes: parsed.riskNotes,
+          extractedSummary: parsed.extractedSummary,
+        },
+      });
+    }
   }
 
   const watchedAssets = await prisma.watchedAsset.findMany();
@@ -83,10 +96,16 @@ export async function scanMarket(input: ScanInput) {
     orderBy: { createdAt: "desc" },
     take: 100,
   });
-  const memorySymbols = recentPrepMemory.flatMap((memory) =>
-    Array.isArray(memory.relatedAssets) ? memory.relatedAssets.map(String) : [],
-  );
-  const historicalNotificationSymbols = recentNotifications.flatMap((item) => (item.symbol ? [item.symbol] : []));
+  const memorySymbols = recentPrepMemory
+    .filter((memory) => useXavierAssetMemory || memory.kind !== "xavier_import")
+    .flatMap((memory) => (Array.isArray(memory.relatedAssets) ? memory.relatedAssets.map(String) : []));
+  const historicalNotificationSymbols = useXavierAssetMemory
+    ? recentNotifications.flatMap((item) => (item.symbol ? [item.symbol] : []))
+    : [];
+  const methodContext =
+    input.methodContext ??
+    recentPrepMemory.find((memory) => memory.kind === "xavier_method")?.rawText ??
+    null;
 
   const symbols = Array.from(
     new Set([
@@ -116,12 +135,14 @@ export async function scanMarket(input: ScanInput) {
     const definition = findAssetDefinition(symbol) ?? defaultUniverse.find((asset) => asset.symbol === symbol);
     const quote = quotes.find((item) => item.symbol === symbol);
     const watched = watchedAssets.find((asset) => asset.symbol === symbol);
-    const currentNotification = parsedNotifications.find((item) => item.symbol === symbol);
-    const historicalNotification = recentNotifications.find((item) => item.symbol === symbol);
+    const currentNotification = useXavierAssetMemory ? parsedNotifications.find((item) => item.symbol === symbol) : null;
+    const historicalNotification = useXavierAssetMemory ? recentNotifications.find((item) => item.symbol === symbol) : null;
     const notification = currentNotification ?? historicalNotification;
-    const symbolPrepMemory = prepMemoryForSymbol(symbol, recentPrepMemory);
+    const symbolPrepMemory = prepMemoryForSymbol(symbol, recentPrepMemory).filter(
+      (memory) => memory.kind !== "xavier_method" && (useXavierAssetMemory || memory.kind !== "xavier_import"),
+    );
     const briefMemory = symbolPrepMemory.find((memory) => memory.kind === "brief");
-    const importMemory = symbolPrepMemory.find((memory) => memory.kind === "xavier_import");
+    const importMemory = useXavierAssetMemory ? symbolPrepMemory.find((memory) => memory.kind === "xavier_import") : null;
     const news = symbolNewsContext(symbol, recentNews);
     const zone = notification?.zone ?? watched?.shortZone ?? watched?.mediumZone ?? watched?.longZone ?? null;
     const invalidation = notification?.invalidation ?? watched?.invalidation ?? null;
@@ -132,8 +153,8 @@ export async function scanMarket(input: ScanInput) {
     const missingData = [];
 
     if (news.length) reasons.push(`${news.length} news liee(s) a l'actif.`);
-    if (currentNotification) reasons.push("Notification Xavier / IVT ajoutee au scan.");
-    else if (historicalNotification) reasons.push("Memoire Xavier / IVT recente reprise.");
+    if (useXavierAssetMemory && currentNotification) reasons.push("Notification Xavier / IVT ajoutee au scan.");
+    else if (useXavierAssetMemory && historicalNotification) reasons.push("Memoire Xavier / IVT recente reprise.");
     if (briefMemory) reasons.push("Actif mentionne dans un brief recent.");
     if (importMemory && !currentNotification) reasons.push("Actif deja present dans un import recent.");
     if (zone) reasons.push("Zone connue.");
@@ -147,8 +168,8 @@ export async function scanMarket(input: ScanInput) {
 
     let score = 0;
     if (news.length) score += Math.min(20, news.length * 8);
-    if (currentNotification) score += 25;
-    else if (historicalNotification) score += 15;
+    if (useXavierAssetMemory && currentNotification) score += 25;
+    else if (useXavierAssetMemory && historicalNotification) score += 15;
     if (briefMemory) score += 8;
     if (importMemory && !currentNotification) score += 6;
     if (zone) score += 15;
@@ -159,6 +180,51 @@ export async function scanMarket(input: ScanInput) {
     if (Math.abs(quote?.variationPct ?? 0) >= 2) score += 5;
     if (!invalidation) score -= 10;
     score = Math.max(0, Math.min(100, score));
+
+    const methodReview = await reviewWithXavierMethod({
+      symbol,
+      assetName: definition?.assetName ?? symbol,
+      category: definition?.category ?? "Autres",
+      direction: notification?.direction ?? Direction.NEUTRAL,
+      score,
+      price: quote?.price,
+      variationPct: quote?.variationPct,
+      newsContext: news[0]?.summary ?? news[0]?.title,
+      briefContext:
+        input.brief && extractSymbolsFromText(input.brief).includes(symbol)
+          ? input.brief.slice(0, 800)
+          : briefMemory?.summary,
+      knownZone: zone,
+      invalidation,
+      targets,
+      methodContext,
+    });
+    const coherence = await reviewCoherence({
+      symbol,
+      assetName: definition?.assetName ?? symbol,
+      category: definition?.category ?? "Autres",
+      direction: notification?.direction ?? Direction.NEUTRAL,
+      score,
+      price: quote?.price,
+      variationPct: quote?.variationPct,
+      newsContext: news[0]?.summary ?? news[0]?.title,
+      briefContext:
+        input.brief && extractSymbolsFromText(input.brief).includes(symbol)
+          ? input.brief.slice(0, 800)
+          : briefMemory?.summary,
+      knownZone: zone,
+      invalidation,
+      targets,
+      methodContext,
+      methodReview,
+      reasons,
+      missingData,
+    });
+    score = Math.max(0, Math.min(100, score + coherence.scoreAdjustment));
+
+    if (!coherence.display) {
+      continue;
+    }
 
     await prisma.watchedAsset.upsert({
       where: { symbol },
@@ -196,9 +262,9 @@ export async function scanMarket(input: ScanInput) {
         currentPrice: quote?.price,
         variationPct: quote?.variationPct,
         direction: notification?.direction ?? Direction.NEUTRAL,
-        priority: priorityFromScore(score),
+        priority: coherence.priority || priorityFromScore(score),
         score,
-        status: score >= 65 && zone && invalidation ? "setup_candidate" : score >= 35 ? "context" : "watch_only",
+        status: coherence.status,
         knownZone: zone,
         zoneProximityPct: proximity,
         invalidation,
@@ -211,7 +277,7 @@ export async function scanMarket(input: ScanInput) {
             : briefMemory?.summary,
         reasons,
         missingData,
-        riskNotes: invalidation ? "Risque encadre par une invalidation connue." : "Risque incomplet: invalidation manquante.",
+        riskNotes: methodReview.riskNotes || (invalidation ? "Risque encadre par une invalidation connue." : "Risque incomplet: invalidation manquante."),
         sources: {
           quote: quote?.source ?? "none",
           news: news.slice(0, 5).map((item) => ({ title: item.title, source: item.source, url: item.url })),
@@ -222,12 +288,14 @@ export async function scanMarket(input: ScanInput) {
             createdAt: memory.createdAt,
           })),
           openAI: allowOpenAI,
+          xavierMethod: methodReview.methodNotes,
+          coherence: coherence.summary,
         },
       },
     });
     createdRadarItems.push(radarItem);
 
-    if (score >= 65 && zone && invalidation && targets.length) {
+    if (coherence.status === "setup_candidate" && score >= 65 && zone && invalidation && targets.length) {
       const scored = scoreOpportunity({
         hasTradingView: false,
         hasIvtNotification: Boolean(currentNotification ?? historicalNotification),
@@ -250,9 +318,9 @@ export async function scanMarket(input: ScanInput) {
           score: scored.score,
           status: OpportunityStatus.WATCHING,
           source: OpportunitySource.MIX,
-          summary: `${definition?.assetName ?? symbol}: convergence detectee entre contexte marche, donnees suivies et informations Xavier / IVT.`,
-          riskNotes: invalidation ? "Scenario a surveiller avec invalidation definie." : "Invalidation manquante.",
-          aiReasoningSummary: reasons.join(" "),
+          summary: coherence.summary,
+          riskNotes: methodReview.riskNotes,
+          aiReasoningSummary: [methodReview.methodNotes, ...reasons].filter(Boolean).join(" "),
         },
       });
       createdOpportunities += 1;

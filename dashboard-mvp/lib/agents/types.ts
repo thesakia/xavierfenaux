@@ -43,3 +43,41 @@ export type OpportunityCandidate = {
   riskNotes?: string | null;
   aiReasoningSummary?: string | null;
 };
+
+export type XavierMethodReviewInput = {
+  symbol: string;
+  assetName?: string | null;
+  category?: string | null;
+  direction: Direction;
+  score: number;
+  price?: number | null;
+  variationPct?: number | null;
+  newsContext?: string | null;
+  briefContext?: string | null;
+  knownZone?: string | null;
+  invalidation?: string | null;
+  targets: string[];
+  methodContext?: string | null;
+};
+
+export type XavierMethodReview = {
+  scoreAdjustment: number;
+  passesMethod: boolean;
+  methodNotes: string;
+  riskNotes: string;
+};
+
+export type CoherenceReviewInput = XavierMethodReviewInput & {
+  methodReview: XavierMethodReview;
+  reasons: string[];
+  missingData: string[];
+};
+
+export type CoherenceReview = {
+  display: boolean;
+  status: "setup_candidate" | "context" | "watch_only";
+  priority: number;
+  scoreAdjustment: number;
+  summary: string;
+  refusalReason?: string;
+};
