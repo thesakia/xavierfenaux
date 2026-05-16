@@ -43,17 +43,102 @@ const mockQuotes: Record<string, { price: number; variationPct: number }> = {
   DE10Y: { price: 2.58, variationPct: 0.7 },
 };
 
+const yahooSymbols: Record<string, string> = {
+  CAC40: "^FCHI",
+  DAX: "^GDAXI",
+  STOXX50: "^STOXX50E",
+  FTSE: "^FTSE",
+  SP500: "^GSPC",
+  NASDAQ: "^IXIC",
+  DOWJONES: "^DJI",
+  RUSSELL: "^RUT",
+  NIKKEI: "^N225",
+  AAPL: "AAPL",
+  MSFT: "MSFT",
+  NVDA: "NVDA",
+  TSLA: "TSLA",
+  AMZN: "AMZN",
+  META: "META",
+  GOOGL: "GOOGL",
+  LVMH: "MC.PA",
+  TTE: "TTE.PA",
+  BTC: "BTC-USD",
+  ETH: "ETH-USD",
+  SOL: "SOL-USD",
+  BNB: "BNB-USD",
+  XRP: "XRP-USD",
+  EURUSD: "EURUSD=X",
+  GBPUSD: "GBPUSD=X",
+  USDJPY: "JPY=X",
+  GOLD: "GC=F",
+  SILVER: "SI=F",
+  BRENT: "BZ=F",
+  WTI: "CL=F",
+  US10Y: "^TNX",
+};
+
+type YahooQuote = {
+  symbol?: string;
+  regularMarketPrice?: number;
+  regularMarketChangePercent?: number;
+  regularMarketTime?: number;
+};
+
+async function getYahooQuotes(symbols: string[]) {
+  const mapped = symbols
+    .map((symbol) => yahooSymbols[symbol])
+    .filter((symbol): symbol is string => Boolean(symbol));
+  if (!mapped.length) return new Map<string, MarketQuote>();
+
+  const response = await fetch(
+    `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(mapped.join(","))}`,
+    {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    },
+  );
+  if (!response.ok) throw new Error(`Yahoo quote failed with status ${response.status}`);
+
+  const payload = (await response.json()) as { quoteResponse?: { result?: YahooQuote[] } };
+  const byYahooSymbol = new Map((payload.quoteResponse?.result ?? []).map((quote) => [quote.symbol, quote]));
+  const quotes = new Map<string, MarketQuote>();
+
+  for (const symbol of symbols) {
+    const yahooSymbol = yahooSymbols[symbol];
+    const quote = yahooSymbol ? byYahooSymbol.get(yahooSymbol) : null;
+    if (!quote || typeof quote.regularMarketPrice !== "number") continue;
+    quotes.set(symbol, {
+      symbol,
+      price: quote.regularMarketPrice,
+      variationPct: quote.regularMarketChangePercent ?? 0,
+      source: "yahoo",
+      timestamp: quote.regularMarketTime ? new Date(quote.regularMarketTime * 1000) : new Date(),
+    });
+  }
+
+  return quotes;
+}
+
 export async function getMarketQuotes(symbols: string[]): Promise<MarketQuote[]> {
   const now = new Date();
+  let yahooQuotes = new Map<string, MarketQuote>();
 
-  // Placeholder provider: replace with TwelveData, Polygon, Alpha Vantage, Yahoo adapter, etc.
+  try {
+    yahooQuotes = await getYahooQuotes(symbols);
+  } catch {
+    yahooQuotes = new Map();
+  }
+
   return symbols.map((symbol) => {
+    const yahooQuote = yahooQuotes.get(symbol);
+    if (yahooQuote) return yahooQuote;
+
     const fallback = mockQuotes[symbol] ?? { price: 100, variationPct: 0 };
     return {
       symbol,
       price: fallback.price,
       variationPct: fallback.variationPct,
-      source: process.env.MARKET_DATA_API_KEY ? "market-api-placeholder" : "mock",
+      source: "mock",
       timestamp: now,
     };
   });
