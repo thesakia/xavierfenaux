@@ -514,58 +514,8 @@ export function DashboardClient({
         </div>
       ) : null}
 
-      <section className="mb-5 grid gap-4 xl:grid-cols-[1fr_0.9fr]">
-        <div className="panel p-4">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="section-title">Brief du matin</h2>
-            <span className="text-xs text-slate-500">memorise puis croise avec news + imports</span>
-          </div>
-          <textarea
-            value={brief}
-            onChange={(event) => {
-              setBrief(event.target.value);
-              saveLocal("xf:brief", event.target.value);
-            }}
-            className="min-h-44 w-full rounded-md border border-white/10 bg-ink px-3 py-2 text-sm leading-6 text-slate-100 outline-none ring-violetx/60 focus:ring-2"
-            placeholder="Colle ici le contexte du matin : macro attendue, biais general, niveaux importants, actifs a surveiller. Il servira aussi aux prochains scans."
-          />
-        </div>
-
-        <div className="panel p-4">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="section-title">Agenda macro</h2>
-            <span className="text-xs text-slate-500">evenements du jour</span>
-          </div>
-          <div className="max-h-52 space-y-2 overflow-auto pr-1">
-            {macroEvents.length ? (
-              macroEvents.map((event, index) => (
-                <div
-                  key={`${event.title}-${index}`}
-                  className={`rounded-md border p-3 text-sm ${
-                    event.impact === "high" ? "border-red-500/30 bg-red-500/10" : "border-white/10 bg-ink"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <strong className="text-white">{event.title}</strong>
-                    <span className="font-mono text-xs text-slate-300">{event.time}</span>
-                  </div>
-                  <p className="mt-1 text-xs text-slate-400">
-                    {event.country} - prev {event.previous ?? "-"} / consensus {event.forecast ?? "-"} / publie{" "}
-                    {event.actual ?? "-"}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="rounded-md border border-white/10 bg-ink p-3 text-sm text-slate-400">
-                {macroMessage || "Aucun evenement macro du jour charge."}
-              </p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="mb-5 grid gap-4 xl:grid-cols-[0.85fr_1.15fr]">
-        <div className="panel p-4">
+      <section className="mx-auto mb-5 grid w-full max-w-[1500px] gap-4">
+        <div className="panel order-2 p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
             <h2 className="section-title">Memoire Xavier</h2>
             <span className="text-xs text-slate-500">exemples pour ajuster le filtre interne</span>
@@ -610,11 +560,11 @@ export function DashboardClient({
           </div>
         </div>
 
-        <div className="panel p-4">
-          <div className="mb-4 flex flex-col gap-2 border-b border-white/10 pb-4 md:flex-row md:items-end md:justify-between">
+        <div className="panel order-1 p-4 shadow-[0_0_0_1px_rgba(139,92,246,0.22),0_24px_80px_rgba(15,23,42,0.45)]">
+          <div className="mb-4 flex flex-col gap-3 border-b border-violetx/30 pb-4 text-center md:flex-row md:items-end md:justify-between md:text-left">
             <div>
               <p className="text-xs uppercase tracking-[0.22em] text-violet-300">Une seule liste a regarder</p>
-              <h2 className="mt-1 text-2xl font-semibold text-white">Radar du jour</h2>
+              <h2 className="mt-1 text-3xl font-semibold text-white md:text-4xl">Radar du jour</h2>
               <p className="mt-1 text-sm text-slate-400">
                 TOP3 par marche, uniquement avec contexte news ou zone technique.
               </p>
@@ -857,6 +807,56 @@ export function DashboardClient({
             ) : (
               <p className="rounded-md border border-white/10 bg-ink p-3 text-sm text-slate-400">
                 Clique sur Preparer la seance pour generer le TOP3 par marche.
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-5 grid gap-4 xl:grid-cols-[1fr_0.9fr]">
+        <div className="panel p-4">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h2 className="section-title">Brief du matin</h2>
+            <span className="text-xs text-slate-500">memorise puis croise avec news + imports</span>
+          </div>
+          <textarea
+            value={brief}
+            onChange={(event) => {
+              setBrief(event.target.value);
+              saveLocal("xf:brief", event.target.value);
+            }}
+            className="min-h-44 w-full rounded-md border border-white/10 bg-ink px-3 py-2 text-sm leading-6 text-slate-100 outline-none ring-violetx/60 focus:ring-2"
+            placeholder="Colle ici le contexte du matin : macro attendue, biais general, niveaux importants, actifs a surveiller. Il servira aussi aux prochains scans."
+          />
+        </div>
+
+        <div className="panel p-4">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h2 className="section-title">Agenda macro</h2>
+            <span className="text-xs text-slate-500">evenements du jour</span>
+          </div>
+          <div className="max-h-52 space-y-2 overflow-auto pr-1">
+            {macroEvents.length ? (
+              macroEvents.map((event, index) => (
+                <div
+                  key={`${event.title}-${index}`}
+                  className={`rounded-md border p-3 text-sm ${
+                    event.impact === "high" ? "border-red-500/30 bg-red-500/10" : "border-white/10 bg-ink"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <strong className="text-white">{event.title}</strong>
+                    <span className="font-mono text-xs text-slate-300">{event.time}</span>
+                  </div>
+                  <p className="mt-1 text-xs text-slate-400">
+                    {event.country} - prev {event.previous ?? "-"} / consensus {event.forecast ?? "-"} / publie{" "}
+                    {event.actual ?? "-"}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="rounded-md border border-white/10 bg-ink p-3 text-sm text-slate-400">
+                {macroMessage || "Aucun evenement macro du jour charge."}
               </p>
             )}
           </div>
