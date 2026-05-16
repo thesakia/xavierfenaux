@@ -58,12 +58,19 @@ function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function aliasMatches(upperText: string, alias: string) {
+export function aliasMatches(upperText: string, alias: string) {
   const upperAlias = alias.toUpperCase();
   if (upperAlias.length <= 3) {
     return new RegExp(`(^|[^A-Z0-9])${escapeRegExp(upperAlias)}([^A-Z0-9]|$)`).test(upperText);
   }
   return upperText.includes(upperAlias);
+}
+
+export function assetMatchesText(symbol: string, text: string) {
+  const definition = findAssetDefinition(symbol);
+  const aliases = [symbol, ...(definition?.aliases ?? [])];
+  const upperText = text.toUpperCase();
+  return aliases.some((alias) => aliasMatches(upperText, alias));
 }
 
 export function extractSymbolsFromText(text: string) {

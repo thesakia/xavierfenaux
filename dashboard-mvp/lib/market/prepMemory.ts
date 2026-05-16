@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
-import { extractSymbolsFromText, findAssetDefinition } from "@/lib/market/universe";
+import { assetMatchesText, extractSymbolsFromText } from "@/lib/market/universe";
 
 export type PrepMemoryKind = "brief" | "xavier_import" | "xavier_method" | "market_scan";
 
@@ -53,12 +53,9 @@ export function prepMemoryForSymbol(
   symbol: string,
   memories: Awaited<ReturnType<typeof getRecentPrepMemory>>,
 ) {
-  const definition = findAssetDefinition(symbol);
-  const aliases = [symbol, ...(definition?.aliases ?? [])].map((item) => item.toUpperCase());
-
   return memories.filter((memory) => {
     const assets = Array.isArray(memory.relatedAssets) ? memory.relatedAssets.map(String).join(" ").toUpperCase() : "";
     const text = `${memory.rawText} ${memory.summary ?? ""}`.toUpperCase();
-    return aliases.some((alias) => assets.includes(alias) || text.includes(alias));
+    return assets.split(/\s+/).includes(symbol.toUpperCase()) || assetMatchesText(symbol, text);
   });
 }

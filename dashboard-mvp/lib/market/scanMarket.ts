@@ -1,7 +1,7 @@
 import { Direction, OpportunitySource, OpportunityStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db/prisma";
 import { auditLog } from "@/lib/db/audit";
-import { defaultUniverse, extractSymbolsFromText, findAssetDefinition } from "@/lib/market/universe";
+import { assetMatchesText, defaultUniverse, extractSymbolsFromText, findAssetDefinition } from "@/lib/market/universe";
 import { defaultQuoteUniverse, getMarketQuotes } from "@/lib/market/priceProvider";
 import { parseNotificationsBatch } from "@/lib/market/notificationParser";
 import { getRecentPrepMemory, prepMemoryForSymbol, storePrepMemory } from "@/lib/market/prepMemory";
@@ -30,12 +30,10 @@ function proximityPct(price?: number | null, zone?: string | null) {
 }
 
 function symbolNewsContext(symbol: string, news: Awaited<ReturnType<typeof prisma.marketNews.findMany>>) {
-  const definition = findAssetDefinition(symbol);
-  const aliases = [symbol, ...(definition?.aliases ?? [])].map((item) => item.toUpperCase());
   return news.filter((item) => {
-    const text = `${item.title} ${item.summary ?? ""}`.toUpperCase();
-    const assets = Array.isArray(item.relatedAssets) ? item.relatedAssets.map(String).join(" ").toUpperCase() : "";
-    return aliases.some((alias) => text.includes(alias) || assets.includes(alias));
+    const text = `${item.title} ${item.summary ?? ""}`;
+    const assets = Array.isArray(item.relatedAssets) ? item.relatedAssets.map(String) : [];
+    return assets.includes(symbol) || assetMatchesText(symbol, text);
   });
 }
 
