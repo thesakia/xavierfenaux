@@ -43,6 +43,15 @@ function priorityFromScore(score: number) {
   return 3;
 }
 
+function briefContextForSymbol(symbol: string, brief?: string | null) {
+  if (!brief?.trim()) return null;
+  const blocks = brief
+    .split(/\n\s*\n/)
+    .map((block) => block.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+  return blocks.find((block) => assetMatchesText(symbol, block))?.slice(0, 700) ?? null;
+}
+
 function formatVariation(value?: number | null) {
   if (!Number.isFinite(value ?? NaN)) return null;
   const number = Number(value);
@@ -123,7 +132,15 @@ export async function scanMarket(input: ScanInput) {
   );
 
   const quotes = await getMarketQuotes(symbols);
-  const recentNews = await prisma.marketNews.findMany({ orderBy: { publishedAt: "desc" }, take: 80 });
+  const recentNews = await prisma.marketNews.findMany({
+    where: {
+      source: {
+        not: "mock",
+      },
+    },
+    orderBy: { publishedAt: "desc" },
+    take: 80,
+  });
   const run = await prisma.marketScanRun.create({
     data: {
       status: "running",
@@ -148,6 +165,7 @@ export async function scanMarket(input: ScanInput) {
     const briefMemory = input.brief ? null : symbolPrepMemory.find((memory) => memory.kind === "brief");
     const importMemory = useXavierAssetMemory ? symbolPrepMemory.find((memory) => memory.kind === "xavier_import") : null;
     const news = symbolNewsContext(symbol, recentNews);
+    const symbolBriefContext = briefContextForSymbol(symbol, input.brief);
     const zone = notification?.zone ?? watched?.shortZone ?? watched?.mediumZone ?? watched?.longZone ?? null;
     const invalidation = notification?.invalidation ?? watched?.invalidation ?? null;
     const notificationTargets = Array.isArray(notification?.targets) ? notification.targets.map(String) : [];
@@ -155,7 +173,7 @@ export async function scanMarket(input: ScanInput) {
     const proximity = proximityPct(quote?.price, zone);
     const leadNews = news[0];
     const leadNewsContext = leadNews?.summary ?? leadNews?.title;
-    const symbolInCurrentBrief = Boolean(input.brief && extractSymbolsFromText(input.brief).includes(symbol));
+    const symbolInCurrentBrief = Boolean(symbolBriefContext);
     const reasons = [];
     const missingData = [];
 
@@ -204,7 +222,7 @@ export async function scanMarket(input: ScanInput) {
       price: quote?.price,
       variationPct: quote?.variationPct,
       newsContext: leadNewsContext,
-      briefContext: symbolInCurrentBrief ? input.brief?.slice(0, 800) : briefMemory?.summary,
+      briefContext: symbolBriefContext ?? briefMemory?.summary,
       knownZone: zone,
       invalidation,
       targets,
@@ -219,7 +237,7 @@ export async function scanMarket(input: ScanInput) {
       price: quote?.price,
       variationPct: quote?.variationPct,
       newsContext: leadNewsContext,
-      briefContext: symbolInCurrentBrief ? input.brief?.slice(0, 800) : briefMemory?.summary,
+      briefContext: symbolBriefContext ?? briefMemory?.summary,
       knownZone: zone,
       invalidation,
       targets,
@@ -279,7 +297,7 @@ export async function scanMarket(input: ScanInput) {
         targets,
         newsContext: leadNewsContext,
         xavierContext: notification?.extractedSummary ?? importMemory?.summary,
-        briefContext: symbolInCurrentBrief ? input.brief?.slice(0, 800) : briefMemory?.summary,
+        briefContext: symbolBriefContext ?? briefMemory?.summary,
         reasons,
         missingData,
         riskNotes: methodReview.riskNotes || (invalidation ? "Risque encadre par une invalidation connue." : "Risque incomplet: invalidation manquante."),
