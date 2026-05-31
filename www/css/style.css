@@ -1090,6 +1090,48 @@ a {
     margin-right: 0.8rem;
 }
 
+.running-performances {
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-soft);
+    padding-top: 1.5rem;
+}
+
+.running-performances h3 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+}
+
+.performance-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+    gap: 1rem;
+}
+
+.performance-item {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1rem;
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    background: var(--surface-muted);
+}
+
+.performance-item span {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.performance-item strong {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 1.35rem;
+}
+
 
 /* Footer / Connect */
 .social-grid {
