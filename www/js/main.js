@@ -65,8 +65,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Morning Mood interview modal
     const morningMoodModal = document.getElementById('morning-mood-modal');
-    const openMorningMoodModal = () => {
+    const formStatus = document.getElementById('morning-mood-form-status');
+    const resetMorningMoodStatus = () => {
+        if (!formStatus) return;
+        formStatus.hidden = true;
+        formStatus.textContent = '';
+        formStatus.classList.remove('success', 'error');
+    };
+    const openMorningMoodModal = (options = {}) => {
         if (!morningMoodModal) return;
+        if (!options.keepStatus) {
+            resetMorningMoodStatus();
+        }
         morningMoodModal.classList.add('is-open');
         morningMoodModal.setAttribute('aria-hidden', 'false');
         document.body.classList.add('modal-open');
@@ -76,10 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
         morningMoodModal.classList.remove('is-open');
         morningMoodModal.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('modal-open');
+        resetMorningMoodStatus();
     };
 
     document.querySelectorAll('[data-modal-open="morning-mood-modal"]').forEach((trigger) => {
-        trigger.addEventListener('click', openMorningMoodModal);
+        trigger.addEventListener('click', () => openMorningMoodModal());
     });
 
     if (morningMoodModal) {
@@ -112,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Morning Mood interview form status
-    const formStatus = document.getElementById('morning-mood-form-status');
     if (formStatus) {
         const params = new URLSearchParams(window.location.search);
         const status = params.get('morningmood');
@@ -136,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formStatus.hidden = false;
             formStatus.textContent = messages[status].text;
             formStatus.classList.add(messages[status].type);
-            openMorningMoodModal();
+            openMorningMoodModal({ keepStatus: true });
 
             if (status === 'ok' && trackingId) {
                 const storageKey = `umami:morning_mood_email_sent:${trackingId}`;
@@ -150,6 +160,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
             }
+
+            params.delete('morningmood');
+            params.delete('mmid');
+            const cleanQuery = params.toString();
+            const cleanUrl = `${window.location.pathname}${cleanQuery ? `?${cleanQuery}` : ''}${window.location.hash}`;
+            window.history.replaceState({}, document.title, cleanUrl);
         }
     }
 
