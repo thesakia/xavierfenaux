@@ -1361,6 +1361,7 @@ footer {
     color: var(--text-primary);
     border-radius: 8px;
     font-weight: 700;
+    font-family: inherit;
     text-transform: uppercase;
     letter-spacing: 0.6px;
     transition: all 0.3s;
@@ -1369,6 +1370,7 @@ footer {
     width: 100%;
     min-width: 200px;
     white-space: nowrap;
+    cursor: pointer;
 }
 
 .cta-button i {
@@ -1395,13 +1397,12 @@ footer {
 
 .interview-rdv-layout {
     display: grid;
-    grid-template-columns: minmax(280px, 0.85fr) minmax(320px, 1.15fr);
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
     gap: 2rem;
     align-items: start;
 }
 
-.interview-rdv-card,
-.interview-rdv-form {
+.interview-rdv-card {
     padding: 2rem;
 }
 
@@ -1435,9 +1436,94 @@ footer {
     width: 1rem;
 }
 
+.interview-rdv-button {
+    margin-top: 1.75rem;
+}
+
+.interview-rdv-note {
+    background: var(--surface-muted);
+}
+
 .interview-rdv-form {
     display: grid;
     gap: 1rem;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.modal.is-open {
+    display: flex;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 5, 5, 0.68);
+    backdrop-filter: blur(8px);
+}
+
+.modal-dialog {
+    position: relative;
+    z-index: 1;
+    width: min(820px, 100%);
+    max-height: min(88vh, 980px);
+    overflow-y: auto;
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+    padding: 2rem;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--border-soft);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-muted);
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.modal-header {
+    padding-right: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+    margin-bottom: 0.75rem;
+    font-size: 2rem;
+    line-height: 1.15;
+    text-transform: none;
+}
+
+.modal-header p:last-child {
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+body.modal-open {
+    overflow: hidden;
 }
 
 .form-grid {
@@ -1757,6 +1843,12 @@ footer {
     background: var(--surface-strong);
     border-color: var(--accent);
     transform: translateY(-2px);
+}
+
+button.contact-link {
+    border: 1px solid var(--border-soft);
+    cursor: pointer;
+    font: inherit;
 }
 
 .contact-link i {
@@ -2387,8 +2479,7 @@ footer {
     .testimonial-card,
     .credibility-item,
     .contact-item,
-    .interview-rdv-card,
-    .interview-rdv-form {
+    .interview-rdv-card {
         padding: 1.5rem;
     }
 
@@ -2525,6 +2616,23 @@ footer {
     
     .card {
         padding: 1.25rem;
+    }
+
+    .modal {
+        padding: 0.75rem;
+    }
+
+    .modal-dialog {
+        padding: 1.25rem;
+        max-height: 92vh;
+    }
+
+    .modal-header {
+        padding-right: 2.75rem;
+    }
+
+    .modal-header h2 {
+        font-size: 1.55rem;
     }
     
     .card h3 {

@@ -63,6 +63,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Morning Mood interview modal
+    const morningMoodModal = document.getElementById('morning-mood-modal');
+    const openMorningMoodModal = () => {
+        if (!morningMoodModal) return;
+        morningMoodModal.classList.add('is-open');
+        morningMoodModal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+    };
+    const closeMorningMoodModal = () => {
+        if (!morningMoodModal) return;
+        morningMoodModal.classList.remove('is-open');
+        morningMoodModal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+    };
+
+    document.querySelectorAll('[data-modal-open="morning-mood-modal"]').forEach((trigger) => {
+        trigger.addEventListener('click', openMorningMoodModal);
+    });
+
+    if (morningMoodModal) {
+        morningMoodModal.querySelectorAll('[data-modal-close]').forEach((trigger) => {
+            trigger.addEventListener('click', closeMorningMoodModal);
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && morningMoodModal.classList.contains('is-open')) {
+                closeMorningMoodModal();
+            }
+        });
+    }
+
     // Morning Mood interview form status
     const formStatus = document.getElementById('morning-mood-form-status');
     if (formStatus) {
@@ -79,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             error: {
                 type: 'error',
-                text: 'L’envoi n’a pas abouti. Tu peux écrire directement à morningmood@xavierfenaux.com.'
+                text: 'L’envoi n’a pas abouti. Réessaie dans quelques instants.'
             }
         };
 
@@ -87,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formStatus.hidden = false;
             formStatus.textContent = messages[status].text;
             formStatus.classList.add(messages[status].type);
+            openMorningMoodModal();
         }
     }
 
