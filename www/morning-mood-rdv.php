@@ -23,9 +23,23 @@ function clean_header(string $value, int $maxLength = 180): string
     return str_replace(["\n", "\r"], ' ', $value);
 }
 
-function redirect_with_status(string $status): never
+function create_tracking_id(): string
 {
-    header('Location: /?morningmood=' . rawurlencode($status) . '#interview-morning-mood', true, 303);
+    try {
+        return bin2hex(random_bytes(8));
+    } catch (Throwable $error) {
+        return uniqid('', true);
+    }
+}
+
+function redirect_with_status(string $status, string $trackingId = ''): never
+{
+    $query = '?morningmood=' . rawurlencode($status);
+    if ($trackingId !== '') {
+        $query .= '&mmid=' . rawurlencode($trackingId);
+    }
+
+    header('Location: /' . $query . '#interview-morning-mood', true, 303);
     exit;
 }
 
@@ -71,4 +85,4 @@ $headers = [
 
 $sent = mail(MORNING_MOOD_RECIPIENT, $subject, $body, implode("\r\n", $headers), '-f' . MORNING_MOOD_SENDER);
 
-redirect_with_status($sent ? 'ok' : 'error');
+redirect_with_status($sent ? 'ok' : 'error', $sent ? create_tracking_id() : '');

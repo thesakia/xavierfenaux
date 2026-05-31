@@ -94,11 +94,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const trackUmamiEvent = (eventName, data) => {
+        let attempts = 0;
+        const send = () => {
+            attempts += 1;
+            if (window.umami && typeof window.umami.track === 'function') {
+                window.umami.track(eventName, data);
+                return;
+            }
+
+            if (attempts < 20) {
+                window.setTimeout(send, 250);
+            }
+        };
+
+        send();
+    };
+
     // Morning Mood interview form status
     const formStatus = document.getElementById('morning-mood-form-status');
     if (formStatus) {
         const params = new URLSearchParams(window.location.search);
         const status = params.get('morningmood');
+        const trackingId = params.get('mmid') || '';
         const messages = {
             ok: {
                 type: 'success',
@@ -119,6 +137,19 @@ document.addEventListener('DOMContentLoaded', () => {
             formStatus.textContent = messages[status].text;
             formStatus.classList.add(messages[status].type);
             openMorningMoodModal();
+
+            if (status === 'ok' && trackingId) {
+                const storageKey = `umami:morning_mood_email_sent:${trackingId}`;
+                if (sessionStorage.getItem(storageKey) !== '1') {
+                    sessionStorage.setItem(storageKey, '1');
+                    trackUmamiEvent('morning_mood_email_sent', {
+                        event_category: 'form',
+                        form_name: 'morning_mood_participation',
+                        status: 'sent',
+                        page_path: window.location.pathname
+                    });
+                }
+            }
         }
     }
 
