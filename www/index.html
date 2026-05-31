@@ -14,7 +14,7 @@
     <script>
         document.documentElement.dataset.theme = localStorage.getItem('theme') || 'light';
     </script>
-    <script defer src="https://analytics.parentsdejumeaux.fr/script.js" data-website-id="3ff9a2c0-10a3-4c98-8e96-777b0c04aadc" data-domains="xavierfenaux.com,www.xavierfenaux.com"></script>
+    <script defer src="https://analytics.ftfenaux.com/script.js" data-website-id="3ff9a2c0-10a3-4c98-8e96-777b0c04aadc" data-domains="xavierfenaux.com,www.xavierfenaux.com"></script>
 </head>
 <body>
     <div class="noise-overlay"></div>
@@ -27,6 +27,7 @@
             <div class="nav-links">
 			<a href="#who">Profil</a>
             <a href="#ivt">IVT</a>
+            <a href="#interview-morning-mood">Interview Morning Mood</a>
             <a href="#contact">Contact</a>
 			<a href="/actualités">Actualités</a>
             </div>
@@ -223,6 +224,12 @@
                     <p>Le podcast qui te remet la tête droite avant d'ouvrir les marchés. On parle macro, crypto, gestion, discipline… et de comment ne PAS faire n'importe quoi.</p>
                     <a href="#podcast" class="cta-button"><i class="fas fa-arrow-right"></i> Écouter maintenant</a>
                 </div>
+                <div class="cta-card card cta-card-featured">
+                    <div class="cta-icon"><i class="fas fa-calendar-check"></i></div>
+                    <h3>Passer dans le Morning Mood</h3>
+                    <p>Propose un sujet, laisse une brève description et indique tes créneaux disponibles. Je valide ensuite un format interview d'une heure selon les disponibilités.</p>
+                    <a href="#interview-morning-mood" class="cta-button"><i class="fas fa-arrow-right"></i> Proposer une interview</a>
+                </div>
                 <div class="cta-card card">
                     <div class="platform-logo youtube-logo"><i class="fab fa-youtube"></i><span>YouTube</span></div>
                     <h3>Ma chaîne YouTube</h3>
@@ -241,6 +248,59 @@
                     <p>Des sessions live, sans script, sans filet. On analyse les marchés en direct, on discute stratégie, compréhension, mindset. La transparence totale, en temps réel.</p>
                     <a href="https://www.twitch.tv/xavierfenaux" target="_blank" rel="noopener noreferrer" class="cta-button"><i class="fas fa-arrow-right"></i> Rejoindre les Lives</a>
                 </div>
+            </div>
+        </section>
+
+        <section id="interview-morning-mood" class="section interview-rdv-section">
+            <div class="section-heading-row">
+                <div>
+                    <h2 class="section-title">INTERVIEW <span class="accent">MORNING MOOD</span></h2>
+                </div>
+                <p>Une demande claire, quelques créneaux possibles, puis je valide le rendez-vous d'une heure si le sujet colle au format.</p>
+            </div>
+            <div class="interview-rdv-layout">
+                <div class="interview-rdv-card card">
+                    <h3><i class="fas fa-microphone"></i> Proposer une interview</h3>
+                    <p>Indique le sujet, le contexte et plusieurs disponibilités. La demande est envoyée à <strong>morningmood@xavierfenaux.com</strong>.</p>
+                    <ul class="interview-rdv-points">
+                        <li><i class="fas fa-clock"></i> Format prévu : 1h</li>
+                        <li><i class="fas fa-check"></i> Validation manuelle selon tes créneaux</li>
+                        <li><i class="fas fa-align-left"></i> Description brève demandée en amont</li>
+                    </ul>
+                </div>
+                <form class="interview-rdv-form card" action="/morning-mood-rdv.php" method="post">
+                    <div id="morning-mood-form-status" class="form-status" hidden></div>
+                    <input type="text" name="website" class="form-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+                    <div class="form-grid">
+                        <label class="form-field">
+                            <span>Nom</span>
+                            <input type="text" name="name" autocomplete="name" required>
+                        </label>
+                        <label class="form-field">
+                            <span>Email</span>
+                            <input type="email" name="email" autocomplete="email" required>
+                        </label>
+                    </div>
+                    <div class="form-grid">
+                        <label class="form-field">
+                            <span>Téléphone</span>
+                            <input type="tel" name="phone" autocomplete="tel">
+                        </label>
+                        <label class="form-field">
+                            <span>Sujet / profil</span>
+                            <input type="text" name="topic" placeholder="Trader, entrepreneur, investisseur...">
+                        </label>
+                    </div>
+                    <label class="form-field">
+                        <span>Créneaux disponibles</span>
+                        <textarea name="availability" rows="4" placeholder="Ex : lundi 10h-12h, mardi 14h-17h, vendredi matin..." required></textarea>
+                    </label>
+                    <label class="form-field">
+                        <span>Brève description</span>
+                        <textarea name="description" rows="5" placeholder="Présente le sujet, l'angle proposé et pourquoi ce serait intéressant pour le Morning Mood." required></textarea>
+                    </label>
+                    <button type="submit" class="cta-button form-submit"><i class="fas fa-paper-plane"></i> Envoyer la demande</button>
+                </form>
             </div>
         </section>
 

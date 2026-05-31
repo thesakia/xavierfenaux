@@ -1284,6 +1284,11 @@ footer {
     box-shadow: 0 15px 40px rgba(153, 119, 51, 0.14);
 }
 
+.cta-card-featured {
+    border-color: var(--border-accent);
+    background: linear-gradient(135deg, rgba(153, 119, 51, 0.14), var(--card-bg));
+}
+
 .cta-card.reveal.visible:hover {
     transform: translateY(-6px);
 }
@@ -1381,6 +1386,136 @@ footer {
     background: var(--accent);
     color: var(--bg-color);
     border-color: var(--accent);
+}
+
+/* Morning Mood interview form */
+.interview-rdv-section {
+    padding-top: 4rem;
+}
+
+.interview-rdv-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.85fr) minmax(320px, 1.15fr);
+    gap: 2rem;
+    align-items: start;
+}
+
+.interview-rdv-card,
+.interview-rdv-form {
+    padding: 2rem;
+}
+
+.interview-rdv-card h3 {
+    color: var(--accent);
+    font-size: 1.45rem;
+    margin-bottom: 1rem;
+}
+
+.interview-rdv-card p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.interview-rdv-points {
+    display: grid;
+    gap: 0.9rem;
+    list-style: none;
+}
+
+.interview-rdv-points li {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.interview-rdv-points i {
+    color: var(--accent);
+    width: 1rem;
+}
+
+.interview-rdv-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.form-field {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.form-field span {
+    color: var(--text-primary);
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.form-field input,
+.form-field textarea {
+    width: 100%;
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    background: var(--surface-muted);
+    color: var(--text-primary);
+    font: inherit;
+    padding: 0.9rem 1rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.form-field textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+    border-color: var(--accent);
+    background: var(--surface-strong);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.form-submit {
+    border: 1px solid var(--border-accent);
+    cursor: pointer;
+    font: inherit;
+    margin-top: 0.25rem;
+}
+
+.form-status {
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    color: var(--text-primary);
+    background: var(--surface-muted);
+    font-weight: 700;
+}
+
+.form-status.success {
+    border-color: rgba(22, 138, 74, 0.35);
+    background: rgba(22, 138, 74, 0.1);
+}
+
+.form-status.error {
+    border-color: rgba(180, 35, 24, 0.35);
+    background: rgba(180, 35, 24, 0.1);
+}
+
+.form-honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
 }
 
 .latest-logo {
@@ -1738,7 +1873,8 @@ footer {
     }
 
     .expertise-layout,
-    .section-heading-row {
+    .section-heading-row,
+    .interview-rdv-layout {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
@@ -2235,7 +2371,8 @@ footer {
     .latest-grid,
     .testimonials-grid,
     .credibility-grid,
-    .contact-grid {
+    .contact-grid,
+    .form-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
@@ -2249,7 +2386,9 @@ footer {
     .latest-item,
     .testimonial-card,
     .credibility-item,
-    .contact-item {
+    .contact-item,
+    .interview-rdv-card,
+    .interview-rdv-form {
         padding: 1.5rem;
     }
 

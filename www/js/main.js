@@ -63,6 +63,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Morning Mood interview form status
+    const formStatus = document.getElementById('morning-mood-form-status');
+    if (formStatus) {
+        const params = new URLSearchParams(window.location.search);
+        const status = params.get('morningmood');
+        const messages = {
+            ok: {
+                type: 'success',
+                text: 'Demande envoyée. Je reviens vers toi après validation des créneaux.'
+            },
+            missing: {
+                type: 'error',
+                text: 'Il manque une information obligatoire. Vérifie ton email, tes créneaux et la description.'
+            },
+            error: {
+                type: 'error',
+                text: 'L’envoi n’a pas abouti. Tu peux écrire directement à morningmood@xavierfenaux.com.'
+            }
+        };
+
+        if (status && messages[status]) {
+            formStatus.hidden = false;
+            formStatus.textContent = messages[status].text;
+            formStatus.classList.add(messages[status].type);
+        }
+    }
+
     // Scroll Animations (Intersection Observer)
     const observerOptions = {
         threshold: 0.1,
