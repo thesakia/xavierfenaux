@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 const MORNING_MOOD_RECIPIENT = 'morningmood@xavierfenaux.com';
+const MORNING_MOOD_CC = 'fenauxft@gmail.com';
 
 function clean_text(string $value, int $maxLength = 2000): string
 {
@@ -62,6 +63,7 @@ $body = implode("\n\n", [
 $headers = [
     'From: XavierFenaux.com <noreply@xavierfenaux.com>',
     'Reply-To: ' . $name . ' <' . $email . '>',
+    'Cc: ' . MORNING_MOOD_CC,
     'Content-Type: text/plain; charset=UTF-8',
     'X-Mailer: PHP/' . phpversion(),
 ];
