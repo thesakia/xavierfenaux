@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 const MORNING_MOOD_RECIPIENT = 'morningmood@xavierfenaux.com';
 const MORNING_MOOD_CC = 'fenauxft@gmail.com';
+const MORNING_MOOD_SENDER = 'noreply@xavierfenaux.com';
 
 function clean_text(string $value, int $maxLength = 2000): string
 {
@@ -61,13 +62,13 @@ $body = implode("\n\n", [
 ]);
 
 $headers = [
-    'From: XavierFenaux.com <noreply@xavierfenaux.com>',
+    'From: XavierFenaux.com <' . MORNING_MOOD_SENDER . '>',
     'Reply-To: ' . $name . ' <' . $email . '>',
     'Cc: ' . MORNING_MOOD_CC,
     'Content-Type: text/plain; charset=UTF-8',
     'X-Mailer: PHP/' . phpversion(),
 ];
 
-$sent = mail(MORNING_MOOD_RECIPIENT, $subject, $body, implode("\r\n", $headers));
+$sent = mail(MORNING_MOOD_RECIPIENT, $subject, $body, implode("\r\n", $headers), '-f' . MORNING_MOOD_SENDER);
 
 redirect_with_status($sent ? 'ok' : 'error');
