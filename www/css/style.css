@@ -3228,9 +3228,13 @@ body {
 .cta-card h3,
 .interview-rdv-card h3,
 .latest-item h3,
-.testimonial-card h3 {
+.testimonial-card h3,
+.contact-item h3,
+.certification-card h3 {
     font-size: clamp(1.1rem, 1.7vw, 1.35rem);
     margin-bottom: 0.85rem;
+    text-transform: none;
+    letter-spacing: 0;
 }
 
 .card p,
@@ -3466,5 +3470,202 @@ body {
 
     #who .dna-values {
         margin-top: 0.35rem;
+    }
+}
+
+/* Minimal frames pass */
+.card,
+.cta-card,
+.benefit-item,
+.latest-item,
+.testimonial-card,
+.contact-item,
+.youtube-content,
+.ivt-description,
+.golf-card,
+.running-card,
+.certification-card,
+.reference-logo-card,
+.social-card {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.card:hover,
+.cta-card:hover,
+.benefit-item:hover,
+.latest-item:hover,
+.testimonial-card:hover,
+.contact-item:hover,
+.social-card:hover,
+.card.reveal.visible:hover,
+.cta-card.reveal.visible:hover {
+    transform: none;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.certifications-grid {
+    gap: 0;
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.certification-card {
+    min-height: 0;
+    grid-template-columns: auto 1fr;
+    gap: 0.9rem;
+    padding: 1.1rem 1.25rem 1.1rem 0;
+}
+
+.certification-card + .certification-card {
+    padding-left: 1.25rem;
+    border-left: 1px solid var(--border-soft);
+}
+
+.certification-mark {
+    width: 34px;
+    height: 34px;
+    border: 0;
+    background: transparent;
+}
+
+.certification-mark i {
+    font-size: 1rem;
+}
+
+.certification-card h3 {
+    font-size: clamp(0.88rem, 1vw, 0.98rem);
+    line-height: 1.35;
+    font-weight: 700;
+}
+
+.reference-strip {
+    margin-top: 1.3rem;
+    gap: 0;
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.reference-logo-card {
+    min-height: 0;
+    padding: 1rem 1.1rem;
+    border-right: 1px solid var(--border-soft);
+}
+
+.reference-logo-card:last-child {
+    border-right: 0;
+}
+
+.reference-logo {
+    height: 30px;
+}
+
+.reference-logo-card span {
+    font-size: 0.76rem;
+}
+
+.section-photo,
+.spotify-embed-container {
+    border: 0;
+    box-shadow: none;
+}
+
+.section-photo {
+    background: transparent;
+}
+
+.cta-grid,
+.latest-grid,
+.testimonials-grid,
+.contact-grid,
+.social-grid {
+    gap: 0;
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.cta-card,
+.latest-item,
+.testimonial-card,
+.contact-item,
+.social-card {
+    border-right: 1px solid var(--border-soft);
+    border-radius: 0;
+}
+
+.cta-card:last-child,
+.latest-item:last-child,
+.testimonial-card:last-child,
+.contact-item:last-child,
+.social-card:last-child {
+    border-right: 0;
+}
+
+.platform-logo {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    min-height: 0;
+}
+
+.card-icon,
+.cta-icon {
+    font-size: 1.35rem;
+    margin-bottom: 0.75rem;
+}
+
+.cta-icon i {
+    font-size: 1.35rem;
+}
+
+.latest-item,
+.testimonial-card,
+.contact-item {
+    text-align: left;
+}
+
+.latest-item h3,
+.testimonial-card h3,
+.contact-item h3 {
+    color: var(--text-primary);
+}
+
+@media (max-width: 900px) {
+    .certifications-grid,
+    .reference-strip,
+    .cta-grid,
+    .latest-grid,
+    .testimonials-grid,
+    .contact-grid,
+    .social-grid {
+        gap: 0;
+    }
+
+    .certification-card,
+    .reference-logo-card,
+    .cta-card,
+    .latest-item,
+    .testimonial-card,
+    .contact-item,
+    .social-card {
+        border-right: 0;
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+    .certification-card + .certification-card {
+        padding-left: 0;
+        border-left: 0;
+    }
+
+    .certification-card:last-child,
+    .reference-logo-card:last-child,
+    .cta-card:last-child,
+    .latest-item:last-child,
+    .testimonial-card:last-child,
+    .contact-item:last-child,
+    .social-card:last-child {
+        border-bottom: 0;
     }
 }
