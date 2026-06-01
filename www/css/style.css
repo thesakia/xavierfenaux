@@ -3267,6 +3267,11 @@ body {
     aspect-ratio: 16 / 6.5;
 }
 
+.footer-photo {
+    margin-top: 1.6rem;
+    margin-bottom: 1.2rem;
+}
+
 .spotify-embed-container {
     margin-bottom: 1.25rem;
     padding: 0.8rem;
