@@ -830,6 +830,52 @@ a {
     margin: 0 auto;
 }
 
+.section-photo {
+    margin: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--border-soft);
+    background: var(--surface-muted);
+    box-shadow: var(--shadow-soft);
+}
+
+.section-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.section-photo-wide {
+    margin-top: 2rem;
+    aspect-ratio: 16 / 7;
+}
+
+.who-photo-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: 1.5rem;
+}
+
+.who-photo-grid .section-photo {
+    aspect-ratio: 16 / 10;
+}
+
+.expertise-photo {
+    margin-top: 2rem;
+    aspect-ratio: 4 / 3;
+}
+
+.interview-photo {
+    margin-top: 1.5rem;
+    aspect-ratio: 16 / 10;
+}
+
+.podcast-photo {
+    margin-bottom: 2rem;
+    aspect-ratio: 16 / 7;
+}
+
 /* Spotify Embed */
 .podcast-title {
     margin-bottom: 2rem;
@@ -2539,8 +2585,14 @@ button.contact-link {
     }
 
     .reference-strip,
-    .expertise-grid {
+    .expertise-grid,
+    .who-photo-grid {
         grid-template-columns: 1fr;
+    }
+
+    .section-photo-wide,
+    .podcast-photo {
+        aspect-ratio: 16 / 10;
     }
 
     .certification-card {
