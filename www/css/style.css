@@ -156,7 +156,7 @@ a {
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem 5%;
-    max-width: 1920px;
+    max-width: 1600px;
     margin: 0 auto;
     width: 100%;
 }
@@ -829,7 +829,7 @@ a {
 /* Section General */
 .section {
     padding: 6rem 10%;
-    max-width: 1920px;
+    max-width: 1600px;
     margin: 0 auto;
 }
 
