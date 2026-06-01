@@ -2838,6 +2838,7 @@ button.contact-link {
 html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
 }
 
 /* Prevent horizontal scroll */
@@ -2850,4 +2851,327 @@ body {
 #hero-particles {
     max-width: 100%;
     height: auto;
+}
+
+/* Premium hero refresh */
+.hero-section {
+    min-height: 100svh;
+    height: auto;
+    align-items: center;
+    justify-content: flex-start;
+    padding: clamp(7rem, 13vh, 10rem) 8% clamp(4rem, 9vh, 7rem);
+    isolation: isolate;
+    background:
+        linear-gradient(90deg, rgba(9, 8, 6, 0.82) 0%, rgba(9, 8, 6, 0.62) 42%, rgba(9, 8, 6, 0.18) 76%, rgba(9, 8, 6, 0.04) 100%),
+        linear-gradient(180deg, rgba(9, 8, 6, 0.16) 0%, rgba(9, 8, 6, 0.54) 100%),
+        url('../images/events/conference-stage-wide.webp') center / cover no-repeat;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    inset: auto 8% 3rem 8%;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255, 253, 247, 0.5), transparent);
+    z-index: 2;
+}
+
+.hero-chart,
+.hero-visual {
+    display: none;
+}
+
+.hero-content {
+    max-width: 760px;
+    color: #fffdf7;
+}
+
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 1.2rem;
+    color: rgba(255, 253, 247, 0.72);
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.hero-eyebrow::before {
+    content: '';
+    width: 34px;
+    height: 1px;
+    background: var(--accent);
+}
+
+.hero-title {
+    max-width: 720px;
+    margin-bottom: 1.35rem;
+    color: #fffdf7;
+    font-size: clamp(3.4rem, 7vw, 7.4rem);
+    line-height: 0.94;
+    font-weight: 900;
+}
+
+.hero-subtitle {
+    max-width: 680px;
+    color: rgba(255, 253, 247, 0.82);
+    font-family: var(--font-main);
+    font-size: clamp(1.2rem, 2vw, 1.65rem);
+    font-weight: 500;
+    line-height: 1.45;
+}
+
+.hero-description {
+    max-width: 650px;
+    margin-top: 2rem;
+}
+
+.hero-text {
+    color: rgba(255, 253, 247, 0.76);
+    font-size: 1.08rem;
+    line-height: 1.75;
+}
+
+.hero-text.accent-text {
+    color: #fffdf7;
+    font-weight: 700;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 2.2rem;
+}
+
+.hero-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0.85rem 1.15rem;
+    border-radius: 8px;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.hero-action-primary {
+    background: #fffdf7;
+    color: #17140f;
+    border: 1px solid #fffdf7;
+}
+
+.hero-action-secondary {
+    color: #fffdf7;
+    border: 1px solid rgba(255, 253, 247, 0.35);
+    background: rgba(255, 253, 247, 0.08);
+    backdrop-filter: blur(12px);
+}
+
+.hero-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+}
+
+.hero-proof-strip {
+    gap: 0.55rem;
+    margin-top: 2.4rem;
+}
+
+.hero-proof-strip span {
+    min-height: 32px;
+    border-color: rgba(255, 253, 247, 0.2);
+    background: rgba(255, 253, 247, 0.08);
+    color: rgba(255, 253, 247, 0.78);
+    font-family: var(--font-display);
+    letter-spacing: 0;
+    backdrop-filter: blur(12px);
+}
+
+.hero-socials {
+    top: auto;
+    right: 8%;
+    bottom: 3.8rem;
+    left: auto;
+    width: auto;
+    margin: 0;
+    gap: 0.45rem;
+    padding: 0.45rem;
+    border-radius: 8px;
+    border-color: rgba(255, 253, 247, 0.18);
+    background: rgba(9, 8, 6, 0.28);
+    box-shadow: none;
+    backdrop-filter: blur(14px);
+}
+
+.hero-social-btn {
+    width: 40px;
+    height: 40px;
+    color: rgba(255, 253, 247, 0.68);
+    font-size: 1rem;
+}
+
+.hero-social-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.hero-social-btn:hover {
+    color: #fffdf7;
+    background: rgba(255, 253, 247, 0.12);
+    box-shadow: none;
+}
+
+.color-picker-container {
+    bottom: 3.8rem;
+    left: 8%;
+    padding: 0.45rem 0.7rem;
+    border-radius: 8px;
+    border-color: rgba(255, 253, 247, 0.18);
+    background: rgba(9, 8, 6, 0.28);
+    box-shadow: none;
+    backdrop-filter: blur(14px);
+}
+
+.theme-toggle {
+    width: 34px;
+    height: 34px;
+    color: rgba(255, 253, 247, 0.76);
+    background: transparent;
+    border-color: rgba(255, 253, 247, 0.18);
+}
+
+.color-picker-label {
+    color: rgba(255, 253, 247, 0.68);
+    font-family: var(--font-display);
+}
+
+.color-picker {
+    width: 34px;
+    height: 34px;
+    border-color: rgba(255, 253, 247, 0.18);
+}
+
+.ticker-wrap {
+    margin: 0 0 5rem;
+    transform: none;
+    border: 0;
+    padding: 0.72rem 0;
+    background: #17140f;
+}
+
+.ticker__item {
+    color: rgba(255, 253, 247, 0.72);
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+@media (max-width: 900px) {
+    .hero-section {
+        padding: 7rem 6% 7.5rem;
+        background:
+            linear-gradient(180deg, rgba(9, 8, 6, 0.7) 0%, rgba(9, 8, 6, 0.5) 45%, rgba(9, 8, 6, 0.76) 100%),
+            url('../images/events/conference-stage-wide.webp') 58% center / cover no-repeat;
+    }
+
+    .hero-content {
+        text-align: left;
+    }
+
+    .hero-title {
+        font-size: clamp(3.1rem, 16vw, 5.2rem);
+    }
+
+    .hero-socials {
+        right: 6%;
+        bottom: 2rem;
+    }
+
+    .color-picker-container {
+        left: 6%;
+        bottom: 2rem;
+    }
+}
+
+@media (max-width: 520px) {
+    .hero-section {
+        min-height: calc(100svh - 0px);
+        padding: 7.5rem 1.35rem 3.4rem;
+        background:
+            linear-gradient(180deg, rgba(9, 8, 6, 0.68) 0%, rgba(9, 8, 6, 0.48) 42%, rgba(9, 8, 6, 0.84) 100%),
+            url('../images/events/conference-stage-wide.webp') 61% center / cover no-repeat;
+    }
+
+    .hero-section::after {
+        display: none;
+    }
+
+    .hero-eyebrow {
+        display: none;
+    }
+
+    .hero-title {
+        max-width: 330px;
+        font-size: 2.85rem;
+        line-height: 0.96;
+        margin-bottom: 1rem;
+    }
+
+    .hero-subtitle {
+        max-width: 340px;
+        font-size: 1rem;
+        line-height: 1.45;
+    }
+
+    .hero-description {
+        margin-top: 1.25rem;
+    }
+
+    .hero-text {
+        font-size: 0.95rem;
+        line-height: 1.58;
+        margin-bottom: 0.7rem;
+    }
+
+    .hero-actions {
+        gap: 0.65rem;
+        margin-top: 1.45rem;
+    }
+
+    .hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .hero-action {
+        min-height: 44px;
+        padding: 0.75rem 0.95rem;
+        font-size: 0.75rem;
+    }
+
+    .hero-proof-strip {
+        margin-top: 1.3rem;
+    }
+
+    .hero-proof-strip span {
+        font-size: 0.66rem;
+        min-height: 30px;
+    }
+
+    .hero-socials,
+    .color-picker-container {
+        display: none;
+    }
+
+    .ticker-wrap {
+        margin-bottom: 3.5rem;
+    }
 }
