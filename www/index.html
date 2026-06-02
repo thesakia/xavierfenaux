@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -27,7 +27,7 @@
             <div class="nav-links">
 			<a href="#who">Profil</a>
             <a href="#ivt">IVT</a>
-            <a href="#interview-morning-mood">Participer au podcast</a>
+            <a href="#interview-morning-mood">Participer au Morning Mood</a>
             <a href="#contact">Contact</a>
 			<a href="/actualités">Actualités</a>
             </div>
@@ -54,17 +54,11 @@
                     <a href="#interview-morning-mood" class="hero-action hero-action-primary">Participer au Morning Mood</a>
                     <a href="#certifications" class="hero-action hero-action-secondary">Voir les repères</a>
                 </div>
-                <div class="hero-proof-strip" aria-label="Références">
-                    <span>Certifié AMF</span>
-                    <span>ARPP 2026</span>
-                    <span>BFM Business</span>
-                    <span>Talents du Trading</span>
-                </div>
             </div>
             <div class="hero-visual">
                 <!-- Dynamic chart canvas or SVG here -->
                 <div class="circle-glow"></div>
-                <img src="images/profile.jpg" alt="Xavier Fenaux" class="profile-cutout">
+                <img src="images/events/speaker-closeup-color.webp" alt="Xavier Fenaux en intervention" class="profile-cutout">
             </div>
             <div class="hero-socials">
                 <a href="https://twitter.com/XFenaux" target="_blank" class="hero-social-btn" title="Twitter">
@@ -113,7 +107,7 @@
 
         <section id="certifications" class="section certifications-section">
             <div class="certifications-header">
-                <h2 class="section-title">DES <span class="accent">REPÈRES</span></h2>
+                <h2 class="section-title">Des repères</h2>
             </div>
             <div class="certifications-grid">
                 <article class="certification-card card">
@@ -129,10 +123,10 @@
                     </div>
                 </article>
             </div>
-            <figure class="section-photo section-photo-wide">
+            <figure class="section-photo section-photo-wide keynote-fixed-photo">
                 <img src="images/events/audience-keynote.webp" alt="Xavier Fenaux face à une salle de conférence" loading="lazy">
             </figure>
-            <div class="reference-strip" aria-label="Références professionnelles">
+            <div class="reference-strip media-reference-strip" aria-label="Références professionnelles">
                 <div class="reference-logo-card">
                     <img src="images/bfm-business.png" alt="BFM Business" class="reference-logo">
                     <span>Interventions médias</span>
@@ -153,31 +147,24 @@
         </section>
 
         <section id="who" class="section">
-            <h2 class="section-title">QUI <span class="accent">SUIS-JE</span> ?</h2>
+            <h2 class="section-title">Qui suis-je ?</h2>
             <div class="who-content">
-                <div class="who-text card">
+                <div class="who-text">
                     <p>Je suis <strong>Investisseur et entrepreneur</strong>.</p>
                     <p>Depuis 20 ans, j'interviens sur les marchés.</p>
                     <p>Depuis 15 ans, j'aide ceux qui veulent arrêter les paris… et commencer à mieux investir.</p>
                 </div>
                 <div class="who-activities">
-                    <div class="activity-item card">
+                    <div class="activity-item">
                         <h3><i class="fas fa-microphone"></i> Morning Mood</h3>
                         <p>Chaque matin, j'allume le micro du Morning Mood pour remettre de l'ordre : macro, cryptos, psychologie, discipline, gestion du risque, sans filtre et sans excuses.</p>
                     </div>
-                    <div class="activity-item card">
+                    <div class="activity-item">
                         <h3><i class="fas fa-chart-bar"></i> Débrief Hebdo</h3>
                         <p>Chaque semaine, je publie le Débrief Hebdo, mes plans, mes stratégies crypto, et des dizaines de points pédagogiques pour que tu arrêtes de naviguer à vue.</p>
                     </div>
                 </div>
-                <div class="who-dna card">
-                    <h3>Mon ADN :</h3>
-                    <p class="dna-values"><strong>Clarté. Action. Constance. Aucune complaisance.</strong></p>
-                </div>
                 <div class="who-photo-grid">
-                    <figure class="section-photo">
-                        <img src="images/events/speaker-closeup-color.webp" alt="Xavier Fenaux en intervention" loading="lazy">
-                    </figure>
                     <figure class="section-photo">
                         <img src="images/events/speaker-profile-bw.webp" alt="Portrait de Xavier Fenaux sur scène" loading="lazy">
                     </figure>
@@ -185,62 +172,59 @@
             </div>
         </section>
 
-        <section id="expertise" class="section expertise-section">
+        <section id="expertise" class="section expertise-section ivt-band">
             <div class="expertise-layout">
                 <div class="expertise-copy">
-                    <h2 class="section-title">CE QUE <span class="accent">J'APPORTE</span></h2>
+                    <p class="section-kicker">Méthode IVT</p>
+                    <h2 class="section-title">Ce que j'apporte</h2>
                     <p>Une lecture structurée des marchés pour avancer avec moins d'impulsion et plus de méthode. Le travail n'est pas de prédire chaque mouvement, mais de savoir quoi regarder, quoi ignorer, et comment réagir.</p>
-                    <figure class="section-photo expertise-photo">
-                        <img src="images/events/speaker-stage-bw.webp" alt="Xavier Fenaux pendant une conférence" loading="lazy">
-                    </figure>
                 </div>
-                <div class="expertise-grid">
-                    <div class="expertise-item card">
-                        <i class="fas fa-globe-europe card-icon"></i>
+                <div class="expertise-board" aria-label="Piliers de travail">
+                    <article class="expertise-step">
+                        <span class="expertise-number">01</span>
+                        <i class="fas fa-globe-europe"></i>
                         <h3>Macro & contexte</h3>
                         <p>Identifier le climat de marché, les catalyseurs et les zones où le bruit peut faire perdre le plan.</p>
-                    </div>
-                    <div class="expertise-item card">
-                        <i class="fas fa-route card-icon"></i>
+                    </article>
+                    <article class="expertise-step">
+                        <span class="expertise-number">02</span>
+                        <i class="fas fa-route"></i>
                         <h3>Plan de marché</h3>
                         <p>Construire des scénarios, définir des niveaux, gérer les invalidations et éviter les décisions à chaud.</p>
-                    </div>
-                    <div class="expertise-item card">
-                        <i class="fas fa-scale-balanced card-icon"></i>
+                    </article>
+                    <article class="expertise-step">
+                        <span class="expertise-number">03</span>
+                        <i class="fas fa-scale-balanced"></i>
                         <h3>Gestion du risque</h3>
                         <p>Raisonner en exposition, paliers, temporalité et taille de position plutôt qu'en conviction.</p>
-                    </div>
-                    <div class="expertise-item card">
-                        <i class="fas fa-brain card-icon"></i>
+                    </article>
+                    <article class="expertise-step">
+                        <span class="expertise-number">04</span>
+                        <i class="fas fa-brain"></i>
                         <h3>Discipline</h3>
                         <p>Tenir un cadre quand les marchés accélèrent, corrigent, ou donnent envie de tout remettre en cause.</p>
-                    </div>
+                    </article>
                 </div>
             </div>
         </section>
 
-        <section id="interview-morning-mood" class="section interview-rdv-section">
-            <div class="section-heading-row">
-                <div>
-                    <h2 class="section-title">PARTICIPER AU <span class="accent">MORNING MOOD</span></h2>
-                </div>
-                <p>Le samedi matin, le Morning Mood peut accueillir une interview au format podcast. La discussion dure environ une heure, selon les disponibilités validées directement par Xavier.</p>
+        <section id="interview-morning-mood" class="section interview-rdv-section apple-section">
+            <div class="apple-section-header">
+                <p class="section-kicker">Morning Mood</p>
+                <h2 class="section-title">Participer au Morning Mood.</h2>
+                <p>Le samedi matin, le Morning Mood accueille une conversation d'environ une heure. Un format simple, direct, validé par Xavier selon le profil, le sujet et les disponibilités.</p>
             </div>
-            <div class="interview-rdv-layout">
-                <div class="interview-rdv-card card">
-                    <h3><i class="fas fa-microphone"></i> Interview du samedi matin</h3>
-                    <p>Présente ton profil, ton sujet et les créneaux où tu es disponible. Xavier s'adaptera si le format correspond, puis te répondra directement par mail.</p>
-                    <ul class="interview-rdv-points">
-                        <li><i class="fas fa-clock"></i> Durée indicative : environ 1h</li>
-                        <li><i class="fas fa-calendar-day"></i> Format interview du samedi matin</li>
-                        <li><i class="fas fa-check"></i> Réponse directe après validation</li>
-                        <li><i class="fas fa-align-left"></i> Description brève demandée en amont</li>
+            <div class="interview-rdv-layout apple-interview-layout">
+                <div class="interview-rdv-card apple-interview-main">
+                    <span class="apple-card-eyebrow">Interview</span>
+                    <h3>Une discussion utile, pas une apparition de plus.</h3>
+                    <p>Présente ton profil, ton sujet et les créneaux où tu es disponible. Si le format correspond, Xavier cale l'échange puis te répond directement par mail.</p>
+                    <ul class="interview-rdv-points apple-feature-list">
+                        <li><i class="fas fa-clock"></i><span>Durée indicative : environ 1h</span></li>
+                        <li><i class="fas fa-calendar-day"></i><span>Format interview du samedi matin</span></li>
+                        <li><i class="fas fa-check"></i><span>Réponse directe après validation</span></li>
                     </ul>
-                    <button type="button" class="cta-button interview-rdv-button" data-modal-open="morning-mood-modal"><i class="fas fa-arrow-right"></i> Proposer ma participation</button>
-                </div>
-                <div class="interview-rdv-card card interview-rdv-note">
-                    <h3><i class="fas fa-list-check"></i> À préparer</h3>
-                    <p>Quelques lignes suffisent : qui tu es, le sujet que tu proposes, ce que l'échange peut apporter aux auditeurs, et plusieurs créneaux possibles.</p>
+                    <button type="button" class="cta-button interview-rdv-button apple-button" data-modal-open="morning-mood-modal"><i class="fas fa-arrow-right"></i> Proposer ma participation</button>
                 </div>
             </div>
         </section>
@@ -291,10 +275,12 @@
         </div>
 
 <section id="podcast" class="section">
-    <h2 class="section-title podcast-title"><i class="fas fa-headphones"></i> MORNING MOOD <span class="accent">PODCAST</span></h2>
+    <h2 class="section-title podcast-title"><i class="fas fa-headphones"></i> Morning Mood</h2>
 
     <div class="spotify-embed-container">
+        <div class="spotify-iframe-frame">
         <iframe 
+            title="Morning Mood sur Spotify"
             style="border-radius: 12px" 
             src="https://open.spotify.com/embed/show/4Kka5gOG1cnplAmHB0vGXD?utm_source=generator&theme=0" 
             width="100%" 
@@ -302,42 +288,29 @@
             frameBorder="0" 
             allowfullscreen="" 
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-            loading="lazy">
+            loading="eager">
         </iframe>
+        </div>
+        <a class="spotify-mobile-fallback" href="https://open.spotify.com/show/4Kka5gOG1cnplAmHB0vGXD" target="_blank" rel="noopener noreferrer">
+            <i class="fab fa-spotify"></i> Ouvrir Morning Mood sur Spotify
+        </a>
+    </div>
 
-        <!-- Texte dans le même cadre -->
-
-            <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.7; margin-top: 1.5rem;">
-    Je publie chaque matin le Morning Mood, un podcast où je partage mon état d’esprit face aux marchés, 
-    ce que je surveille, ce qui m’intrigue et comment j’aborde la journée. 
-    Je décrypte l’actualité économique, les zones techniques importantes, les mouvements des indices et des cryptos, 
-    sans jamais tomber dans les promesses faciles ni les scénarios miracles.
-</p>
-
-<p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.7; margin-top: 1.2rem;">
-    Mon objectif est simple. Aider ceux qui veulent progresser à comprendre ce qui compte vraiment, 
-    à structurer leur réflexion, à développer de la discipline et à apprendre à réagir avec méthode 
-    plutôt qu’à l’instinct. 
-    Je parle de mes propres questionnements, de mes doutes, de ce que je fais quand les marchés accélèrent 
-    ou quand ils se figent, et surtout de la manière dont j’essaie de rester lucide au milieu du bruit.
-</p>
-
-<p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.7; margin-top: 1.2rem;">
-    Si vous écoutez ce podcast, vous repartirez avec une vision claire du climat du marché du jour, 
-    des éléments à suivre, et d’une façon de penser qui vous évite les excès. 
-    Mon but n’est pas de vous dire quoi faire, mais de vous montrer comment je fais pour avancer, 
-    jour après jour, avec la tête froide et un plan solide.
-</p>
-
+    <div class="podcast-copy podcast-editorial">
+        <p class="podcast-lead">Chaque matin, Morning Mood remet de l'ordre dans le bruit des marchés.</p>
+        <div class="podcast-points" aria-label="Ce que vous trouvez dans Morning Mood">
+            <p><span>01</span> Une lecture directe de l'actualité économique, des indices, des cryptos et des zones techniques importantes.</p>
+            <p><span>02</span> Une façon de penser le risque, la discipline et la psychologie sans promesses faciles ni scénarios miracles.</p>
+            <p><span>03</span> Des repères concrets pour avancer avec plus de méthode, la tête froide, et un plan clair pour la journée.</p>
+        </div>
     </div>
 </section>
 
         <section id="content" class="section ctas-section content-section">
             <div class="section-heading-row">
                 <div>
-                    <h2 class="section-title">SUIVRE <span class="accent">MON TRAVAIL</span></h2>
+                    <h2 class="section-title">Suivre mon travail</h2>
                 </div>
-                <p>Vidéos, lives et accompagnement IVT : plusieurs formats, un même fil conducteur.</p>
             </div>
             <div class="cta-grid">
                 <div class="cta-card card">
@@ -362,7 +335,7 @@
         </section>
 
         <section id="youtube" class="section">
-            <h2 class="section-title"><i class="fab fa-youtube"></i> MA CHAÎNE <span class="accent">YOUTUBE</span></h2>
+            <h2 class="section-title"><i class="fab fa-youtube"></i> Ma chaîne YouTube</h2>
             <div class="youtube-content card">
                 <p>Les marchés expliqués simplement, sans drama, sans bullshit.</p>
                 <p>FED, inflation, cryptos, opportunités, volatilité : je décortique, tu avances.</p>
@@ -371,7 +344,7 @@
         </section>
 
         <section id="ivt" class="section">
-            <h2 class="section-title"><i class="fas fa-chart-line"></i> <span class="accent">IVT</span> - INTERACTIV TRADING</h2>
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> IVT - Interactiv Trading</h2>
             <div class="ivt-content">
                 <div class="ivt-description card">
                     <p><strong>Indices, Cryptos, polarités, notifications, PDF pédagogiques</strong> (Carnet de Bord, Crypto Board), <strong>Vidéos, Audios, mes positions en temps réel.</strong></p>
@@ -383,12 +356,12 @@
         </section>
 
         <section id="latest" class="section">
-            <h2 class="section-title"><i class="fas fa-fire"></i> DERNIÈRES <span class="accent">PUBLICATIONS</span></h2>
+            <h2 class="section-title"><i class="fas fa-fire"></i> Dernières publications</h2>
             <div class="latest-grid">
                 <div class="latest-item card">
                     <div class="platform-logo spotify-logo compact-logo"><i class="fab fa-spotify"></i><span>Spotify</span></div>
                     <h3>Derniers Morning Mood</h3>
-                    <p>Écoute les derniers épisodes du podcast quotidien</p>
+                    <p>Écoute les derniers épisodes du Morning Mood</p>
                     <a href="#podcast" class="cta-button-small">Écouter</a>
                 </div>
                 <div class="latest-item card">
@@ -401,31 +374,34 @@
         </section>
 
         <section id="community" class="section">
-            <h2 class="section-title">AVIS & <span class="accent">RETOURS</span></h2>
+            <h2 class="section-title">Avis & retours</h2>
             <div class="testimonials-grid">
                 <div class="testimonial-card card">
                     <h3><i class="fas fa-star"></i> Trustpilot</h3>
-                    <p class="testimonial-text">"Excellente formation, très pédagogique et concrète. Xavier explique clairement les concepts complexes."</p>
-                    <p class="testimonial-author">— Membre IVT</p>
+                    <p class="testimonial-text">Un avis public de mai 2026 cite des analyses partagées avec les coachs, ainsi qu'avec Rodolphe et Xavier, dans une méthode IVT structurée.</p>
+                    <p class="testimonial-author">— Avis Trustpilot, membre IVT</p>
+                    <a href="https://fr.trustpilot.com/review/interactivtrading.com" target="_blank" rel="noopener noreferrer" class="testimonial-source">Voir les avis</a>
                 </div>
                 <div class="testimonial-card card">
-                    <h3><i class="fas fa-headphones"></i> Podcast Reviews</h3>
-                    <p class="testimonial-text">"Le Morning Mood est devenu mon rituel matinal. Ça me remet les idées en place avant d'ouvrir les marchés."</p>
-                    <p class="testimonial-author">— Auditeur Apple Podcasts</p>
+                    <h3><i class="fas fa-chart-line"></i> Analyse externe</h3>
+                    <p class="testimonial-text">NewTrading relève que les retours positifs portent notamment sur l'accompagnement régulier, la disponibilité de l'équipe et la pédagogie de Rodolphe Steffan et Xavier Fenaux.</p>
+                    <p class="testimonial-author">— NewTrading, avril 2026</p>
+                    <a href="https://newtrading.fr/avis-interactiv-trading" target="_blank" rel="noopener noreferrer" class="testimonial-source">Lire l'analyse</a>
                 </div>
                 <div class="testimonial-card card">
-                    <h3><i class="fas fa-chart-line"></i> Communauté IVT</h3>
-                    <p class="testimonial-text">"Enfin quelqu'un qui parle vrai, sans promesses miraculeuses. La méthode et la discipline avant tout."</p>
-                    <p class="testimonial-author">— Membre IVT</p>
+                    <h3><i class="fas fa-headphones"></i> Communauté IVT</h3>
+                    <p class="testimonial-text">IVT présente Xavier comme associé en gestion active, spécialiste de l'accompagnement des traders actifs, du Morning Mood et des analyses multi-actifs.</p>
+                    <p class="testimonial-author">— Interactiv Trading</p>
+                    <a href="https://interactivtrading.com/" target="_blank" rel="noopener noreferrer" class="testimonial-source">Voir la page IVT</a>
                 </div>
             </div>
         </section>
 
 		<section id="about" class="section" style="display: none;">
-            <h2 class="section-title">PARCOURS <span class="accent">PROFESSIONNEL</span></h2>
+            <h2 class="section-title">Parcours professionnel</h2>
             <div class="timeline">
                 <div class="timeline-item">
-                    <div class="timeline-date">2014 - PRESENT</div>
+                    <div class="timeline-date">2014 - présent</div>
                     <div class="timeline-content card">
                         <h3>Associé @ InteractivTrading</h3>
                         <p>Analyses Forex, Indices, Actions. Création de contenu vidéo & formations. Développement de communauté.</p>
@@ -465,13 +441,13 @@
 
         <section id="golf" class="section golf-section">
             <div class="golf-content">
-                <h2 class="section-title"><span class="accent">GOLF</span></h2>
-                <div class="card golf-card">
+                <h2 class="section-title">Golf</h2>
+                <div class="golf-card">
                     <div class="golf-stats">
                         <div class="stat-big">12</div>
-                        <div class="stat-desc">HANDICAP</div>
+                        <div class="stat-desc">Handicap</div>
                     </div>
-                    <p>Le Trading et le Golf partagent la même ADN : <strong>Discipline, Psychologie, Gestion du Risque.</strong></p>
+                    <p>Le trading et le golf partagent le même ADN : <strong>discipline, psychologie, gestion du risque.</strong></p>
                     <ul class="achievements">
                         <li><i class="fas fa-trophy"></i> Compétitions Corpo Régionales & Nationales</li>
                         <li><i class="fas fa-trophy"></i> 8ème Finale Nationale International Pairs</li>
@@ -485,11 +461,11 @@
 		
 <section id="running" class="section running-section">
     <div class="running-content">
-        <h2 class="section-title"><span class="accent">RUNNING</span></h2>
-        <div class="card running-card">
+        <h2 class="section-title">Running</h2>
+        <div class="running-card">
             <div class="running-stats">
                 <div class="stat-big">10KM</div>
-                <div class="stat-desc">QUOTIDIEN</div>
+                <div class="stat-desc">Quotidien</div>
             </div>
             <p>
                 Le trading et le running partagent là aussi une identité commune faite de discipline, de constance et de lucidité. 
@@ -522,7 +498,7 @@
 
 
         <section id="contact" class="section footer-section">
-            <h2 class="section-title">CONTACT</h2>
+            <h2 class="section-title">Contact</h2>
             <div class="contact-content">
                 <div class="contact-grid">
                     <div class="contact-item card">
@@ -540,7 +516,7 @@
         </section>
 
         <section id="connect" class="section footer-section">
-            <h2 class="section-title">RESTEZ <span class="accent">CONNECTÉ</span></h2>
+            <h2 class="section-title">Restez connecté</h2>
             <div class="social-grid">
                 <a href="https://twitter.com/XFenaux" target="_blank" class="social-card twitter">
                     <svg viewBox="0 0 24 24" fill="currentColor" width="40" height="40">
@@ -578,4 +554,5 @@
     <script src="/js/umami-events.js" defer></script>
 </body>
 </html>
+
 
