@@ -169,6 +169,65 @@ function master_services(): array
                 'Compare les pages actives et les sources apres les publications.',
             ],
         ],
+        [
+            'id' => 'social-x',
+            'name' => 'X',
+            'category' => 'Reseaux',
+            'href' => 'https://x.com/XFenaux',
+            'launchLabel' => 'Ouvrir X',
+            'statusCheck' => ['type' => 'http', 'url' => 'https://x.com/XFenaux'],
+            'stats' => [
+                ['label' => 'Compte', 'value' => '@XFenaux'],
+                ['label' => 'Stats auto', 'value' => 'API X requise'],
+                ['label' => 'A suivre', 'value' => 'posts, reponses, impressions'],
+            ],
+            'summary' => 'Canal court pour les prises de position, reactions marche et posts issus de la strategie editoriale.',
+            'result' => 'Une lecture rapide de ce qui prend: sujets, accroches, reponses et angles a recycler.',
+            'tutorial' => [
+                'Ouvre X depuis le master.',
+                'Regarde les posts recents, les reponses et les sujets qui creent le plus d echanges.',
+                'Note les accroches qui peuvent devenir un clip, un Morning Mood ou un post plus long.',
+            ],
+        ],
+        [
+            'id' => 'social-instagram',
+            'name' => 'Instagram',
+            'category' => 'Reseaux',
+            'href' => 'https://www.instagram.com/xfenaux/',
+            'launchLabel' => 'Ouvrir Instagram',
+            'statusCheck' => ['type' => 'http', 'url' => 'https://www.instagram.com/xfenaux/'],
+            'stats' => [
+                ['label' => 'Compte', 'value' => '@xfenaux'],
+                ['label' => 'Abonnes publics', 'value' => '2 317'],
+                ['label' => 'Publication', 'value' => 'Reels et posts'],
+            ],
+            'summary' => 'Canal visuel pour reels, extraits, coulisses et signaux de presence personnelle Xavier.',
+            'result' => 'Une vue simple des formats qui meritent d etre pousses ou adaptes en clips.',
+            'tutorial' => [
+                'Ouvre Instagram.',
+                'Controle les derniers reels et posts.',
+                'Reprends les formats qui gardent le mieux l attention ou declenchent des messages.',
+            ],
+        ],
+        [
+            'id' => 'social-tiktok',
+            'name' => 'TikTok',
+            'category' => 'Reseaux',
+            'href' => 'https://www.tiktok.com/search?q=Xavier%20Fenaux',
+            'launchLabel' => 'Chercher TikTok',
+            'statusCheck' => ['type' => 'http', 'url' => 'https://www.tiktok.com/search?q=Xavier%20Fenaux'],
+            'stats' => [
+                ['label' => 'Compte', 'value' => 'A confirmer'],
+                ['label' => 'Stats auto', 'value' => 'Profil public non trouve'],
+                ['label' => 'A suivre', 'value' => 'vues, retention, partages'],
+            ],
+            'summary' => 'Point d entree TikTok pour retrouver ou confirmer le compte Xavier avant branchement complet.',
+            'result' => 'Un compte confirme, puis un suivi des videos courtes les plus reutilisables.',
+            'tutorial' => [
+                'Ouvre la recherche TikTok.',
+                'Confirme le bon profil Xavier avant publication ou reporting.',
+                'Une fois le compte confirme, suis les vues, la retention et les partages des clips.',
+            ],
+        ],
     ];
 }
-

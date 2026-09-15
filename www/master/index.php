@@ -434,6 +434,35 @@ $servicesJson = json_encode(array_map(static function (array $service): array {
       margin: 14px 0;
     }
 
+    .stats-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .stat-chip {
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .stat-chip span {
+      display: block;
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .stat-chip strong {
+      display: block;
+      font-size: .98rem;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
     .muted {
       color: var(--muted);
       font-size: .9rem;
@@ -609,6 +638,7 @@ $servicesJson = json_encode(array_map(static function (array $service): array {
         </div>
         <h2>${service.name}</h2>
         <p>${service.summary}</p>
+        ${service.stats ? `<div class="stats-list">${service.stats.map((stat) => `<div class="stat-chip"><span>${stat.label}</span><strong>${stat.value}</strong></div>`).join('')}</div>` : ''}
         <ol class="steps">${service.tutorial.map((step) => `<li>${step}</li>`).join('')}</ol>
         <div class="result-box"><strong>Resultat attendu</strong><br>${service.result}</div>
         <a class="button" href="${service.href}" target="${service.href.startsWith('http') ? '_blank' : '_self'}" rel="noreferrer">${service.launchLabel}</a>
@@ -694,4 +724,3 @@ $servicesJson = json_encode(array_map(static function (array $service): array {
 <?php endif; ?>
 </body>
 </html>
-
