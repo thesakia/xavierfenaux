@@ -1,0 +1,8 @@
+{
+  "x": {"client_id": "", "client_secret": ""},
+  "instagram": {"client_id": "", "client_secret": ""},
+  "tiktok": {"client_id": "", "client_secret": ""},
+  "youtube": {"client_id": "", "client_secret": "", "channel_id": ""},
+  "twitch": {"client_id": "", "client_secret": ""},
+  "spotify": {"client_id": "", "client_secret": ""}
+}

@@ -5,6 +5,7 @@ require __DIR__ . '/auth.php';
 require __DIR__ . '/services.php';
 
 master_require_login();
+session_write_close();
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -24,14 +25,15 @@ function master_port_open(string $host, int $port): array
 
 function master_http_status(string $url): array
 {
-    $headers = @get_headers($url, true);
+    $context = stream_context_create(['http'=>['timeout'=>3, 'method'=>'HEAD', 'follow_location'=>0]]);
+    $headers = @get_headers($url, true, $context);
     if (!is_array($headers) || empty($headers[0])) {
         return ['state' => 'offline', 'label' => 'A verifier', 'code' => null];
     }
 
     preg_match('/\s(\d{3})\s/', (string) $headers[0], $matches);
     $code = isset($matches[1]) ? (int) $matches[1] : null;
-    $state = $code !== null && $code < 500 ? 'online' : 'offline';
+    $state = $code !== null && (($code >= 200 && $code < 400) || $code === 401) ? 'online' : 'offline';
 
     return ['state' => $state, 'label' => $state === 'online' ? 'Repond' : 'A verifier', 'code' => $code];
 }
@@ -46,7 +48,7 @@ function master_file_status(string $path): array
         ];
     }
 
-    return ['state' => 'missing', 'label' => 'Absent du webroot', 'updatedAt' => null];
+    return ['state' => 'missing', 'label' => 'Indisponible', 'updatedAt' => null];
 }
 
 $services = array_map(static function (array $service): array {
@@ -65,7 +67,7 @@ $services = array_map(static function (array $service): array {
     unset($service['statusCheck']);
     $service['status'] = $status;
     return $service;
-}, master_services());
+}, array_values(array_filter(master_services(), static fn(array $s): bool => $s['category'] !== 'Reseaux')));
 
 $revisionPath = dirname(__DIR__, 2) . '/.deploy-revision';
 
@@ -74,4 +76,3 @@ echo json_encode([
     'revision' => is_file($revisionPath) ? trim((string) file_get_contents($revisionPath)) : null,
     'services' => $services,
 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-

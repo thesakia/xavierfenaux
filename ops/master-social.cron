@@ -1,0 +1,1 @@
+* * * * * www-data /usr/bin/php /var/www/xavierfenaux/ops/master-social-sync.php >> /var/log/xavier-master-sync.log 2>&1

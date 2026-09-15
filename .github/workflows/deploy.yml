@@ -37,6 +37,11 @@ jobs:
           ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new \
             root@76.13.48.6 "chown -R www-data:www-data /var/www/xavierfenaux/www/dashboard/strategy; chmod 775 /var/www/xavierfenaux/www/dashboard/strategy; find /var/www/xavierfenaux/www/dashboard/strategy -type f -name '*.html' -exec chmod 664 {} \;; printf '%s\n' '$GITHUB_SHA' > /var/www/xavierfenaux/.deploy-revision"
 
+      - name: Configure cockpit storage and social sync
+        run: |
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new \
+            root@76.13.48.6 "bash /var/www/xavierfenaux/ops/setup-master.sh"
+
       - name: Note migrated dashboard services
         run: |
           echo "Xavier dashboard services run on VPS2/Contabo and are proxied by Nginx on the website VPS."

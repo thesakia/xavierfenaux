@@ -1,0 +1,8 @@
+/var/log/xavier-master-sync.log {
+    weekly
+    rotate 8
+    compress
+    missingok
+    notifempty
+    create 0640 www-data www-data
+}
