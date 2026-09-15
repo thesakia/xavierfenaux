@@ -10,7 +10,7 @@ function master_services(): array
             'category' => 'Marches',
             'href' => '/dashboard',
             'launchLabel' => 'Ouvrir le radar',
-            'statusCheck' => ['type' => 'port', 'host' => '127.0.0.1', 'port' => 3000],
+            'statusCheck' => ['type' => 'http', 'url' => 'https://xavierfenaux.com/dashboard'],
             'summary' => 'Le poste de pilotage marche: brief, TOP 3 radar, opportunites, news, macro et agents Xavier.',
             'result' => 'Une shortlist claire avec contexte, zones, invalidation, objectifs et score de revue avant de preparer la seance.',
             'tutorial' => [
@@ -25,7 +25,7 @@ function master_services(): array
             'category' => 'Contenu',
             'href' => '/clips/',
             'launchLabel' => 'Ouvrir les clips',
-            'statusCheck' => ['type' => 'port', 'host' => '127.0.0.1', 'port' => 8094],
+            'statusCheck' => ['type' => 'http', 'url' => 'https://xavierfenaux.com/clips/'],
             'summary' => 'Studio de clips et worker de traitement pour transformer les contenus Morning Mood en formats courts.',
             'result' => 'Des extraits prets a verifier, monter, sous-titrer et publier sans repartir du podcast complet.',
             'tutorial' => [
@@ -40,7 +40,7 @@ function master_services(): array
             'category' => 'Marches',
             'href' => 'https://radar.ftfenaux.com/',
             'launchLabel' => 'Ouvrir IVT Radar',
-            'statusCheck' => ['type' => 'port', 'host' => '127.0.0.1', 'port' => 8787],
+            'statusCheck' => ['type' => 'http', 'url' => 'https://radar.ftfenaux.com/'],
             'summary' => 'Veille IVT autonome avec service quotidien programme a 07:15 heure de Paris.',
             'result' => 'Un radar de veille exploitable le matin pour reperer les sujets et signaux IVT a suivre.',
             'tutorial' => [
@@ -55,7 +55,7 @@ function master_services(): array
             'category' => 'Contenu',
             'href' => 'https://radar.ftfenaux.com/newsletter/',
             'launchLabel' => 'Ouvrir newsletter',
-            'statusCheck' => ['type' => 'port', 'host' => '127.0.0.1', 'port' => 8790],
+            'statusCheck' => ['type' => 'http', 'url' => 'https://radar.ftfenaux.com/newsletter/'],
             'summary' => 'Dashboard newsletter connecte au radar IVT, avec brouillon quotidien programme a 07:30.',
             'result' => 'Un brouillon de newsletter alimente par la veille, pret a relire et ajuster.',
             'tutorial' => [
