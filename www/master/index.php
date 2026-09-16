@@ -29,7 +29,7 @@ $services = array_map(static function(array $s): array { unset($s['statusCheck']
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#f7f9f8">
   <title>Le cockpit de Xavier</title>
-  <link rel="stylesheet" href="/master/cockpit.css?v=5">
+  <link rel="stylesheet" href="/master/cockpit.css?v=6">
   <script defer src="/master/lucide.min.js"></script>
   <?php if ($loggedIn): ?><script defer src="/master/chart.umd.js"></script><?php endif; ?>
 </head>
@@ -54,7 +54,7 @@ $services = array_map(static function(array $s): array { unset($s['statusCheck']
       <span class="nav-label">MON ESPACE</span>
       <nav aria-label="Navigation principale">
         <a href="#home" data-view="home"><i data-lucide="layout-dashboard"></i>Vue d’ensemble</a>
-        <a href="#social" data-view="social"><i data-lucide="chart-no-axes-combined"></i>Mes statistiques</a>
+        <a href="#social" data-view="social"><i data-lucide="chart-no-axes-combined"></i>Mes réseaux</a>
         <a href="#analytics" data-view="analytics"><i data-lucide="mouse-pointer-2"></i>Analytics</a>
         <a href="#content" data-view="content"><i data-lucide="clapperboard"></i>Créer du contenu</a>
         <a href="#markets" data-view="markets"><i data-lucide="radar"></i>Ma veille</a>
@@ -76,8 +76,8 @@ $services = array_map(static function(array $s): array { unset($s['statusCheck']
   <dialog id="data-dialog" aria-labelledby="data-title"><button class="dialog-close icon-button" data-close title="Fermer" aria-label="Fermer"><i data-lucide="x"></i></button><div id="data-body"></div></dialog>
   <div id="toast" class="toast" role="status" hidden></div>
   <script id="boot" type="application/json"><?= json_encode(['services'=>$services, 'csrf'=>$csrf, 'flash'=>$flash], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?></script>
-  <script defer src="/master/metrics.js?v=2"></script>
-  <script defer src="/master/cockpit.js?v=5"></script>
+  <script defer src="/master/metrics.js?v=3"></script>
+  <script defer src="/master/cockpit.js?v=6"></script>
 <?php endif; ?>
 </body>
 </html>

@@ -3,12 +3,13 @@ const boot = JSON.parse(document.getElementById("boot").textContent);
 const main = document.getElementById("main");
 const labels = {
   home: "Vue d’ensemble",
-  social: "Mes statistiques",
+  social: "Mes réseaux",
   analytics: "Analytics",
   content: "Créer du contenu",
   markets: "Ma veille",
   tools: "Tous mes outils",
   accounts: "Mes comptes & données",
+  integrations: "Administration des connexions",
 };
 const state = {
   view: "home",
@@ -16,6 +17,7 @@ const state = {
   owner: "all",
   network: "all",
   metric: "followers",
+  chartMode: "combined",
   social: null,
   socialError: "",
   analytics: null,
@@ -108,7 +110,7 @@ function connectButton(a) {
   return c.active
     ? `<span class="chip ok">${icon("check")}${c.apiOnly ? "API publique active" : "Connecté"}</span>`
     : c.configured ? `<form method="post" action="/master/connect.php"><input type="hidden" name="account" value="${a.id}"><input type="hidden" name="csrf" value="${esc(boot.csrf)}"><button class="primary" type="submit">${icon("plug")}${c.needsReconnect ? "Reconnecter" : "Connecter"} ${esc(a.network)}</button></form>`
-    : `<button class="primary" data-connect="${a.id}">${icon("settings-2")}Configurer ${esc(a.network)}</button>`;
+    : `<button class="primary" data-connect="${a.id}">${icon("plug")}Connecter ${esc(a.network)}</button>`;
 }
 function kpis() {
   const accounts = accountList(),
@@ -151,9 +153,7 @@ function channels() {
   }</ul></section>`;
 }
 function home() {
-  const connected = Object.values(state.social?.connections || {}).filter(
-    (c) => c.active,
-  ).length;
+  const connected = (state.social?.accounts || []).filter(a => connection(a).active).length;
   return (
     heading(
       "Bonjour Xavier,",
@@ -254,35 +254,75 @@ function statsTable() {
       "",
     )}</tbody></table></div><p class="table-hint">— = donnée indisponible, jamais zéro par défaut. Le gain nécessite un relevé aux deux dates limites. Les vues et les écoutes ne sont pas directement comparables.</p>`;
 }
+function socialHealth(a) {
+  const c = connection(a), sync = state.social?.sync?.[a.id];
+  if (c.needsReconnect) return { label: "À reconnecter", tone: "bad", detail: "L’autorisation a expiré." };
+  if (c.active && sync?.error) return { label: "Lecture interrompue", tone: "bad", detail: sync.error };
+  if (c.active) {
+    const last = sync?.lastSuccess;
+    const stale = last && Date.now() - Date.parse(last) > 86400000;
+    return { label: stale ? "Données en retard" : last ? "Synchronisé" : "Première lecture en attente", tone: stale ? "" : "ok", detail: last ? "Dernière lecture : " + new Date(last).toLocaleString("fr-FR") : "Le compte est autorisé. Le premier relevé n’est pas encore disponible." };
+  }
+  return c.setup?.mode === "official"
+    ? { label: "Suivi par relevés", tone: "", detail: "Statistiques disponibles dans l’espace officiel. Pas de synchronisation automatique." }
+    : { label: "Non connecté", tone: "", detail: c.configured ? "Autorise la lecture depuis ton compte sur le réseau." : "La connexion doit encore être activée côté cockpit. Aucune configuration technique à faire sur ton compte." };
+}
+function networkTabs() {
+  return `<nav class="network-tabs" aria-label="Réseaux sociaux"><a href="#social" ${state.network === "all" ? 'aria-current="page"' : ""}>${icon("panels-top-left")}Ensemble</a>${(state.social?.accounts || []).map(a => `<a href="#social/${a.id}" ${state.network === a.id ? 'aria-current="page"' : ""}>${networkIcon(a)}${esc(a.network)}<span class="connection-dot ${connection(a).active ? "active" : ""}" title="${esc(socialHealth(a).label)}"></span></a>`).join("")}</nav>`;
+}
+function socialKpis() {
+  const p = period(), selected = accountList();
+  const podcast = selected.length === 1 && selected[0].network === "Spotify";
+  return `<section class="social-kpis" aria-label="Chiffres clés">${[
+    ["followers", selected.length === 1 ? "Abonnés" : "Abonnés cumulés", "users-round"],
+    ["gain", "Gain d’abonnés", "trending-up"],
+    ["posts", podcast ? "Épisodes publiés" : "Publications", "files"],
+    ["views", podcast ? "Écoutes" : "Vues", "play"],
+    ["reactions", "J’aime", "heart"],
+    ["comments", "Commentaires", "message-circle"],
+  ].map(([key, label, glyph]) => {
+    const accounts = key === "views" && !podcast ? selected.filter(a => a.network !== "Spotify") : selected;
+    const sums = accounts.map(summary), result = CockpitMetrics.aggregate(sums, key);
+    const comparison = key === "gain" ? null : CockpitMetrics.comparison(state.social?.records || [], accounts.map(a => a.id), p.start, p.end, key).percent;
+    const coverage = key === "followers" ? (selected.length === 1 ? shortDate(sums[0]?.followerDate) : `${result.count}/${accounts.length} comptes · non dédupliqués`) : key === "gain" ? "Entre le premier et le dernier jour" : `${sums.reduce((n, s) => n + s[key + "Days"], 0)}/${accounts.length * state.days} journées de compte`;
+    return `<article class="social-kpi"><span>${icon(glyph)}${label}</span><strong class="${key === "gain" && result.value !== null ? (result.value >= 0 ? "positive" : "negative") : ""}">${key === "gain" && result.value > 0 ? "+" : ""}${fmt(result.value)}</strong><small>${result.value === null ? "Donnée indisponible" : coverage}</small>${comparison !== null ? `<small class="${comparison >= 0 ? "positive" : "negative"}">${comparison > 0 ? "+" : ""}${comparison.toLocaleString("fr-FR", { maximumFractionDigits: 1 })}% vs période précédente</small>` : ""}${key === "views" && selected.length > 1 ? "<small>Hors écoutes Spotify</small>" : ""}</article>`;
+  }).join("")}</section>`;
+}
+function audienceBreakdown() {
+  const accounts = accountList(), total = CockpitMetrics.aggregate(accounts.map(summary), "followers");
+  return `<section class="audience-breakdown"><div class="section-title"><div><h2>Répartition de l’audience</h2><p>${total.count}/${accounts.length} comptes renseignés</p></div></div>${accounts.map(a => {
+    const s = summary(a), share = s.followers !== null && total.value > 0 ? s.followers / total.value * 100 : null;
+    return `<a class="audience-row" href="#social/${a.id}">${networkIcon(a)}<span><span class="audience-label"><strong>${esc(a.network)}</strong><b>${fmt(s.followers)}</b></span><span class="audience-track"><span style="width:${share ?? 0}%;background:${esc(a.color)}"></span></span><small>${share === null ? "Pas de répartition disponible" : share.toLocaleString("fr-FR", { maximumFractionDigits: 1 }) + "% des abonnements renseignés"}</small></span></a>`;
+  }).join("")}<p class="table-hint">Une personne peut suivre plusieurs comptes. Les derniers relevés peuvent dater de jours différents.</p></section>`;
+}
+function networkOverview() {
+  return `<section><div class="section-title"><div><h2>Tous tes réseaux</h2><p>${shortDate(period().start)} au ${shortDate(period().end)}</p></div><a href="#accounts" class="text-button">Gérer les connexions ${icon("arrow-right")}</a></div><div class="network-overview">${accountList().map(a => {
+    const s = summary(a), health = socialHealth(a);
+    return `<article class="network-summary"><div class="network-summary-head">${networkIcon(a)}<div><h3><a href="#social/${a.id}">${esc(a.network)}</a></h3><small>${esc(a.handle)}</small></div><span class="chip ${health.tone}">${esc(health.label)}</span></div><dl><div><dt>Abonnés</dt><dd>${fmt(s.followers)}</dd></div><div><dt>Gain</dt><dd class="${s.gain > 0 ? "positive" : s.gain < 0 ? "negative" : ""}">${s.gain > 0 ? "+" : ""}${fmt(s.gain)}</dd></div><div><dt>${a.network === "Spotify" ? "Écoutes" : "Vues"}</dt><dd>${fmt(s.views)}</dd></div></dl><div class="network-summary-foot"><small>${s.followerDate ? "Audience au " + shortDate(s.followerDate) : "Aucun relevé d’audience"}</small><a href="#social/${a.id}" class="icon-button" title="Voir les statistiques ${esc(a.network)}" aria-label="Voir les statistiques ${esc(a.network)}">${icon("arrow-right")}</a></div></article>`;
+  }).join("")}</div></section>`;
+}
+function networkDetail(a) {
+  const s = summary(a), health = socialHealth(a);
+  const last = s.rows.at(-1);
+  if (a.network === "Spotify") return `<section class="network-detail"><div class="section-title"><div><h2>Morning Mood · Acast</h2><p>Le podcast, au-delà de Spotify</p></div></div><p>Les épisodes sont hébergés chez Acast. Les téléchargements et les auditeurs se consultent dans Acast Insights, pas dans son API de publication.</p><div class="dialog-actions">${external("https://insights.acast.com/", "Acast Insights", "primary")}${external(a.analytics, "Spotify for Creators")}${external("https://shows.acast.com/xavierfenaux", "Épisodes Acast")}</div><dl class="detail-list"><div><dt>Statistiques Acast dans le cockpit</dt><dd>Non connectées</dd></div><div><dt>Dernier relevé Spotify</dt><dd>${shortDate(last?.date)}</dd></div></dl><p class="table-hint">Les téléchargements Acast ne doivent pas être ajoutés aux écoutes Spotify : les audiences peuvent se recouper.</p><button class="text-button" data-entry="${a.id}">${icon("upload")}Compléter les données Spotify</button></section>`;
+  return `<section class="network-detail"><div class="section-title"><div><h2>Le compte en détail</h2><p>${esc(a.owner)} · ${esc(a.handle)}</p></div></div><dl class="detail-list"><div><dt>Synchronisation</dt><dd><span class="chip ${health.tone}">${esc(health.label)}</span></dd></div><div><dt>${a.network === "Spotify" ? "Épisodes au total" : "Publications au total"}</dt><dd>${fmt(s.totalPosts)}<small>${shortDate(s.totalPostsDate)}</small></dd></div><div><dt>${a.network === "Spotify" ? "Écoutes cumulées" : "Vues cumulées"}</dt><dd>${fmt(s.totalViews)}<small>${shortDate(s.totalViewsDate)}</small></dd></div><div><dt>Partages sur la période</dt><dd>${fmt(s.shares)}<small>${s.sharesDays}/${state.days} jours renseignés</small></dd></div><div><dt>Dernier relevé de la période</dt><dd>${shortDate(last?.date)}</dd></div></dl><p class="table-hint">${esc(health.detail)}</p><div class="dialog-actions">${external(a.url, "Profil public")}${external(a.analytics, "Statistiques officielles")}</div><button class="text-button" data-entry="${a.id}">${icon("upload")}Compléter les données</button></section>`;
+}
+function socialHistory(a) {
+  const rows = summary(a).rows.slice().reverse();
+  return `<section class="social-history"><div class="section-title"><div><h2>Historique ${esc(a.network)}</h2><p>${rows.length} journées avec un relevé · ${state.days} jours</p></div><button class="icon-button" data-export title="Exporter les relevés" aria-label="Exporter les relevés">${icon("download")}</button></div>${rows.length ? `<div class="table-scroll history-scroll"><table><thead><tr><th>Date</th><th>Abonnés</th><th>Publications</th><th>${a.network === "Spotify" ? "Écoutes" : "Vues"}</th><th>J’aime</th><th>Commentaires</th><th>Partages</th><th>Sources</th></tr></thead><tbody>${rows.map(r => `<tr><td>${shortDate(r.date)}</td>${["followers", "posts", "views", "reactions", "comments", "shares"].map(k => `<td title="${esc(r.sources?.[k] || r.source || "")}">${fmt(r[k])}</td>`).join("")}<td>${esc([...new Set(Object.values(r.sources || { source: r.source }))].filter(Boolean).join(" · "))}</td></tr>`).join("")}</tbody></table></div>` : `<div class="history-empty">${icon("calendar-days")}<div><h3>Aucun relevé sur cette période</h3><p>Les statistiques apparaîtront après la première synchronisation ou un import.</p></div><button class="secondary" data-entry="${a.id}">Importer un relevé</button></div>`}</section>`;
+}
 function socialPage() {
-  return (
-    heading(
-      "Mes statistiques",
-      "Ce qui grandit, ce qui attire l’attention, ce qui donne envie de réagir.",
-      `<a href="#accounts" class="secondary">${icon("plug")}Mes connexions</a><button class="primary" data-entry="">${icon("plus")}Ajouter un relevé</button>`,
-    ) +
-    guideBand(
-      "bobby",
-      "Faisons parler tes chiffres.",
-      "Commence par les abonnés pour suivre ta communauté. Puis regarde les vues et les réactions pour repérer les contenus à refaire.",
-      "",
-      "metrics",
-    ) +
-    filters() +
-    kpis() +
-    `<div class="segmented" aria-label="Indicateur du graphique">${[
-      ["followers", "Abonnés"],
-      ["views", "Vues / écoutes"],
-      ["reactions", "J’aime"],
-    ]
-      .map(
-        ([k, v]) =>
-          `<button data-metric="${k}" aria-pressed="${state.metric === k}">${v}</button>`,
-      )
-      .join("")}</div><div class="split">${chartSection()}${channels()}</div>` +
-    statsTable() +
-    `<div class="help-line">${icon("info")}Les chiffres évoluent avec les connexions et les relevés. Les autorisations de chaque réseau déterminent les statistiques disponibles.</div>`
-  );
+  const a = state.social?.accounts.find(a => a.id === state.network);
+  const active = (state.social?.accounts || []).filter(a => connection(a).active).length;
+  const health = a ? socialHealth(a) : null;
+  return heading("Mes réseaux", "Xavier Fenaux & Interactiv Trading", `<button class="icon-button" data-export title="Exporter les statistiques" aria-label="Exporter les statistiques">${icon("download")}</button><a href="#accounts" class="secondary">${icon("plug")}Connexions <span class="chip">${active}/6</span></a>`)
+    + networkTabs()
+    + `<div class="social-toolbar"><div class="social-identity">${a ? networkIcon(a) : '<img src="/images/events/speaker-portrait-color.webp" alt="Xavier Fenaux">'}<div><h2>${a ? esc(a.network) : "Vue d’ensemble"}</h2><p>${a ? esc(a.handle) : "Tous tes comptes, une seule lecture"}</p></div>${a ? `<span class="chip ${health.tone}">${esc(health.label)}</span>` : ""}</div><div class="social-period"><div class="segmented" aria-label="Période">${[7, 30, 90].map(d => `<button data-days="${d}" aria-pressed="${state.days === d}">${d} jours</button>`).join("")}</div>${a ? connectButton(a) : '<select id="owner-filter" aria-label="Propriétaire"><option value="all">Xavier + IVT</option><option value="Xavier" ' + (state.owner === "Xavier" ? "selected" : "") + '>Xavier</option><option value="IVT" ' + (state.owner === "IVT" ? "selected" : "") + '>Interactiv Trading</option></select>'}</div></div>`
+    + (!active && !a ? `<aside class="social-notice">${icon("unplug")}<div><strong>Aucun compte synchronisé pour le moment</strong><p>Les profils sont identifiés ; leurs statistiques ne sont pas encore autorisées.</p></div><a href="#accounts" class="text-button">Mes connexions ${icon("arrow-right")}</a></aside>` : "")
+    + socialKpis()
+    + `<div class="social-chart-toolbar"><div class="segmented" aria-label="Indicateur du graphique">${[["followers", "Abonnés"], ["views", a?.network === "Spotify" ? "Écoutes" : "Vues"], ["reactions", "J’aime"]].map(([key, label]) => `<button data-metric="${key}" aria-pressed="${state.metric === key}">${label}</button>`).join("")}</div>${!a ? `<div class="segmented" aria-label="Courbes"><button data-chart-mode="combined" aria-pressed="${state.chartMode === "combined"}">Cumul</button><button data-chart-mode="networks" aria-pressed="${state.chartMode === "networks"}">Par réseau</button></div>` : ""}</div><div class="social-chart-layout">${chartSection()}${a ? networkDetail(a) : audienceBreakdown()}</div>`
+    + (a ? socialHistory(a) : networkOverview() + `<details class="social-comparison"><summary>Comparer tous les indicateurs</summary>${statsTable()}</details>`)
+    + `<aside class="bobby-note"><div class="avatar bobby" role="img" aria-label="Bobby, ton community manager"></div><div><strong>Bobby · Le point sur tes données</strong><p>${a ? esc(health.detail) : "Les pourcentages d’évolution comparent des comptes identiques sur deux périodes complètes. Les valeurs absentes restent vides."}</p></div><button class="icon-button" data-guide="metrics" title="Comprendre les indicateurs" aria-label="Comprendre les indicateurs">${icon("circle-help")}</button></aside>`;
 }
 const toolCopy = {
   "ivt-radar": [
@@ -433,22 +473,24 @@ function accountsPage() {
     ) +
     guideBand(
       "bobby",
-      "Une connexion, puis on suit la suite.",
-      "Choisis un réseau, autorise la lecture de tes données et reviens ici. Le bouton Connecter laisse sa place à l’état de synchronisation.",
+      "Tes comptes restent entre tes mains.",
+      "Les connexions se font sur les sites officiels. Ton mot de passe social ne passe jamais par le cockpit.",
       "",
       "connections",
     ) +
     `<section class="accounts-grid">${
       (state.social?.accounts || [])
         .map((a) => {
-          const c = connection(a),
-            s = summary(a),
-            sync = state.social?.sync?.[a.id];
-          return `<article class="account-card"><div class="account-head">${networkIcon(a)}<div><h3>${esc(a.network)} <small>· ${esc(a.owner)}</small></h3><small>${esc(a.handle)}</small></div><span class="chip ${c.active ? "ok" : ""}">${c.active ? (c.apiOnly ? "API publique active" : "Connexion active") : c.setup?.mode === "official" ? "Accès officiel" : c.configured ? "Prêt à connecter" : "Application requise"}</span></div><p>${c.setup?.mode === "official" ? esc(c.setup.note) : c.active ? (c.apiOnly ? "Compteurs publics via le quota gratuit YouTube. Les statistiques privées nécessitent la connexion Google." : "Les relevés automatiques alimentent ton historique selon les autorisations accordées.") : c.configured ? "Connecte ton compte sur le site officiel pour autoriser le suivi." : "Une application développeur doit être enregistrée avant de pouvoir autoriser le cockpit."}</p><div class="account-actions">${connectButton(a)}${c.setup?.mode === "official" ? "" : external(a.analytics, "Statistiques officielles")}<button class="secondary" data-entry="${a.id}">${icon("plus")}Relevé</button></div><div class="account-source">${c.active ? `Suivi activé le ${shortDate(c.connectedAt?.slice(0, 10))}` : c.setup?.mode === "official" ? "Pas de synchronisation automatique" : "Autorisation du compte requise"}${sync?.lastSuccess ? " · Dernière lecture : " + new Date(sync.lastSuccess).toLocaleString("fr-FR") : ""}${sync?.error ? `<p class="form-error">${esc(sync.error)}</p>` : ""}<br>${external(a.url, "Voir le profil", "text-button")}${c.setup?.mode === "oauth" && c.configured ? ` · <button class="text-button" data-connect="${a.id}">Configuration</button>` : ""}${c.active ? ` · <button class="text-button" data-disconnect="${a.id}">Déconnecter</button>` : ""}</div>${s.totalPosts !== null ? `<small>${fmt(s.totalPosts)} publications au total · ${shortDate(s.totalPostsDate)}</small>` : ""}</article>`;
+          const c = connection(a), s = summary(a);
+          const health = socialHealth(a);
+          return `<article class="account-card"><div class="account-head">${networkIcon(a)}<div><h3>${esc(a.network)} <small>· ${esc(a.owner)}</small></h3><small>${esc(a.handle)}</small></div><span class="chip ${health.tone}">${esc(health.label)}</span></div><p>${esc(health.detail)}</p><div class="account-actions">${connectButton(a)}<a class="secondary" href="#social/${a.id}">${icon("chart-no-axes-combined")}Statistiques</a></div><div class="account-source">${external(a.url, "Voir le profil", "text-button")}${c.active ? ` · <button class="text-button" data-disconnect="${a.id}">Déconnecter</button>` : ""}</div>${s.totalPosts !== null ? `<small>${fmt(s.totalPosts)} publications au total · ${shortDate(s.totalPostsDate)}</small>` : ""}</article>`;
         })
         .join("") || "<p>Chargement…</p>"
-    }</section><div class="section-title"><h2>Besoin d’un repère ?</h2></div><details><summary>Quels chiffres sont récupérés automatiquement ?</summary><p>Les abonnés et le total des publications selon le réseau. YouTube fournit aussi des vues, des j’aime, des commentaires et des partages par jour. Les autres chiffres peuvent être complétés par des relevés ou des imports.</p></details><details><summary>Et les écoutes de mon podcast ?</summary><p>Spotify for Creators donne les écoutes et les auditeurs. Le compte Spotify destiné à écouter de la musique ne donne pas accès à ces chiffres. Ajoute un relevé pour les retrouver ici.</p></details><details><summary>Pourquoi une application développeur ?</summary><p>Instagram, TikTok, Google et Twitch doivent reconnaître le cockpit avant une connexion OAuth. Les identifiants de l’application s’enregistrent une fois, puis le bouton ouvre directement la plateforme. Aucun mot de passe social n’est enregistré ici. X reste sans API payante.</p></details>`
+    }</section><div class="section-title"><h2>Besoin d’un repère ?</h2></div><details><summary>Quels chiffres sont récupérés automatiquement ?</summary><p>Les connexions autorisées fournissent les compteurs du profil selon les droits accordés. YouTube peut aussi fournir des statistiques quotidiennes. Les données manquantes restent vides.</p></details><details><summary>Et les écoutes de mon podcast ?</summary><p>Acast Insights donne les téléchargements et les auditeurs du podcast. L’API de publication Acast ne fournit pas ces statistiques. Spotify for Creators conserve ses propres mesures. Ces chiffres ne doivent pas être additionnés.</p></details>`
   );
+}
+function integrationsPage() {
+  return heading("Administration des connexions", "Configuration de la plateforme · réservée à la maintenance", '<a href="#accounts" class="secondary">Retour aux comptes</a>') + `<section class="accounts-grid">${(state.social?.accounts || []).filter(a => connection(a).setup?.mode === "oauth").map(a => `<article class="account-card"><h2>${esc(a.network)}</h2><p>${esc(connection(a).setup.note)}</p><button class="secondary" data-provider="${a.id}">${icon("settings-2")}Configuration de l’application</button></article>`).join("")}</section>`;
 }
 function render() {
   state.chart?.destroy();
@@ -475,6 +517,7 @@ function render() {
       markets: marketsPage,
       tools: toolsPage,
       accounts: accountsPage,
+      integrations: integrationsPage,
     }[state.view]();
   icons();
   drawChart();
@@ -487,7 +530,8 @@ function drawChart() {
     dates = Array.from({ length: state.days }, (_, i) =>
       dateOffset(p.start, i),
     );
-  const datasets = accountList()
+  const chartAccounts = accountList().filter(a => !(state.view === "social" && state.network === "all" && state.metric === "views" && a.network === "Spotify"));
+  let datasets = chartAccounts
     .map((a) => {
       const rows = summary(a).rows;
       return {
@@ -505,6 +549,10 @@ function drawChart() {
       };
     })
     .filter((d) => d.data.some((v) => v !== null));
+  if (state.view === "social" && state.network === "all" && state.chartMode === "combined") {
+    const points = CockpitMetrics.series(state.social?.records || [], chartAccounts.map(a => a.id), dates, state.metric);
+    datasets = [{ label: "Cumul des comptes renseignés", data: points.map(p => p.value), borderColor: "#21785b", backgroundColor: "#21785b18", fill: true, borderWidth: 2, pointRadius: 3, spanGaps: false, coverage: points.map(p => p.count), total: chartAccounts.length }];
+  }
   state.chart = new Chart(canvas, {
     type: "line",
     data: { labels: dates.map(shortDate), datasets },
@@ -525,7 +573,7 @@ function drawChart() {
           },
         },
         tooltip: {
-          callbacks: { label: (c) => c.dataset.label + ": " + fmt(c.raw) },
+          callbacks: { label: (c) => c.dataset.label + ": " + fmt(c.raw) + (c.dataset.coverage ? ` · ${c.dataset.coverage[c.dataIndex]}/${c.dataset.total} comptes` : "") },
         },
       },
       scales: {
@@ -693,12 +741,20 @@ function providerFields(id, mode) {
   if (mode === "api") return '<label for="provider-api-key">Clé YouTube Data API</label><input id="provider-api-key" name="api_key" type="password" autocomplete="new-password" required maxlength="2048"><label for="provider-channel">Identifiant de la chaîne InteractivTrading</label><input id="provider-channel" name="channel_id" placeholder="UC…" required pattern="UC[A-Za-z0-9_-]{22}"><p class="field-note">Abonnés publics, vidéos et vues cumulées. Pas de statistiques privées. Limite : quota gratuit du projet Google.</p>';
   return `<label for="provider-id">${id === "tiktok-ivt" ? "Client key" : "Client ID / identifiant de l’application"}</label><input id="provider-id" name="client_id" autocomplete="off" required maxlength="2048"><label for="provider-secret">Client secret</label><input id="provider-secret" name="client_secret" type="password" autocomplete="new-password" required maxlength="2048"><label for="provider-callback">URL de retour à enregistrer sur la plateforme</label><input id="provider-callback" value="https://xavierfenaux.com/master/connect.php" readonly><p class="field-note">Les secrets restent sur le serveur. Ne saisis jamais ici ton mot de passe Instagram, Google, TikTok ou Twitch.</p>`;
 }
-function showConnection(id) {
+function showProviderSetup(id) {
   const a = state.social?.accounts.find(a => a.id === id);
   if (!a) return;
   const c = connection(a), setup = c.setup || {};
   document.getElementById("data-body").innerHTML =
     `<div class="dialog-avatar"><div class="avatar bobby"></div><div><strong>Bobby</strong><p>${esc(a.network)} · ${esc(a.handle)}</p></div></div><h2 id="data-title">${setup.mode === "official" ? "Ton espace officiel" : "Relier " + esc(a.network)}</h2><p>${esc(setup.note || "Lecture des possibilités de connexion…")}</p><div class="dialog-actions">${external(a.analytics, "Ouvrir " + esc(a.network))}${setup.portal ? external(setup.portal, "Application développeur") : ""}<button class="secondary" data-entry="${a.id}">Ajouter un relevé</button></div>${setup.mode === "oauth" ? `<details class="provider-setup"><summary>Configuration de l’application</summary><form id="provider-form"><input type="hidden" name="account" value="${a.id}">${a.network === "YouTube" ? '<label for="provider-mode">Mode de suivi</label><select id="provider-mode" name="mode"><option value="oauth">Connexion Google · statistiques privées</option><option value="api">API publique · quota gratuit</option></select>' : '<input type="hidden" name="mode" value="oauth">'}<div id="provider-fields">${providerFields(a.id, "oauth")}</div><p class="form-error" id="provider-error" role="alert"></p><button class="primary" type="submit">${icon("save")}Enregistrer et continuer</button></form></details>` : ""}`;
+  document.getElementById("data-dialog").showModal();
+  icons();
+}
+function showConnection(id) {
+  const a = state.social?.accounts.find(a => a.id === id);
+  if (!a) return;
+  const health = socialHealth(a);
+  document.getElementById("data-body").innerHTML = `<div class="dialog-avatar"><div class="avatar bobby"></div><div><strong>Bobby</strong><p>${esc(a.network)}</p></div></div><h2 id="data-title">Connexion ${esc(a.network)}</h2><p>${esc(health.detail)}</p><p>Aucun mot de passe social ni identifiant développeur à saisir ici.</p><div class="dialog-actions">${external(a.analytics, "Ouvrir les statistiques officielles")}<button class="secondary" data-close>Fermer</button></div>`;
   document.getElementById("data-dialog").showModal();
   icons();
 }
@@ -780,6 +836,7 @@ document.addEventListener("click", (e) => {
   else if (button.dataset.guide) showGuide(button.dataset.guide);
   else if (button.dataset.tool) showGuide(button.dataset.tool, true);
   else if (button.dataset.connect) showConnection(button.dataset.connect);
+  else if (button.dataset.provider) showProviderSetup(button.dataset.provider);
   else if (button.hasAttribute("data-entry")) showEntry(button.dataset.entry);
   else if (button.dataset.entryMode)
     showEntry(
@@ -788,6 +845,9 @@ document.addEventListener("click", (e) => {
     );
   else if (button.dataset.days) {
     state.days = Number(button.dataset.days);
+    render();
+  } else if (button.dataset.chartMode) {
+    state.chartMode = button.dataset.chartMode;
     render();
   } else if (button.dataset.metric) {
     state.metric = button.dataset.metric;
@@ -924,8 +984,11 @@ document.querySelectorAll("dialog").forEach((d) =>
 );
 function route() {
   document.querySelectorAll("dialog[open]").forEach((dialog) => dialog.close());
-  const next = location.hash.slice(1) || "home";
+  const [next = "home", network = "all"] = (location.hash.slice(1) || "home").split("/");
   state.view = labels[next] ? next : "home";
+  const known = ["x-xavier", "instagram-xavier", "tiktok-ivt", "youtube-ivt", "twitch-xavier", "spotify-xavier"];
+  state.network = state.view === "social" && known.includes(network) ? network : "all";
+  state.owner = "all";
   render();
   window.scrollTo(0, 0);
 }
