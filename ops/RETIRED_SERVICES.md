@@ -4,8 +4,10 @@ At the owner's request: Radar Xavier (Next dashboard), IVT Day, Deck Live,
 Newsletter IVT, Tournage IVT and Archives IVT.
 
 The website deployment removes their tracked sources and all cockpit references.
-The strategy document remains at www/dashboard/strategy, read by master/strategy.php;
-the old /dashboard URL itself returns HTTP 410.
+The strategy source document remains archived at www/dashboard/strategy.
+At the owner's subsequent request, master/strategy.php and its cockpit entries
+are also removed; that endpoint returns HTTP 404 after deployment.
+The old /dashboard URL itself returns HTTP 410.
 
 After website deployment, run ops/retire-xavier-services.sh vps1 on the website VPS.
 For Contabo, stage this script and ops/nginx/vps2-xavier-services.conf with the same
@@ -21,7 +23,7 @@ entry, IVT Remote service and obsolete morning-news cron entry.
 
 IVT Radar, its daily timer, its shared Python libraries/database and machine token
 remain intact. Its retired newsletter API routes return HTTP 410 at both gateways.
-Clips, Recall, social account connections, Strategy X, the public website and
+Clips, Recall, social account connections, the public website and
 Xavier-only Umami analytics remain available.
 
 Verify with php ops/master-services.test.php and php ops/master-access.test.php,

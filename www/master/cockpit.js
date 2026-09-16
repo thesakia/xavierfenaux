@@ -362,10 +362,6 @@ const toolCopy = {
     "scissors",
     "Transforme un Morning Mood en extraits courts à relire puis exporter.",
   ],
-  "strategy-x": [
-    "notebook-pen",
-    "Choisis un sujet, un angle et une accroche pour ton prochain post X.",
-  ],
   analytics: [
     "mouse-pointer-2",
     "Suis les visites du site, les pages lues et l’origine des visiteurs.",
@@ -400,12 +396,6 @@ function taskList() {
       "Un passage utile du Morning Mood.",
       "/clips/",
     ],
-    [
-      "post",
-      "Préparer un post",
-      "Une idée claire à partager.",
-      "/master/strategy.php",
-    ],
   ]
     .map(
       ([id, title, desc, url]) =>
@@ -422,7 +412,7 @@ function contentPage() {
     guideBand(
       "maya",
       "On part de ce que tu as déjà.",
-      "Un passage du Morning Mood peut devenir un clip. Un sujet du radar peut nourrir ton prochain post X. Choisis le format, je t’indique les étapes.",
+      "Retrouve un passage du Morning Mood, prépare ton extrait et vérifie le résultat avant publication.",
       "lilac",
       "content",
     ) +
@@ -432,12 +422,6 @@ function contentPage() {
         "scissors",
         "Un extrait vidéo",
         "À partir d’un épisode ou d’un enregistrement.",
-      ],
-      [
-        "strategy-x",
-        "notebook-pen",
-        "Un post X",
-        "À partir de tes sujets et de ta stratégie éditoriale.",
       ],
     ]
       .map(

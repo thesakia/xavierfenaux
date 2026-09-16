@@ -35,21 +35,6 @@ function master_services(): array
             ],
         ],
         [
-            'id' => 'strategy-x',
-            'name' => 'Strategie X',
-            'category' => 'Editorial',
-            'href' => '/master/strategy.php',
-            'launchLabel' => 'Ouvrir la strategie',
-            'statusCheck' => ['type' => 'file', 'path' => __DIR__ . '/../dashboard/strategy/strategie_x_xfenaux_v7_source.html'],
-            'summary' => 'Plan de publication X et base editoriale Xavier, accessible ici sous le login master.',
-            'result' => 'Une strategie claire pour choisir les angles, posts et priorites de publication.',
-            'tutorial' => [
-                'Ouvre la strategie depuis le master.',
-                'Choisis le pilier editorial du moment.',
-                'Transforme les idees retenues en posts ou scripts courts.',
-            ],
-        ],
-        [
             'id' => 'site-xavier',
             'name' => 'Site Xavier',
             'category' => 'Public',
