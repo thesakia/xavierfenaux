@@ -78,6 +78,13 @@ def test_draft_forbidden_variation():
     assert any('Variation' in x for x in core.draft_issues(d,research()))
 
 
+def test_generated_signature_is_not_duplicated():
+    d=draft();d['closing']+='\n\nXavier';d['podcast_script']+='\n\nXavier'
+    e={'draft':d,'polarities':''}
+    assert core.text(e).count('Xavier')==1
+    assert core.text(e,True).count('Xavier')==1
+
+
 def test_no_historical_delivery():
     with pytest.raises(ValueError):core.send_day('2020-01-01')
 
