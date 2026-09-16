@@ -11,3 +11,4 @@ if [ ! -f /var/log/xavier-master-sync.log ]; then
 fi
 install -o root -g root -m 0644 "$base/ops/master-social.cron" /etc/cron.d/xavier-master-social
 install -o root -g root -m 0644 "$base/ops/master-social.logrotate" /etc/logrotate.d/xavier-master-social
+install -o root -g root -m 0644 "$base/ops/master-analytics.cron" /etc/cron.d/xavier-master-analytics

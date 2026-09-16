@@ -1,0 +1,1 @@
+*/5 * * * * root /usr/bin/flock -n /var/lib/xavier-master/analytics-export.lock /usr/bin/python3 /var/www/xavierfenaux/ops/master-analytics-export.py >> /var/log/xavier-master-sync.log 2>&1

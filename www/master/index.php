@@ -4,11 +4,13 @@ require __DIR__ . '/auth.php';
 require __DIR__ . '/services.php';
 header('Cache-Control: no-store');
 $error = '';
-if (isset($_GET['logout'])) { $_SESSION = []; session_destroy(); header('Location: /master/'); exit; }
+if (isset($_GET['logout'])) { master_logout(); header('Location: /master/'); exit; }
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (master_verify_login(trim((string)($_POST['username'] ?? '')), (string)($_POST['password'] ?? ''))) {
-        session_regenerate_id(true); $_SESSION['master_user'] = MASTER_USERNAME;
-        header('Location: /master/'); exit;
+        master_login();
+        $next = $_SESSION['master_next_tool'] ?? '';
+        unset($_SESSION['master_next_tool']);
+        header('Location: ' . ($next ? '/master/launch.php?tool=' . rawurlencode($next) : '/master/')); exit;
     }
     $error = 'Ces identifiants ne correspondent pas. Réessaie.';
 }
