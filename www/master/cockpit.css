@@ -1,3 +1,8 @@
+.provider-setup { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 16px; }
+.provider-setup summary { cursor: pointer; font-weight: 600; }
+.provider-setup form { display: grid; gap: 10px; margin-top: 16px; min-width: 0; }
+.provider-setup input, .provider-setup select { width: 100%; min-width: 0; }
+.account-actions form { margin: 0; }
 .site-summary {
   margin: 28px 0;
   padding: 24px 0;

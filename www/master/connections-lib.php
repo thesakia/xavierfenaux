@@ -16,7 +16,48 @@ function connection_providers(): array
 function connection_config(): array
 {
     $path = getenv('MASTER_PROVIDERS_FILE') ?: '/etc/xavier-master/providers.json';
-    return is_file($path) ? json_decode((string)file_get_contents($path), true, 64, JSON_THROW_ON_ERROR) : [];
+    $base = is_file($path) ? json_decode((string)file_get_contents($path), true, 64, JSON_THROW_ON_ERROR) : [];
+    return array_replace_recursive($base, master_store_read(dirname(social_path()) . '/providers.json', []));
+}
+
+function connection_setup(string $account): array
+{
+    $common = ['callback'=>'https://xavierfenaux.com/master/connect.php'];
+    $options = [
+        'instagram-xavier'=>['mode'=>'oauth', 'portal'=>'https://developers.facebook.com/apps/', 'note'=>'Compte Instagram professionnel (créateur ou entreprise). Application Meta avec Instagram Login et accès au profil et aux statistiques. Le propriétaire doit autoriser le compte ou être ajouté comme testeur.'],
+        'tiktok-ivt'=>['mode'=>'oauth', 'portal'=>'https://developers.tiktok.com/apps/', 'note'=>'Application TikTok avec Login Kit et Display API. Les permissions de profil, statistiques et vidéos doivent être approuvées, ou le compte ajouté au sandbox pour les tests.'],
+        'youtube-ivt'=>['mode'=>'oauth', 'portal'=>'https://console.cloud.google.com/apis/credentials', 'note'=>'Client OAuth Google de type application Web, avec YouTube Data API et YouTube Analytics API activées. Une clé API seule suffit pour les compteurs publics, dans le quota gratuit.'],
+        'twitch-xavier'=>['mode'=>'oauth', 'portal'=>'https://dev.twitch.tv/console/apps', 'note'=>'Application Twitch confidentielle avec cette URL de retour. Le propriétaire doit avoir activé la double authentification.'],
+        'x-xavier'=>['mode'=>'official', 'note'=>'La lecture des statistiques par l’API X est payante. Aucun appel payant n’est activé. Connecte-toi sur X pour consulter les chiffres disponibles dans ton offre, puis ajoute un relevé ici.'],
+        'spotify-xavier'=>['mode'=>'official', 'note'=>'Les statistiques privées du podcast se consultent dans Spotify for Creators. La Web API ne donne pas ces écoutes : inutile de relier un compte d’écoute au cockpit.'],
+    ];
+    if (!isset($options[$account])) throw new InvalidArgumentException('Compte inconnu.');
+    return $options[$account] + $common;
+}
+
+function connection_settings(string $account, array $input): array
+{
+    if (connection_setup($account)['mode'] !== 'oauth') throw new InvalidArgumentException('API non activée pour ce réseau.');
+    $mode = $input['mode'] ?? 'oauth';
+    if (!in_array($mode, ['oauth','api'], true) || ($mode === 'api' && $account !== 'youtube-ivt')) throw new InvalidArgumentException('Mode non disponible.');
+    $fields = $mode === 'api' ? ['api_key','channel_id'] : ['client_id','client_secret'];
+    $result = [];
+    foreach ($fields as $field) {
+        $value = $input[$field] ?? '';
+        if (!is_string($value) || trim($value) === '' || strlen($value)>2048 || preg_match('/[\x00-\x20]/', $value)) throw new InvalidArgumentException('Renseigne les identifiants de l’application, sans espaces.');
+        $result[$field] = $value;
+    }
+    if ($mode === 'api' && !preg_match('/^UC[A-Za-z0-9_-]{22}$/', $result['channel_id'])) throw new InvalidArgumentException('L’identifiant de la chaîne YouTube commence par UC et contient 24 caractères.');
+    return $result;
+}
+
+function connection_youtube_public(array $config): array
+{
+    $data = connection_http('https://www.googleapis.com/youtube/v3/channels?' . http_build_query(['part'=>'snippet,statistics', 'id'=>$config['channel_id'], 'key'=>$config['api_key']]));
+    $user = $data['items'][0] ?? [];
+    $name = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $user['snippet']['title'] ?? ''));
+    if (!in_array($name, ['interactivtrading','ivtinteractivtrading'], true)) throw new RuntimeException('Cette clé ne permet pas de lire la chaîne InteractivTrading. Vérifie la clé, la chaîne et l’activation de YouTube Data API.');
+    return ['identity'=>['id'=>$user['id'], 'label'=>$user['snippet']['title']], 'record'=>social_record(['account'=>'youtube-ivt', 'date'=>date('Y-m-d'), 'followers'=>!empty($user['statistics']['hiddenSubscriberCount']) ? null : ($user['statistics']['subscriberCount'] ?? null), 'totalPosts'=>$user['statistics']['videoCount'] ?? null, 'totalViews'=>$user['statistics']['viewCount'] ?? null], 'YouTube Data API (compteurs publics)')];
 }
 
 function connection_path(): string { return dirname(social_path()) . '/connections.json'; }
@@ -39,8 +80,10 @@ function connection_public(): array
     foreach (connection_providers() as $id=>$provider) {
         $c = $config[$provider['key']] ?? [];
         $token = $saved[$id] ?? [];
-        $active = !empty($token['access_token']) && ($token['status'] ?? '') === 'active' && (($token['expires_at'] ?? 0) > time() || !empty($token['refresh_token']));
-        $result[$id] = ['configured'=>!empty($c['client_id']) && !empty($c['client_secret']), 'active'=>$active, 'label'=>$token['label'] ?? null, 'connectedAt'=>$token['connected_at'] ?? null, 'needsReconnect'=>!empty($token) && !$active, 'catalogOnly'=>$provider['key'] === 'spotify'];
+        $setup = connection_setup($id);
+        $api = $id === 'youtube-ivt' && ($token['mode'] ?? '') === 'api' && !empty($c['api_key']);
+        $active = $setup['mode'] !== 'official' && ($token['status'] ?? '') === 'active' && ($api || (!empty($token['access_token']) && (($token['expires_at'] ?? 0) > time() || !empty($token['refresh_token']))));
+        $result[$id] = ['configured'=>$setup['mode'] !== 'official' && !empty($c['client_id']) && !empty($c['client_secret']), 'active'=>$active, 'label'=>$token['label'] ?? null, 'connectedAt'=>$token['connected_at'] ?? null, 'needsReconnect'=>!empty($token) && !$active, 'catalogOnly'=>false, 'apiOnly'=>$api, 'setup'=>$setup];
     }
     return $result;
 }
@@ -72,6 +115,7 @@ function connection_exchange(string $account, array $fields): array
 
 function connection_access(string $account, array $token): array
 {
+    if ($account === 'youtube-ivt' && ($token['mode'] ?? '') === 'api') return $token;
     if (($token['expires_at'] ?? 0) > time() + 300) return $token;
     if ($account === 'instagram-xavier' && ($token['expires_at'] ?? 0) > time()) {
         $fresh = connection_http('https://graph.instagram.com/refresh_access_token?' . http_build_query(['grant_type'=>'ig_refresh_token', 'access_token'=>$token['access_token']]));
@@ -87,6 +131,8 @@ function connection_access(string $account, array $token): array
 
 function connection_profile(string $account, array $token): array
 {
+    if (connection_setup($account)['mode'] === 'official') throw new RuntimeException('Suivi API désactivé pour ce réseau.');
+    if ($account === 'youtube-ivt' && ($token['mode'] ?? '') === 'api') return connection_youtube_public(connection_config()['youtube']);
     $bearer = ['Authorization: Bearer ' . $token['access_token']];
     $record = ['account'=>$account, 'date'=>date('Y-m-d')];
     $identity = ['id'=>'', 'label'=>''];

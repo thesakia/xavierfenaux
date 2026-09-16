@@ -18,8 +18,9 @@ try {
             $_SESSION['master_flash'] = 'Synchronisation arrêtée. L’historique est conservé. Tu peux aussi retirer l’autorisation dans les réglages du réseau.';
             header('Location: /master/#accounts'); exit;
         }
+        if (connection_setup($account)['mode'] !== 'oauth') throw new RuntimeException('Utilise l’espace officiel de ce réseau. Aucune API payante n’est activée.');
         $config = connection_config()[$provider['key']] ?? [];
-        if (empty($config['client_id']) || empty($config['client_secret'])) throw new RuntimeException('FT doit encore activer l’accès à ce réseau. Tu peux déjà consulter tes statistiques officielles ou ajouter un relevé.');
+        if (empty($config['client_id']) || empty($config['client_secret'])) throw new RuntimeException('Enregistre les identifiants de l’application dans Mes comptes avant la connexion.');
         $state = bin2hex(random_bytes(32)); $verifier = bin2hex(random_bytes(32));
         $_SESSION['master_oauth'] = ['account'=>$account, 'state'=>$state, 'verifier'=>$verifier, 'created'=>time()];
         $params = ['response_type'=>'code', 'redirect_uri'=>$callback, 'state'=>$state, 'scope'=>$provider['scope']];
@@ -33,6 +34,7 @@ try {
     if (!$flow || time() - $flow['created'] > 600 || !hash_equals($flow['state'], (string)($_GET['state'] ?? ''))) throw new RuntimeException('Cette demande de connexion a expiré. Recommence depuis le cockpit.');
     if (isset($_GET['error']) || empty($_GET['code'])) throw new RuntimeException('Connexion annulée. Tu peux réessayer quand tu veux.');
     $account = $flow['account']; $provider = connection_providers()[$account];
+    if (connection_setup($account)['mode'] !== 'oauth') throw new RuntimeException('Cette connexion API est désactivée.');
     $fields = ['grant_type'=>'authorization_code', 'code'=>(string)$_GET['code'], 'redirect_uri'=>$callback];
     if (!empty($provider['pkce'])) $fields['code_verifier'] = $flow['verifier'];
     $token = connection_exchange($account, $fields);

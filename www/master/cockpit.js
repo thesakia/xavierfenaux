@@ -104,9 +104,11 @@ function heading(title, description, actions = "") {
 }
 function connectButton(a) {
   const c = connection(a);
+  if (c.setup?.mode === "official") return external(a.analytics, a.network === "Spotify" ? "Ouvrir Spotify for Creators" : "Ouvrir X", "primary");
   return c.active
-    ? `<span class="chip ok">${icon("check")}Connecté${c.catalogOnly ? " · catalogue" : ""}</span>`
-    : `<button class="primary" data-connect="${a.id}">${icon("plug")}${c.needsReconnect ? "Reconnecter" : "Connecter"} ${esc(a.network)}</button>`;
+    ? `<span class="chip ok">${icon("check")}${c.apiOnly ? "API publique active" : "Connecté"}</span>`
+    : c.configured ? `<form method="post" action="/master/connect.php"><input type="hidden" name="account" value="${a.id}"><input type="hidden" name="csrf" value="${esc(boot.csrf)}"><button class="primary" type="submit">${icon("plug")}${c.needsReconnect ? "Reconnecter" : "Connecter"} ${esc(a.network)}</button></form>`
+    : `<button class="primary" data-connect="${a.id}">${icon("settings-2")}Configurer ${esc(a.network)}</button>`;
 }
 function kpis() {
   const accounts = accountList(),
@@ -442,10 +444,10 @@ function accountsPage() {
           const c = connection(a),
             s = summary(a),
             sync = state.social?.sync?.[a.id];
-          return `<article class="account-card"><div class="account-head">${networkIcon(a)}<div><h3>${esc(a.network)} <small>· ${esc(a.owner)}</small></h3><small>${esc(a.handle)}</small></div><span class="chip ${c.active ? "ok" : ""}">${c.active ? "Connexion active" : "Compte confirmé"}</span></div><p>${a.network === "Spotify" ? "Le catalogue et les épisodes dans le cockpit. Pour les écoutes, la rétention et les auditeurs : Spotify for Creators." : c.active ? "Les relevés automatiques alimentent ton historique. Les statistiques disponibles dépendent des accès accordés." : "Connecte ton compte pour démarrer le suivi automatique des statistiques disponibles."}</p><div class="account-actions">${connectButton(a)}${external(a.analytics, "Statistiques officielles")}<button class="secondary" data-entry="${a.id}">${icon("plus")}Relevé</button></div><div class="account-source">${c.active ? `Connecté le ${shortDate(c.connectedAt?.slice(0, 10))}` : "En attente de connexion"}${sync?.lastSuccess ? " · Dernière lecture : " + new Date(sync.lastSuccess).toLocaleString("fr-FR") : ""}${sync?.error ? `<p class="form-error">${esc(sync.error)}</p>` : ""}<br>${external(a.url, "Voir le profil", "text-button")}${c.active ? ` · <button class="text-button" data-disconnect="${a.id}">Déconnecter</button>` : ""}</div>${s.totalPosts !== null ? `<small>${fmt(s.totalPosts)} ${a.network === "Spotify" ? "épisodes au catalogue" : "publications au total"} · ${shortDate(s.totalPostsDate)}</small>` : ""}</article>`;
+          return `<article class="account-card"><div class="account-head">${networkIcon(a)}<div><h3>${esc(a.network)} <small>· ${esc(a.owner)}</small></h3><small>${esc(a.handle)}</small></div><span class="chip ${c.active ? "ok" : ""}">${c.active ? (c.apiOnly ? "API publique active" : "Connexion active") : c.setup?.mode === "official" ? "Accès officiel" : c.configured ? "Prêt à connecter" : "Application requise"}</span></div><p>${c.setup?.mode === "official" ? esc(c.setup.note) : c.active ? (c.apiOnly ? "Compteurs publics via le quota gratuit YouTube. Les statistiques privées nécessitent la connexion Google." : "Les relevés automatiques alimentent ton historique selon les autorisations accordées.") : c.configured ? "Connecte ton compte sur le site officiel pour autoriser le suivi." : "Une application développeur doit être enregistrée avant de pouvoir autoriser le cockpit."}</p><div class="account-actions">${connectButton(a)}${c.setup?.mode === "official" ? "" : external(a.analytics, "Statistiques officielles")}<button class="secondary" data-entry="${a.id}">${icon("plus")}Relevé</button></div><div class="account-source">${c.active ? `Suivi activé le ${shortDate(c.connectedAt?.slice(0, 10))}` : c.setup?.mode === "official" ? "Pas de synchronisation automatique" : "Autorisation du compte requise"}${sync?.lastSuccess ? " · Dernière lecture : " + new Date(sync.lastSuccess).toLocaleString("fr-FR") : ""}${sync?.error ? `<p class="form-error">${esc(sync.error)}</p>` : ""}<br>${external(a.url, "Voir le profil", "text-button")}${c.setup?.mode === "oauth" && c.configured ? ` · <button class="text-button" data-connect="${a.id}">Configuration</button>` : ""}${c.active ? ` · <button class="text-button" data-disconnect="${a.id}">Déconnecter</button>` : ""}</div>${s.totalPosts !== null ? `<small>${fmt(s.totalPosts)} publications au total · ${shortDate(s.totalPostsDate)}</small>` : ""}</article>`;
         })
         .join("") || "<p>Chargement…</p>"
-    }</section><div class="section-title"><h2>Besoin d’un repère ?</h2></div><details><summary>Quels chiffres sont récupérés automatiquement ?</summary><p>Les abonnés et le total des publications selon le réseau. YouTube fournit aussi des vues, des j’aime, des commentaires et des partages par jour. Les autres chiffres peuvent être complétés par des relevés ou des imports.</p></details><details><summary>Et les écoutes de mon podcast ?</summary><p>La connexion Spotify donne accès au catalogue, pas aux statistiques privées de Spotify for Creators. Ouvre les statistiques officielles et ajoute un relevé pour suivre les écoutes ici.</p></details><details><summary>Pourquoi le bouton de connexion demande l’aide de FT ?</summary><p>Chaque réseau doit d’abord autoriser le cockpit à se connecter. Si cet accès n’est pas encore activé, FT termine la configuration. Ensuite, tu n’auras qu’à te connecter avec ton compte habituel.</p></details>`
+    }</section><div class="section-title"><h2>Besoin d’un repère ?</h2></div><details><summary>Quels chiffres sont récupérés automatiquement ?</summary><p>Les abonnés et le total des publications selon le réseau. YouTube fournit aussi des vues, des j’aime, des commentaires et des partages par jour. Les autres chiffres peuvent être complétés par des relevés ou des imports.</p></details><details><summary>Et les écoutes de mon podcast ?</summary><p>Spotify for Creators donne les écoutes et les auditeurs. Le compte Spotify destiné à écouter de la musique ne donne pas accès à ces chiffres. Ajoute un relevé pour les retrouver ici.</p></details><details><summary>Pourquoi une application développeur ?</summary><p>Instagram, TikTok, Google et Twitch doivent reconnaître le cockpit avant une connexion OAuth. Les identifiants de l’application s’enregistrent une fois, puis le bouton ouvre directement la plateforme. Aucun mot de passe social n’est enregistré ici. X reste sans API payante.</p></details>`
   );
 }
 function render() {
@@ -644,7 +646,7 @@ const guides = {
       "Sur la page officielle du réseau, choisis le compte Xavier ou IVT et autorise la lecture.",
       "De retour ici, la connexion active remplace le bouton. Les relevés s’ajoutent à ton historique.",
     ],
-    "Un suivi automatique des données autorisées. Si l’accès n’est pas encore activé, FT termine la configuration.",
+    "Une connexion OAuth autorisée alimente le suivi. Ouvrir un espace officiel, comme X ou Spotify for Creators, ne synchronise pas les chiffres dans le cockpit.",
   ],
   content: [
     "maya",
@@ -687,12 +689,16 @@ function showGuide(id, tool = false) {
   document.getElementById("guide-dialog").showModal();
   icons();
 }
+function providerFields(id, mode) {
+  if (mode === "api") return '<label for="provider-api-key">Clé YouTube Data API</label><input id="provider-api-key" name="api_key" type="password" autocomplete="new-password" required maxlength="2048"><label for="provider-channel">Identifiant de la chaîne InteractivTrading</label><input id="provider-channel" name="channel_id" placeholder="UC…" required pattern="UC[A-Za-z0-9_-]{22}"><p class="field-note">Abonnés publics, vidéos et vues cumulées. Pas de statistiques privées. Limite : quota gratuit du projet Google.</p>';
+  return `<label for="provider-id">${id === "tiktok-ivt" ? "Client key" : "Client ID / identifiant de l’application"}</label><input id="provider-id" name="client_id" autocomplete="off" required maxlength="2048"><label for="provider-secret">Client secret</label><input id="provider-secret" name="client_secret" type="password" autocomplete="new-password" required maxlength="2048"><label for="provider-callback">URL de retour à enregistrer sur la plateforme</label><input id="provider-callback" value="https://xavierfenaux.com/master/connect.php" readonly><p class="field-note">Les secrets restent sur le serveur. Ne saisis jamais ici ton mot de passe Instagram, Google, TikTok ou Twitch.</p>`;
+}
 function showConnection(id) {
-  const a = state.social?.accounts.find((a) => a.id === id);
+  const a = state.social?.accounts.find(a => a.id === id);
   if (!a) return;
-  const c = connection(a);
+  const c = connection(a), setup = c.setup || {};
   document.getElementById("data-body").innerHTML =
-    `<div class="dialog-avatar"><div class="avatar bobby"></div><div><strong>Bobby</strong><p>Connexion ${esc(a.network)}</p></div></div><h2 id="data-title">Connecter ${esc(a.network)}</h2><p>${c.configured ? "La connexion s’ouvre sur le site officiel. Choisis le compte " + esc(a.handle) + " puis autorise la lecture." : "L’accès du cockpit à " + esc(a.network) + " doit encore être activé par FT. Ton compte est bien identifié ; tu peux déjà ouvrir ses statistiques officielles."}</p>${a.network === "Spotify" ? '<div class="result">Spotify connectera le catalogue du podcast. Les écoutes privées restent dans Spotify for Creators.</div>' : ""}<div class="dialog-actions">${c.configured ? `<form method="post" action="/master/connect.php"><input type="hidden" name="account" value="${a.id}"><input type="hidden" name="csrf" value="${esc(boot.csrf)}"><button class="primary" type="submit">Continuer sur ${esc(a.network)} ${icon("arrow-up-right")}</button></form>` : external(a.analytics, "Ouvrir les statistiques", "primary")}<button class="secondary" data-entry="${a.id}">Ajouter un relevé</button></div>${!c.configured ? '<p class="field-note">Le bouton restera visible jusqu’à une connexion réellement active.</p>' : ""}`;
+    `<div class="dialog-avatar"><div class="avatar bobby"></div><div><strong>Bobby</strong><p>${esc(a.network)} · ${esc(a.handle)}</p></div></div><h2 id="data-title">${setup.mode === "official" ? "Ton espace officiel" : "Relier " + esc(a.network)}</h2><p>${esc(setup.note || "Lecture des possibilités de connexion…")}</p><div class="dialog-actions">${external(a.analytics, "Ouvrir " + esc(a.network))}${setup.portal ? external(setup.portal, "Application développeur") : ""}<button class="secondary" data-entry="${a.id}">Ajouter un relevé</button></div>${setup.mode === "oauth" ? `<details class="provider-setup"><summary>Configuration de l’application</summary><form id="provider-form"><input type="hidden" name="account" value="${a.id}">${a.network === "YouTube" ? '<label for="provider-mode">Mode de suivi</label><select id="provider-mode" name="mode"><option value="oauth">Connexion Google · statistiques privées</option><option value="api">API publique · quota gratuit</option></select>' : '<input type="hidden" name="mode" value="oauth">'}<div id="provider-fields">${providerFields(a.id, "oauth")}</div><p class="form-error" id="provider-error" role="alert"></p><button class="primary" type="submit">${icon("save")}Enregistrer et continuer</button></form></details>` : ""}`;
   document.getElementById("data-dialog").showModal();
   icons();
 }
@@ -803,6 +809,9 @@ document.addEventListener("click", (e) => {
   }
 });
 document.addEventListener("change", (e) => {
+  if (e.target.id === "provider-mode") {
+    document.getElementById("provider-fields").innerHTML = providerFields(document.querySelector('#provider-form [name="account"]').value, e.target.value);
+  }
   if (e.target.id === "owner-filter") {
     state.owner = e.target.value;
     state.network = "all";
@@ -845,6 +854,29 @@ document.addEventListener("input", (e) => {
   }
 });
 document.addEventListener("submit", async (e) => {
+  if (e.target.id === "provider-form") {
+    e.preventDefault();
+    const form = e.target, button = form.querySelector('[type="submit"]');
+    button.disabled = true;
+    try {
+      const input = Object.fromEntries(new FormData(form));
+      const result = await request('/master/provider-settings.php', {method:'POST', headers:{'Content-Type':'application/json','X-CSRF-Token':boot.csrf}, body:JSON.stringify(input)});
+      state.social.connections = result.connections;
+      form.reset();
+      document.getElementById('data-dialog').close();
+      render();
+      if (result.mode === 'oauth') {
+        const login = document.createElement('form');
+        login.method = 'POST'; login.action = '/master/connect.php';
+        for (const [name, value] of Object.entries({account: input.account, csrf: boot.csrf})) {
+          const field = document.createElement('input'); field.type = 'hidden'; field.name = name; field.value = value; login.append(field);
+        }
+        document.body.append(login); login.submit();
+      } else { toast('API YouTube vérifiée. Les compteurs publics sont synchronisés.'); refresh(); }
+    } catch (error) { document.getElementById('provider-error').textContent = error.message; }
+    finally { button.disabled = false; }
+    return;
+  }
   if (e.target.id !== "entry-form") return;
   e.preventDefault();
   const form = e.target,

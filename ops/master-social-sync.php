@@ -12,13 +12,14 @@ if (!in_array('--force', $argv, true) && !is_file($requested) && is_file($lastRu
 if (is_file($requested)) unlink($requested);
 foreach (connection_read() as $account=>$token) {
     if (($token['status'] ?? '') !== 'active' || !isset(connection_providers()[$account])) continue;
+    if (connection_setup($account)['mode'] === 'official') continue;
     try {
         $token = connection_access($account, $token);
         $profile = connection_profile($account, $token);
         if ($profile['identity']['id'] !== ($token['user_id'] ?? '')) throw new RuntimeException('Le compte a changé. Reconnecte le bon profil.', 401);
         $records = [$profile['record']];
         $partial = null;
-        if ($account === 'youtube-ivt') {
+        if ($account === 'youtube-ivt' && ($token['mode'] ?? '') !== 'api') {
             try {
                 $query = ['ids'=>'channel==MINE', 'startDate'=>date('Y-m-d', strtotime('-90 days')), 'endDate'=>date('Y-m-d', strtotime('-1 day')), 'metrics'=>'views,likes,comments,shares', 'dimensions'=>'day', 'sort'=>'day'];
                 $report = connection_http('https://youtubeanalytics.googleapis.com/v2/reports?' . http_build_query($query), ['Authorization: Bearer ' . $token['access_token']]);
@@ -36,7 +37,7 @@ foreach (connection_read() as $account=>$token) {
         });
         echo $account . ': synchronized' . PHP_EOL;
     } catch (Throwable $error) {
-        if (in_array($error->getCode(), [401,403], true)) {
+        if (($token['mode'] ?? '') !== 'api' && in_array($error->getCode(), [401,403], true)) {
             $token['status'] = 'expired';
             try { connection_save($account, $token, $token['access_token']); } catch (RuntimeException $changed) {}
         }

@@ -2,7 +2,7 @@
   "x": {"client_id": "", "client_secret": ""},
   "instagram": {"client_id": "", "client_secret": ""},
   "tiktok": {"client_id": "", "client_secret": ""},
-  "youtube": {"client_id": "", "client_secret": "", "channel_id": ""},
+  "youtube": {"client_id": "", "client_secret": "", "channel_id": "", "api_key": ""},
   "twitch": {"client_id": "", "client_secret": ""},
   "spotify": {"client_id": "", "client_secret": ""}
 }
