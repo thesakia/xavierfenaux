@@ -17,6 +17,7 @@ import db
 import media
 import worker
 import highlights
+import imports
 from config import ROOT, DATA, TRANSCRIPTS, OPUS_KEY, GROQ_KEY, MAX_UPLOAD, RESERVE, PUBLIC_URL, ALLOWED_ORIGINS
 from services import download
 
@@ -99,6 +100,7 @@ def dashboard():
         e['master_available']=(DATA/e['id']/'master.mp4').exists()
         e['opus_stage']=(db.meta('opus-stage:'+e['id']) or {}).get('stage')
         e['transcript_reused']=(TRANSCRIPTS/(e['id']+'.json')).exists()
+        e['import_progress']=db.meta('import-progress:'+e['id']) if e['state'] in imports.IMPORT_STATES else None
     free=shutil.disk_usage(DATA).free
     return {'episodes':episodes,'rss':db.meta('rss'),'worker':db.meta('worker'),
             'settings':db.meta('settings') or {'min_duration':30,'max_duration':90,'keywords':'','brand_template':''},
@@ -123,6 +125,36 @@ def settings(body:Settings):
     db.meta('settings',body.model_dump())
     return {'ok':True}
 
+def reserve_import(eid, state, short_id=None):
+    with db.connect() as c:
+        c.execute('BEGIN IMMEDIATE')
+        e=c.execute('SELECT state FROM episodes WHERE id=?',(eid,)).fetchone()
+        if not e:
+            raise HTTPException(404,'Épisode introuvable.')
+        if e['state'] not in ('waiting_video','archived'):
+            raise HTTPException(409,'Cet épisode attend déjà un traitement.')
+        placeholders=','.join('?' for _ in imports.BUSY_STATES)
+        if c.execute(f'SELECT 1 FROM episodes WHERE state IN ({placeholders})', imports.BUSY_STATES).fetchone():
+            raise HTTPException(409,'Une autre vidéo est déjà en cours de traitement. Réessayer ensuite.')
+        if c.execute('SELECT 1 FROM episodes WHERE id=? AND project_id IS NOT NULL',(eid,)).fetchone():
+            raise HTTPException(409,'Cet épisode dispose déjà d’un projet Opus.')
+        if short_id:
+            c.execute('INSERT OR REPLACE INTO meta VALUES (?,?)', ('icloud-import:'+eid,json.dumps({'share_id':short_id})))
+        c.execute('DELETE FROM meta WHERE key=?',('import-progress:'+eid,))
+        c.execute('UPDATE episodes SET state=?,error=NULL,next_poll=0,updated=? WHERE id=?',(state,time.time(),eid))
+
+class ICloudImport(BaseModel):
+    url:str=Field(min_length=20,max_length=2048)
+
+@app.post('/api/episodes/{eid}/icloud',status_code=202)
+def import_icloud(eid:str,body:ICloudImport):
+    try:
+        short_id=imports.share_id(body.url)
+    except ValueError as exc:
+        raise HTTPException(400,str(exc))
+    reserve_import(eid,'icloud_queued',short_id)
+    return {'ok':True,'queued':True}
+
 @app.post('/api/episodes/{eid}/video')
 async def upload(eid:str,request:Request):
     try:
@@ -138,20 +170,9 @@ async def upload(eid:str,request:Request):
     if size is not None and size*3+RESERVE>shutil.disk_usage(DATA).free:
         raise HTTPException(507,'Pas assez de place pour la vidéo et son master synchronisé.')
     name=unquote(request.headers.get('x-file-name','video.mp4'))[:200]
-    if not name.lower().endswith(('.mp4','.mov','.m4v','.mkv','.webm')):
-        raise HTTPException(400,'Formats acceptés : MP4, MOV, M4V, MKV, WebM.')
-    with db.connect() as c:
-        c.execute('BEGIN IMMEDIATE')
-        e=c.execute('SELECT state FROM episodes WHERE id=?',(eid,)).fetchone()
-        if not e:
-            raise HTTPException(404,'Épisode introuvable.')
-        if e['state'] not in ('waiting_video','archived'):
-            raise HTTPException(409,'Cet épisode attend déjà un traitement.')
-        if c.execute("SELECT 1 FROM episodes WHERE state IN ('uploading','sync_queued','syncing','rendering','render_queued','manual_render_queued')").fetchone():
-            raise HTTPException(409,'Une autre vidéo est déjà en cours de traitement. Réessayer ensuite.')
-        if c.execute('SELECT 1 FROM episodes WHERE id=? AND project_id IS NOT NULL',(eid,)).fetchone():
-            raise HTTPException(409,'Cet épisode dispose déjà d’un projet Opus.')
-        c.execute("UPDATE episodes SET state='uploading',updated=? WHERE id=?",(time.time(),eid))
+    if not name.lower().endswith(imports.VIDEO_SUFFIXES+('.zip',)):
+        raise HTTPException(400,'Formats acceptés : MP4, MOV, M4V, MKV, WebM ou ZIP contenant une vidéo.')
+    reserve_import(eid,'uploading')
     folder=db.folder(eid)
     tmp=folder/'source.part'
     written=0
@@ -168,15 +189,11 @@ async def upload(eid:str,request:Request):
             raise HTTPException(400,'Upload incomplet. Réessayer.')
         if written*2+RESERVE>shutil.disk_usage(DATA).free:
             raise HTTPException(507,'Pas assez de place pour traiter cette vidéo.')
-        info=await run_in_threadpool(media.probe,tmp)
-        if not any(s['codec_type']=='video' for s in info['streams']):
-            raise HTTPException(400,'Ce fichier ne contient pas de vidéo.')
-        if not any(s['codec_type']=='audio' for s in info['streams']):
-            raise HTTPException(400,'Conserver le son témoin de la caméra pour permettre la synchronisation.')
-        if not 35<=float(info['format']['duration'])<=5400:
-            raise HTTPException(400,'La vidéo doit durer entre 35 secondes et 90 minutes.')
-        tmp.replace(folder/'source.mp4')
-        db.update(eid,state='sync_queued',video_name=name,video_bytes=written,error=None,attempts=0,next_poll=0)
+        if name.lower().endswith('.zip'):
+            tmp.replace(folder/'import.zip')
+            db.update(eid,state='zip_queued',video_name=name,video_bytes=written,error=None,attempts=0,next_poll=0)
+            return JSONResponse({'ok':True,'queued':True},status_code=202)
+        await run_in_threadpool(imports.accept_video,eid,tmp,name)
         return {'ok':True}
     except BaseException as exc:
         tmp.unlink(missing_ok=True)
