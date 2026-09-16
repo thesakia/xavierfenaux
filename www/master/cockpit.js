@@ -18,7 +18,7 @@ const state = {
   network: "all",
   metric: "followers",
   chartMode: "combined",
-  social: null,
+  social: boot.social || null,
   socialError: "",
   analytics: null,
   analyticsError: "",
@@ -106,7 +106,6 @@ function heading(title, description, actions = "") {
 }
 function connectButton(a) {
   const c = connection(a);
-  if (c.setup?.mode === "official") return external(a.analytics, a.network === "Spotify" ? "Ouvrir Spotify for Creators" : "Ouvrir X", "primary");
   return c.active
     ? `<span class="chip ok">${icon("check")}${c.apiOnly ? "API publique active" : "Connecté"}</span>`
     : c.configured ? `<form method="post" action="/master/connect.php"><input type="hidden" name="account" value="${a.id}"><input type="hidden" name="csrf" value="${esc(boot.csrf)}"><button class="primary" type="submit">${icon("plug")}${c.needsReconnect ? "Reconnecter" : "Connecter"} ${esc(a.network)}</button></form>`
@@ -265,7 +264,9 @@ function socialHealth(a) {
   }
   return c.setup?.mode === "official"
     ? { label: "Suivi par relevés", tone: "", detail: "Statistiques disponibles dans l’espace officiel. Pas de synchronisation automatique." }
-    : { label: "Non connecté", tone: "", detail: c.configured ? "Autorise la lecture depuis ton compte sur le réseau." : "La connexion doit encore être activée côté cockpit. Aucune configuration technique à faire sur ton compte." };
+    : c.configured
+      ? { label: "Prêt à connecter", tone: "", detail: "Autorise la lecture depuis ton compte sur le réseau." }
+      : { label: c.setup ? "Activation requise" : "État indisponible", tone: "", detail: c.setup ? "L’application de connexion n’est pas encore configurée par FT. La synchronisation ne peut pas démarrer." : "L’état de la connexion n’a pas pu être vérifié. Réessaie dans un instant." };
 }
 function networkTabs() {
   return `<nav class="network-tabs" aria-label="Réseaux sociaux"><a href="#social" ${state.network === "all" ? 'aria-current="page"' : ""}>${icon("panels-top-left")}Ensemble</a>${(state.social?.accounts || []).map(a => `<a href="#social/${a.id}" ${state.network === a.id ? 'aria-current="page"' : ""}>${networkIcon(a)}${esc(a.network)}<span class="connection-dot ${connection(a).active ? "active" : ""}" title="${esc(socialHealth(a).label)}"></span></a>`).join("")}</nav>`;
@@ -479,27 +480,23 @@ function toolsPage() {
   );
 }
 function accountsPage() {
+  const accounts = state.social?.accounts || [];
+  const active = accounts.filter(a => connection(a).active).length;
   return (
     heading(
-      "Mes comptes & données",
-      "Tes six réseaux, un endroit pour les retrouver.",
-    ) +
-    guideBand(
-      "bobby",
-      "Tes comptes restent entre tes mains.",
-      "Les connexions se font sur les sites officiels. Ton mot de passe social ne passe jamais par le cockpit.",
-      "",
-      "connections",
+      "Connecter mes réseaux",
+      "Xavier Fenaux & Interactiv Trading",
+      `<span class="chip ${active ? "ok" : ""}">${active}/${accounts.length} comptes connectés</span><button class="secondary" data-guide="connections">${icon("circle-help")}Aide</button>`,
     ) +
     `<section class="accounts-grid">${
-      (state.social?.accounts || [])
+      accounts
         .map((a) => {
           const c = connection(a), s = summary(a);
           const health = socialHealth(a);
           return `<article class="account-card"><div class="account-head">${networkIcon(a)}<div><h3>${esc(a.network)} <small>· ${esc(a.owner)}</small></h3><small>${esc(a.handle)}</small></div><span class="chip ${health.tone}">${esc(health.label)}</span></div><p>${esc(health.detail)}</p><div class="account-actions">${connectButton(a)}<a class="secondary" href="#social/${a.id}">${icon("chart-no-axes-combined")}Statistiques</a></div><div class="account-source">${external(a.url, "Voir le profil", "text-button")}${c.active ? ` · <button class="text-button" data-disconnect="${a.id}">Déconnecter</button>` : ""}</div>${s.totalPosts !== null ? `<small>${fmt(s.totalPosts)} publications au total · ${shortDate(s.totalPostsDate)}</small>` : ""}</article>`;
         })
         .join("") || "<p>Chargement…</p>"
-    }</section><div class="section-title"><h2>Besoin d’un repère ?</h2></div><details><summary>Quels chiffres sont récupérés automatiquement ?</summary><p>Les connexions autorisées fournissent les compteurs du profil selon les droits accordés. YouTube peut aussi fournir des statistiques quotidiennes. Les données manquantes restent vides.</p></details><details><summary>Et les écoutes de mon podcast ?</summary><p>Acast Insights donne les téléchargements et les auditeurs du podcast. L’API de publication Acast ne fournit pas ces statistiques. Spotify for Creators conserve ses propres mesures. Ces chiffres ne doivent pas être additionnés.</p></details>`
+    }</section><div class="account-maintenance"><p>Les mots de passe restent sur les sites officiels. Seule une autorisation validée active la synchronisation.</p><a href="#integrations" class="text-button">${icon("settings-2")}Configuration FT</a></div><div class="section-title"><h2>Besoin d’un repère ?</h2></div><details><summary>Quels chiffres sont récupérés automatiquement ?</summary><p>Les connexions autorisées fournissent les compteurs du profil selon les droits accordés. YouTube peut aussi fournir des statistiques quotidiennes. Les données manquantes restent vides.</p></details><details><summary>Et les écoutes de mon podcast ?</summary><p>Acast Insights donne les téléchargements et les auditeurs du podcast. L’API de publication Acast ne fournit pas ces statistiques. Spotify for Creators conserve ses propres mesures. Ces chiffres ne doivent pas être additionnés.</p></details>`
   );
 }
 function integrationsPage() {
@@ -610,15 +607,19 @@ function drawChart() {
   });
 }
 async function request(url, options = {}) {
-  const response = await fetch(url, { credentials: "same-origin", ...options });
-  if (response.status === 401 || response.redirected) {
-    location.href = "/master/";
-    throw new Error("Reconnecte-toi pour continuer.");
-  }
-  const data = await response.json();
-  if (!response.ok)
-    throw new Error(data.error || "Lecture impossible. Réessaie.");
-  return data;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+  try {
+    const response = await fetch(url, { credentials: "same-origin", ...options, signal: controller.signal });
+    if (response.status === 401 || response.redirected) {
+      location.href = "/master/";
+      throw new Error("Reconnecte-toi pour continuer.");
+    }
+    const data = await response.json();
+    if (!response.ok)
+      throw new Error(data.error || "Lecture impossible. Réessaie.");
+    return data;
+  } finally { clearTimeout(timeout); }
 }
 async function refresh(schedule = false) {
   if (state.loading) return;
@@ -639,7 +640,12 @@ async function refresh(schedule = false) {
             body: JSON.stringify({ action: "sync" }),
           }
         : {},
-    ),
+    ).then(data => {
+      state.social = data;
+      state.socialError = "";
+      render();
+      return data;
+    }),
     request("/master/status.php"),
     request("/master/analytics-data.php"),
   ]);
@@ -766,8 +772,12 @@ function showProviderSetup(id) {
 function showConnection(id) {
   const a = state.social?.accounts.find(a => a.id === id);
   if (!a) return;
-  const health = socialHealth(a);
-  document.getElementById("data-body").innerHTML = `<div class="dialog-avatar"><div class="avatar bobby"></div><div><strong>Bobby</strong><p>${esc(a.network)}</p></div></div><h2 id="data-title">Connexion ${esc(a.network)}</h2><p>${esc(health.detail)}</p><p>Aucun mot de passe social ni identifiant développeur à saisir ici.</p><div class="dialog-actions">${external(a.analytics, "Ouvrir les statistiques officielles")}<button class="secondary" data-close>Fermer</button></div>`;
+  const c = connection(a), official = c.setup?.mode === "official";
+  const explanation = official
+    ? c.setup.note
+    : c.setup ? "Il manque la configuration de l’application côté cockpit. FT doit l’activer une seule fois ; tu pourras ensuite autoriser ton compte directement sur " + a.network + "."
+    : "L’état du compte est indisponible. Actualise les connexions pour réessayer.";
+  document.getElementById("data-body").innerHTML = `<div class="dialog-avatar"><div class="avatar bobby"></div><div><strong>${esc(a.network)}</strong><p>${esc(a.handle)}</p></div></div><h2 id="data-title">Connexion ${esc(a.network)}</h2><p class="connection-warning">${official ? "Accès officiel uniquement · pas de synchronisation automatique" : "Synchronisation non activée"}</p><p>${esc(explanation)}</p><div class="dialog-actions">${c.setup?.mode === "oauth" ? `<button class="primary" data-provider="${a.id}">${icon("settings-2")}Configurer la connexion · FT</button>` : ""}${external(a.analytics, "Se connecter sur " + esc(a.network), official ? "primary" : "secondary")}${!c.setup ? '<button class="primary" data-retry>Réessayer</button>' : ""}</div><p class="field-note">Ouvrir le site officiel ne connecte pas le compte au cockpit. Aucun mot de passe ni cookie n’est récupéré.</p>${official ? `<button class="text-button" data-entry="${a.id}">${icon("upload")}Importer mes statistiques</button>` : ""}`;
   document.getElementById("data-dialog").showModal();
   icons();
 }

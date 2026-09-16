@@ -912,6 +912,23 @@ td .network-icon {
 .account-source a {
   text-decoration: underline;
 }
+.account-maintenance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0 28px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.account-maintenance p { margin: 0; }
+.connection-warning {
+  padding: 12px;
+  border-left: 3px solid #aa681b;
+  background: #fff7eb;
+  color: #79501d;
+}
 .help-line {
   display: flex;
   gap: 10px;
