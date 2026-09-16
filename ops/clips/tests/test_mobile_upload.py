@@ -30,6 +30,25 @@ def valid_probe(monkeypatch):
     monkeypatch.setattr(media, 'probe', lambda path: {'streams': [{'codec_type': 'video'}, {'codec_type': 'audio'}], 'format': {'duration': '40'}})
 
 
+def test_corrected_video_has_a_new_preview_url(studio, monkeypatch):
+    import os
+    client, eid, tmp = studio
+    monkeypatch.setattr(app.highlights, 'DATA', tmp)
+    cid = 'local-' + eid + '-1'
+    db.folder(eid)
+    video = app.highlights.local_path(cid, eid)
+    video.write_bytes(b'video fixture')
+    with db.connect() as connection:
+        connection.execute('INSERT INTO clips(id,episode_id,title,text,duration,provider) VALUES(?,?,?,?,?,?)',
+                           (cid, eid, 'Accent test', "l'IA", 40, 'local'))
+    first = client.get('/api/dashboard').json()['episodes'][0]['clips'][0]['preview_url']
+    stat = video.stat()
+    os.utime(video, ns=(stat.st_atime_ns, stat.st_mtime_ns + 1_000_000_000))
+    second = client.get('/api/dashboard').json()['episodes'][0]['clips'][0]['preview_url']
+    assert first != second
+    assert second.startswith(app.PUBLIC_URL + '/api/clips/' + cid + '/preview?v=')
+
+
 def test_canonical_origin_and_untrusted_origin(studio):
     client, _, _ = studio
     assert client.post('/api/refresh').status_code == 200

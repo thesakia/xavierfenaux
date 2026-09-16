@@ -97,6 +97,10 @@ def dashboard():
         for clip in e['clips']:
             clip['captions']=json.loads(clip['captions'] or 'null')
             clip['subtitled']=bool(db.meta('subtitles:'+clip['id']))
+            if clip.get('provider')=='local':
+                video=highlights.local_path(clip['id'],e['id'])
+                if video.is_file():
+                    clip['preview_url']=PUBLIC_URL+'/api/clips/'+clip['id']+'/preview?v='+str(video.stat().st_mtime_ns)
         e['master_available']=(DATA/e['id']/'master.mp4').exists()
         e['opus_stage']=(db.meta('opus-stage:'+e['id']) or {}).get('stage')
         e['transcript_reused']=(TRANSCRIPTS/(e['id']+'.json')).exists()
