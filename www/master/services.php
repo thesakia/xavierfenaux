@@ -5,6 +5,21 @@ function master_services(): array
 {
     return [
         [
+            'id' => 'brief-mood',
+            'name' => 'Brief Mood',
+            'category' => 'Contenu',
+            'href' => '/brief-mood/',
+            'launchLabel' => 'Ouvrir le brief',
+            'statusCheck' => ['type' => 'http', 'url' => 'https://xavierfenaux.com/brief-mood/'],
+            'summary' => 'Le brief du matin : actualités vérifiées, version podcast et sources séparées.',
+            'result' => 'Un brief prêt à relire, compléter avec tes polarités et copier. Envoi quotidien à 04:00, heure de Paris.',
+            'tutorial' => [
+                'Ouvre l’édition du jour et vérifie les actualités retenues.',
+                'Ajoute tes polarités ; si nécessaire, ajuste la sélection et relance la rédaction.',
+                'Copie le brief ou la version podcast. Les preuves restent dans Actualités & sources.',
+            ],
+        ],
+        [
             'id' => 'clips',
             'name' => 'Clips Morning Mood',
             'category' => 'Contenu',

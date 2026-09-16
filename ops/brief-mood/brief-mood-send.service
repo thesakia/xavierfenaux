@@ -1,0 +1,21 @@
+[Unit]
+Description=Deliver today's verified Brief Mood, or an explicit failure notice
+After=network-online.target
+StartLimitIntervalSec=900
+StartLimitBurst=3
+[Service]
+Type=oneshot
+User=ivt
+Group=ivt
+WorkingDirectory=/opt/brief-mood
+EnvironmentFile=/etc/brief-mood.env
+Environment=TZ=Europe/Paris
+ExecStart=/opt/ivt-radar/.venv/bin/python core.py send
+TimeoutStartSec=120
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/brief-mood
+Restart=on-failure
+RestartSec=120

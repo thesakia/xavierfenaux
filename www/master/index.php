@@ -67,6 +67,7 @@ if ($loggedIn) {
         <a href="#social" data-view="social"><i data-lucide="chart-no-axes-combined"></i>Statistiques réseaux</a>
         <a href="#analytics" data-view="analytics"><i data-lucide="mouse-pointer-2"></i>Analytics</a>
         <a href="#content" data-view="content"><i data-lucide="clapperboard"></i>Créer du contenu</a>
+        <a href="/brief-mood/"><i data-lucide="notebook-pen"></i>Brief Mood</a>
         <a href="#markets" data-view="markets"><i data-lucide="radar"></i>Ma veille</a>
         <a href="#tools" data-view="tools"><i data-lucide="grid-2x2"></i>Tous mes outils</a>
         <a href="#accounts" data-view="accounts" class="mobile-accounts"><i data-lucide="plug"></i>Mes comptes</a>
@@ -87,7 +88,7 @@ if ($loggedIn) {
   <div id="toast" class="toast" role="status" hidden></div>
   <script id="boot" type="application/json"><?= json_encode(['services'=>$services, 'csrf'=>$csrf, 'flash'=>$flash, 'social'=>$socialBoot], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?></script>
   <script defer src="/master/metrics.js?v=4"></script>
-  <script defer src="/master/cockpit.js?v=9"></script>
+  <script defer src="/master/cockpit.js?v=10"></script>
 <?php endif; ?>
 </body>
 </html>

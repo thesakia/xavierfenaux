@@ -355,6 +355,7 @@ function socialPage() {
     + `<aside class="bobby-note"><div class="avatar bobby" role="img" aria-label="Bobby, ton community manager"></div><div><strong>Bobby · Le point sur tes données</strong><p>${a ? esc(health.detail) : "Les pourcentages d’évolution comparent des comptes identiques sur deux périodes complètes. Les valeurs absentes restent vides."}</p></div><button class="icon-button" data-guide="metrics" title="Comprendre les indicateurs" aria-label="Comprendre les indicateurs">${icon("circle-help")}</button></aside>`;
 }
 const toolCopy = {
+  "brief-mood": ["notebook-pen", "Ton brief de 4 h, sa version podcast et toutes ses sources."],
   "ivt-radar": [
     "scan-eye",
     "Les actualités et sujets IVT qui méritent ton attention ce matin.",
@@ -390,6 +391,7 @@ function taskList() {
     saved = JSON.parse(localStorage.getItem("xavier-tasks:" + today()) || "{}");
   } catch {}
   return [
+    ["brief", "Relire mon Brief Mood", "L’édition de 4 h et mes polarités.", "/brief-mood/"],
     ["veille", "Lire ma veille", "Les sujets IVT du jour.", "https://radar.ftfenaux.com/"],
     [
       "clip",
@@ -418,6 +420,7 @@ function contentPage() {
       "content",
     ) +
     `<section class="actions-grid">${[
+      ["brief-mood", "notebook-pen", "Mon Brief Mood", "Actualités, podcast et sources du matin."],
       [
         "clips",
         "scissors",

@@ -1,0 +1,9 @@
+[Unit]
+Description=Research Brief Mood before the 04:00 Paris delivery
+[Timer]
+OnCalendar=*-*-* 03:15:00 Europe/Paris
+AccuracySec=1s
+Persistent=false
+Unit=brief-mood-prepare.service
+[Install]
+WantedBy=timers.target

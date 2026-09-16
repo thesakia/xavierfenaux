@@ -1,0 +1,9 @@
+[Unit]
+Description=Deliver Brief Mood at 04:00 Paris daily
+[Timer]
+OnCalendar=*-*-* 04:00:00 Europe/Paris
+AccuracySec=1s
+Persistent=false
+Unit=brief-mood-send.service
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,23 @@
+[Unit]
+Description=Prepare the verified morning Brief Mood
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=ivt
+Group=ivt
+WorkingDirectory=/opt/brief-mood
+EnvironmentFile=/etc/brief-mood.env
+Environment=HOME=/opt/ivt-radar
+Environment=CODEX_HOME=/var/lib/ivt-radar/codex
+Environment=PATH=/opt/ivt-radar-tools/node_modules/.bin:/usr/local/bin:/usr/bin:/bin
+Environment=TZ=Europe/Paris
+ExecStart=/opt/ivt-radar/.venv/bin/python core.py generate
+TimeoutStartSec=43min
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/brief-mood /var/lib/ivt-radar/codex /opt/ivt-radar/.config
+MemoryMax=1400M
+CPUQuota=150%
