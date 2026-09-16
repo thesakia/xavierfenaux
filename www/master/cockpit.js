@@ -3,7 +3,7 @@ const boot = JSON.parse(document.getElementById("boot").textContent);
 const main = document.getElementById("main");
 const labels = {
   home: "Vue d’ensemble",
-  social: "Mes réseaux",
+  social: "Statistiques réseaux",
   analytics: "Analytics",
   content: "Créer du contenu",
   markets: "Ma veille",
@@ -257,7 +257,7 @@ function statsTable() {
 function socialHealth(a) {
   const c = connection(a), sync = state.social?.sync?.[a.id];
   if (c.needsReconnect) return { label: "À reconnecter", tone: "bad", detail: "L’autorisation a expiré." };
-  if (c.active && sync?.error) return { label: "Lecture interrompue", tone: "bad", detail: sync.error };
+  if (c.active && sync?.error) return { label: "Données partielles", tone: "bad", detail: sync.error };
   if (c.active) {
     const last = sync?.lastSuccess;
     const stale = last && Date.now() - Date.parse(last) > 86400000;
@@ -311,17 +311,46 @@ function socialHistory(a) {
   const rows = summary(a).rows.slice().reverse();
   return `<section class="social-history"><div class="section-title"><div><h2>Historique ${esc(a.network)}</h2><p>${rows.length} journées avec un relevé · ${state.days} jours</p></div><button class="icon-button" data-export title="Exporter les relevés" aria-label="Exporter les relevés">${icon("download")}</button></div>${rows.length ? `<div class="table-scroll history-scroll"><table><thead><tr><th>Date</th><th>Abonnés</th><th>Publications</th><th>${a.network === "Spotify" ? "Écoutes" : "Vues"}</th><th>J’aime</th><th>Commentaires</th><th>Partages</th><th>Sources</th></tr></thead><tbody>${rows.map(r => `<tr><td>${shortDate(r.date)}</td>${["followers", "posts", "views", "reactions", "comments", "shares"].map(k => `<td title="${esc(r.sources?.[k] || r.source || "")}">${fmt(r[k])}</td>`).join("")}<td>${esc([...new Set(Object.values(r.sources || { source: r.source }))].filter(Boolean).join(" · "))}</td></tr>`).join("")}</tbody></table></div>` : `<div class="history-empty">${icon("calendar-days")}<div><h3>Aucun relevé sur cette période</h3><p>Les statistiques apparaîtront après la première synchronisation ou un import.</p></div><button class="secondary" data-entry="${a.id}">Importer un relevé</button></div>`}</section>`;
 }
+function socialConnections() {
+  return `<details class="social-connections" ${(state.social?.accounts || []).some(a => connection(a).active) ? "" : "open"}><summary>Connexions et données disponibles</summary><div class="social-connection-list">${(state.social?.accounts || []).map(a => {
+    const c = connection(a), health = socialHealth(a);
+    return `<div class="social-connection-row">${networkIcon(a)}<div><strong>${esc(a.network)} <small>${esc(a.handle)}</small></strong><p>${esc(c.capabilities?.metrics || "Statistiques du compte")}</p><small>${c.active ? esc(health.detail) : c.configured ? "Prêt à autoriser depuis le réseau" : c.setup?.mode === "official" ? esc(c.capabilities?.limitation || health.detail) : "Application de connexion à configurer par FT, puis autorisation du compte"}</small></div><div>${connectButton(a)}</div></div>`;
+  }).join("")}</div></details>`;
+}
+function socialExtraMetrics(a) {
+  const sums = accountList().map(summary);
+  const metrics = a?.network === "YouTube" ? [["followersGained","Nouveaux abonnés"],["followersLost","Abonnés perdus"],["watchMinutes","Minutes visionnées"]]
+    : a?.network === "Instagram" ? [["saves","Enregistrements"]] : [];
+  const details = a ? state.social?.details?.[a.id] : null;
+  const live = details?.live;
+  const values = metrics.map(([key,label]) => {
+    const total = CockpitMetrics.aggregate(sums,key);
+    return `<div><dt>${label}</dt><dd>${fmt(total.value)}</dd><small>${sums.reduce((n,s)=>n+s[key+"Days"],0)}/${state.days} jours renseignés</small></div>`;
+  }).join("");
+  const stream = live ? `<div><dt>Direct Twitch</dt><dd>${live.online ? fmt(live.viewers)+" spectateurs" : "Hors ligne"}</dd><small>${esc(new Date(live.checkedAt).toLocaleString("fr-FR"))}</small></div>` : "";
+  return values || stream ? `<dl class="social-extra-metrics">${values}${stream}</dl>` : "";
+}
+function socialPosts() {
+  const accounts = accountList(), p = period();
+  const rows = accounts.flatMap(a => (state.social?.details?.[a.id]?.posts || []).filter(post => {
+    const date = post.publishedAt.slice(0,10);
+    return date >= p.start && date <= p.end;
+  }).map(post => ({...post, network:a.network, color:a.color})));
+  rows.sort((a,b)=>b.publishedAt.localeCompare(a.publishedAt));
+  const available = accounts.filter(a => state.social?.details?.[a.id]?.postsUpdatedAt);
+  return `<section class="social-posts"><div class="section-title"><div><h2>Résultats des publications</h2><p>Publiées du ${shortDate(p.start)} au ${shortDate(p.end)} · compteurs cumulés depuis leur publication</p></div><span class="chip">${rows.length} publications</span></div>${rows.length ? `<div class="table-scroll"><table><thead><tr><th>Publication</th><th>Réseau</th><th>Vues</th><th>J’aime</th><th>Commentaires</th><th>Partages</th></tr></thead><tbody>${rows.slice(0,150).map(post=>`<tr><td><a href="${esc(post.url)}" target="_blank" rel="noopener noreferrer">${esc(post.title || "Publication sans titre")}${icon("arrow-up-right")}</a><small>${shortDate(post.publishedAt.slice(0,10))} · relevé ${esc(new Date(post.updatedAt).toLocaleString("fr-FR"))}</small></td><td>${esc(post.network)}</td>${["views","reactions","comments","shares"].map(k=>`<td>${fmt(post[k])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>` : `<p class="table-hint">${available.length ? "Aucune publication disponible sur cette période." : "Les résultats apparaîtront après connexion et première lecture des publications."}</p>`}${available.map(a=>`<p class="table-hint">${esc(a.network)} · ${state.social.details[a.id].postsComplete ? "Toutes les publications renvoyées par le réseau" : "Publications récentes uniquement"} · dernière lecture ${esc(new Date(state.social.details[a.id].postsUpdatedAt).toLocaleString("fr-FR"))}</p>`).join("")}<p class="table-hint">Ces compteurs ne sont pas ajoutés aux résultats quotidiens : une vue reçue aujourd’hui peut concerner une ancienne vidéo.</p></section>`;
+}
 function socialPage() {
   const a = state.social?.accounts.find(a => a.id === state.network);
   const active = (state.social?.accounts || []).filter(a => connection(a).active).length;
   const health = a ? socialHealth(a) : null;
-  return heading("Mes réseaux", "Xavier Fenaux & Interactiv Trading", `<button class="icon-button" data-export title="Exporter les statistiques" aria-label="Exporter les statistiques">${icon("download")}</button><a href="#accounts" class="secondary">${icon("plug")}Connexions <span class="chip">${active}/6</span></a>`)
+  return heading("Statistiques réseaux", "Xavier Fenaux & Interactiv Trading", `<button class="icon-button" data-export title="Exporter les statistiques" aria-label="Exporter les statistiques">${icon("download")}</button><a href="#accounts" class="secondary">${icon("plug")}Connexions <span class="chip">${active}/6</span></a>`)
     + networkTabs()
     + `<div class="social-toolbar"><div class="social-identity">${a ? networkIcon(a) : '<img src="/images/events/speaker-portrait-color.webp" alt="Xavier Fenaux">'}<div><h2>${a ? esc(a.network) : "Vue d’ensemble"}</h2><p>${a ? esc(a.handle) : "Tous tes comptes, une seule lecture"}</p></div>${a ? `<span class="chip ${health.tone}">${esc(health.label)}</span>` : ""}</div><div class="social-period"><div class="segmented" aria-label="Période">${[7, 30, 90].map(d => `<button data-days="${d}" aria-pressed="${state.days === d}">${d} jours</button>`).join("")}</div>${a ? connectButton(a) : '<select id="owner-filter" aria-label="Propriétaire"><option value="all">Xavier + IVT</option><option value="Xavier" ' + (state.owner === "Xavier" ? "selected" : "") + '>Xavier</option><option value="IVT" ' + (state.owner === "IVT" ? "selected" : "") + '>Interactiv Trading</option></select>'}</div></div>`
     + (!active && !a ? `<aside class="social-notice">${icon("unplug")}<div><strong>Aucun compte synchronisé pour le moment</strong><p>Les profils sont identifiés ; leurs statistiques ne sont pas encore autorisées.</p></div><a href="#accounts" class="text-button">Mes connexions ${icon("arrow-right")}</a></aside>` : "")
-    + socialKpis()
+    + socialConnections() + socialKpis() + socialExtraMetrics(a)
     + `<div class="social-chart-toolbar"><div class="segmented" aria-label="Indicateur du graphique">${[["followers", "Abonnés"], ["views", a?.network === "Spotify" ? "Écoutes" : "Vues"], ["reactions", "J’aime"]].map(([key, label]) => `<button data-metric="${key}" aria-pressed="${state.metric === key}">${label}</button>`).join("")}</div>${!a ? `<div class="segmented" aria-label="Courbes"><button data-chart-mode="combined" aria-pressed="${state.chartMode === "combined"}">Cumul</button><button data-chart-mode="networks" aria-pressed="${state.chartMode === "networks"}">Par réseau</button></div>` : ""}</div><div class="social-chart-layout">${chartSection()}${a ? networkDetail(a) : audienceBreakdown()}</div>`
-    + (a ? socialHistory(a) : networkOverview() + `<details class="social-comparison"><summary>Comparer tous les indicateurs</summary>${statsTable()}</details>`)
+    + socialPosts() + (a ? socialHistory(a) : networkOverview() + `<details class="social-comparison"><summary>Comparer tous les indicateurs</summary>${statsTable()}</details>`)
     + `<aside class="bobby-note"><div class="avatar bobby" role="img" aria-label="Bobby, ton community manager"></div><div><strong>Bobby · Le point sur tes données</strong><p>${a ? esc(health.detail) : "Les pourcentages d’évolution comparent des comptes identiques sur deux périodes complètes. Les valeurs absentes restent vides."}</p></div><button class="icon-button" data-guide="metrics" title="Comprendre les indicateurs" aria-label="Comprendre les indicateurs">${icon("circle-help")}</button></aside>`;
 }
 const toolCopy = {

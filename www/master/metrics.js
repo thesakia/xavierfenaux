@@ -20,7 +20,7 @@
           : null,
       rows,
     };
-    for (const field of ["posts", "reactions", "views", "comments", "shares"]) {
+    for (const field of ["posts", "reactions", "views", "comments", "shares", "followersGained", "followersLost", "watchMinutes", "saves"]) {
       const available = rows.filter((r) => finite(r[field]));
       result[field] = available.length
         ? available.reduce((sum, r) => sum + r[field], 0)

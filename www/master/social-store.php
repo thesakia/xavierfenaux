@@ -5,7 +5,7 @@ date_default_timezone_set('Europe/Paris');
 function social_accounts(): array
 {
     return [
-        ['id'=>'x-xavier', 'network'=>'X', 'owner'=>'Xavier', 'handle'=>'@XFenaux', 'url'=>'https://x.com/XFenaux', 'verified'=>true, 'source'=>'https://www.xavierfenaux.com/', 'analytics'=>'https://analytics.x.com/', 'color'=>'#202622'],
+        ['id'=>'x-xavier', 'network'=>'X', 'owner'=>'Xavier', 'handle'=>'@XFenaux', 'url'=>'https://x.com/XFenaux', 'verified'=>true, 'source'=>'https://www.xavierfenaux.com/', 'analytics'=>'https://x.com/i/account_analytics', 'color'=>'#202622'],
         ['id'=>'instagram-xavier', 'network'=>'Instagram', 'owner'=>'Xavier', 'handle'=>'@xfenaux', 'url'=>'https://www.instagram.com/xfenaux/', 'verified'=>true, 'source'=>'https://videobourse.fr/forum-trading-bourse/viewtopic.php?start=325&t=9402', 'analytics'=>'https://www.instagram.com/accounts/professional_dashboard/', 'color'=>'#bc4278'],
         ['id'=>'tiktok-ivt', 'network'=>'TikTok', 'owner'=>'IVT', 'handle'=>'@interactivtrading', 'url'=>'https://www.tiktok.com/@interactivtrading', 'verified'=>true, 'source'=>'Confirmé par FT', 'analytics'=>'https://www.tiktok.com/tiktokstudio', 'color'=>'#008780'],
         ['id'=>'spotify-xavier', 'network'=>'Spotify', 'owner'=>'Xavier', 'handle'=>'Morning Mood', 'url'=>'https://open.spotify.com/show/4Kka5gOG1cnplAmHB0vGXD', 'verified'=>true, 'source'=>'Confirmé par FT', 'analytics'=>'https://creators.spotify.com/', 'color'=>'#38844a'],
@@ -64,7 +64,7 @@ function social_record(array $input, string $source): array
     if (!$parsed || $parsed->format('Y-m-d') !== $date || $date > date('Y-m-d') || $date < '2020-01-01') throw new InvalidArgumentException('Choisis une date valide, au plus tard aujourd’hui.');
     $record = ['account'=>$input['account'], 'date'=>$date, 'source'=>$source, 'updatedAt'=>date(DATE_ATOM)];
     $count = 0;
-    foreach (['followers', 'posts', 'reactions', 'views', 'comments', 'shares', 'totalPosts', 'totalViews', 'totalLikes'] as $field) {
+    foreach (['followers', 'posts', 'reactions', 'views', 'comments', 'shares', 'totalPosts', 'totalViews', 'totalLikes', 'followersGained', 'followersLost', 'watchMinutes', 'saves'] as $field) {
         $value = $input[$field] ?? null;
         if ($value === '' || $value === null) continue;
         if (!is_numeric($value) || (float)$value < 0 || (float)$value > 1e12 || floor((float)$value) !== (float)$value) throw new InvalidArgumentException('Les statistiques doivent être des nombres entiers positifs.');

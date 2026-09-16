@@ -13,6 +13,18 @@ function connection_providers(): array
     ];
 }
 
+function connection_capabilities(string $account): array
+{
+    return [
+        'x-xavier'=>['metrics'=>'Abonnés, impressions, interactions dans X Analytics', 'limitation'=>'La session X du navigateur ne donne pas accès à ses statistiques depuis le serveur. API X payante non activée.', 'automatic'=>false],
+        'instagram-xavier'=>['metrics'=>'Abonnés, publications, vues, j’aime, commentaires, partages, enregistrements', 'limitation'=>'Compte professionnel et autorisation Insights requis. Détail quotidien récupéré sur les 7 derniers jours, puis conservé.', 'automatic'=>true],
+        'tiktok-ivt'=>['metrics'=>'Abonnés, nombre de vidéos, j’aime du compte ; vues, j’aime, commentaires et partages par vidéo', 'limitation'=>'Les compteurs des vidéos sont cumulés depuis leur publication, pas des résultats quotidiens. Jusqu’à 100 vidéos récentes.', 'automatic'=>true],
+        'youtube-ivt'=>['metrics'=>'Abonnés, vues, j’aime, commentaires, partages, abonnés gagnés et perdus, temps de visionnage', 'limitation'=>'Connexion Google avec Analytics pour les 90 derniers jours. Une clé publique ne donne que les compteurs du profil.', 'automatic'=>true],
+        'twitch-xavier'=>['metrics'=>'Followers, spectateurs du direct et vues des replays', 'limitation'=>'Le nombre de spectateurs est un instantané du direct. Les statistiques privées détaillées restent dans Twitch.', 'automatic'=>true],
+        'spotify-xavier'=>['metrics'=>'Écoutes et audience dans Spotify for Creators et Acast Insights', 'limitation'=>'La connexion Spotify Web API ne fournit pas les statistiques privées du podcast. L’API de publication Acast ne les fournit pas non plus.', 'automatic'=>false],
+    ][$account];
+}
+
 function connection_config(): array
 {
     $path = getenv('MASTER_PROVIDERS_FILE') ?: '/etc/xavier-master/providers.json';
@@ -83,7 +95,7 @@ function connection_public(): array
         $setup = connection_setup($id);
         $api = $id === 'youtube-ivt' && ($token['mode'] ?? '') === 'api' && !empty($c['api_key']);
         $active = $setup['mode'] !== 'official' && ($token['status'] ?? '') === 'active' && ($api || (!empty($token['access_token']) && (($token['expires_at'] ?? 0) > time() || !empty($token['refresh_token']))));
-        $result[$id] = ['configured'=>$setup['mode'] !== 'official' && !empty($c['client_id']) && !empty($c['client_secret']), 'active'=>$active, 'label'=>$token['label'] ?? null, 'connectedAt'=>$token['connected_at'] ?? null, 'needsReconnect'=>!empty($token) && !$active, 'catalogOnly'=>false, 'apiOnly'=>$api, 'setup'=>$setup];
+        $result[$id] = ['configured'=>$setup['mode'] !== 'official' && !empty($c['client_id']) && !empty($c['client_secret']), 'active'=>$active, 'label'=>$token['label'] ?? null, 'connectedAt'=>$token['connected_at'] ?? null, 'needsReconnect'=>!empty($token) && !$active, 'catalogOnly'=>false, 'apiOnly'=>$api, 'setup'=>$setup, 'capabilities'=>connection_capabilities($id)];
     }
     return $result;
 }

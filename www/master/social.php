@@ -57,7 +57,7 @@ try {
     } elseif ($_SERVER['REQUEST_METHOD'] !== 'GET') { http_response_code(405); exit; }
     $data = social_read();
     $accounts = array_map(static fn(array $account): array => array_merge($account, $data['accounts'][$account['id']] ?? []), social_accounts());
-    echo json_encode(['accounts'=>$accounts, 'records'=>array_values($data['records']), 'sync'=>$data['sync'] ?? [], 'connections'=>connection_public(), 'generatedAt'=>date(DATE_ATOM)], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    echo json_encode(['accounts'=>$accounts, 'records'=>array_values($data['records']), 'details'=>$data['details'] ?? [], 'sync'=>$data['sync'] ?? [], 'connections'=>connection_public(), 'generatedAt'=>date(DATE_ATOM)], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 } catch (InvalidArgumentException | JsonException $error) {
     if (http_response_code() < 400) http_response_code(422);
     echo json_encode(['error'=>$error->getMessage()]);

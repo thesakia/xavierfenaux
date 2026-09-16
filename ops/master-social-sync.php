@@ -4,6 +4,7 @@ if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 date_default_timezone_set('Europe/Paris');
 require dirname(__DIR__) . '/www/master/social-store.php';
 require dirname(__DIR__) . '/www/master/connections-lib.php';
+require dirname(__DIR__) . '/www/master/insights-lib.php';
 $lock = fopen(dirname(social_path()) . '/sync.lock', 'c');
 if (!$lock || !flock($lock, LOCK_EX | LOCK_NB)) exit;
 $requested = dirname(social_path()) . '/sync-requested';
@@ -19,16 +20,10 @@ foreach (connection_read() as $account=>$token) {
         if ($profile['identity']['id'] !== ($token['user_id'] ?? '')) throw new RuntimeException('Le compte a changé. Reconnecte le bon profil.', 401);
         $records = [$profile['record']];
         $partial = null;
-        if ($account === 'youtube-ivt' && ($token['mode'] ?? '') !== 'api') {
-            try {
-                $query = ['ids'=>'channel==MINE', 'startDate'=>date('Y-m-d', strtotime('-90 days')), 'endDate'=>date('Y-m-d', strtotime('-1 day')), 'metrics'=>'views,likes,comments,shares', 'dimensions'=>'day', 'sort'=>'day'];
-                $report = connection_http('https://youtubeanalytics.googleapis.com/v2/reports?' . http_build_query($query), ['Authorization: Bearer ' . $token['access_token']]);
-                $headers = array_column($report['columnHeaders'] ?? [], 'name');
-                foreach ($report['rows'] ?? [] as $row) {
-                    $r = array_combine($headers, $row);
-                    $records[] = social_record(['account'=>$account, 'date'=>$r['day'], 'views'=>$r['views'], 'reactions'=>$r['likes'], 'comments'=>$r['comments'], 'shares'=>$r['shares']], 'YouTube Analytics (journée du réseau)');
-                }
-            } catch (Throwable $e) { $partial = 'Abonnés actualisés. Le détail quotidien YouTube est indisponible ; vérifie les autorisations Analytics.'; }
+        if (($token['mode'] ?? '') !== 'api') {
+            $details = insights_collect($account,$token);
+            insights_save($account,$details);
+            $partial = $details['warnings'] ? implode(' ',$details['warnings']) : null;
         }
         social_update(static function(array $data) use ($records, $account, $partial): array {
             $data = social_merge($data, $records);
