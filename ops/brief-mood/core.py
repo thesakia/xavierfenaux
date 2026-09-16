@@ -186,9 +186,10 @@ def validate_research(r, day):
 
 
 def history():
+    today=now().date().isoformat()
     with connect() as c:
-        rows = c.execute("SELECT day,research,draft FROM editions WHERE state='ready' ORDER BY created DESC LIMIT 20").fetchall()
-        archived = [dict(r) for r in c.execute('SELECT day,text FROM archive ORDER BY day DESC LIMIT 15')]
+        rows = c.execute("SELECT day,research,draft FROM editions WHERE state='ready' AND day<? ORDER BY created DESC LIMIT 20",(today,)).fetchall()
+        archived = [dict(r) for r in c.execute('SELECT day,text FROM archive WHERE day<? ORDER BY day DESC LIMIT 15',(today,))]
     return {'editions':[{'day':r['day'],'topics':[{k:n[k] for k in ('topic_key','title','facts','event_date')} for n in json.loads(r['research'])['news']],
                          'closing':json.loads(r['draft'])['closing']} for r in rows], 'published_examples':archived}
 

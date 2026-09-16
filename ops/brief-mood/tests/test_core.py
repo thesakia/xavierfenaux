@@ -85,6 +85,14 @@ def test_generated_signature_is_not_duplicated():
     assert core.text(e,True).count('Xavier')==1
 
 
+def test_revisions_do_not_treat_today_as_recycled_news():
+    today=core.now().date()
+    with core.connect() as c:
+        c.execute('INSERT INTO archive VALUES(?,?,?)',('today',today.isoformat(),'Current edition'))
+        c.execute('INSERT INTO archive VALUES(?,?,?)',('previous',(today-dt.timedelta(days=1)).isoformat(),'Previous edition'))
+    assert [r['text'] for r in core.history()['published_examples']]==['Previous edition']
+
+
 def test_no_historical_delivery():
     with pytest.raises(ValueError):core.send_day('2020-01-01')
 
