@@ -77,7 +77,7 @@ function master_access_revoke(string $id): void {
 }
 
 function master_access_ticket(string $id, string $host, string $path): string {
-    if ($host !== 'radar.ftfenaux.com' || !in_array($path, ['/', '/newsletter/'], true)) throw new InvalidArgumentException('Destination non autorisée.');
+    if ($host !== 'radar.ftfenaux.com' || $path !== '/') throw new InvalidArgumentException('Destination non autorisée.');
     $ticket = bin2hex(random_bytes(32));
     master_access_store(static function(array $data) use ($ticket,$id,$host,$path): array {
         if (empty($data['sessions'][$id])) throw new RuntimeException('Session expirée.');
@@ -104,26 +104,4 @@ function master_access_exchange(string $ticket, string $host): array {
 
 function master_tool_credentials(): array {
     return json_decode((string)file_get_contents('/etc/xavier-master/tool-access.json'), true, 16, JSON_THROW_ON_ERROR);
-}
-
-function master_dashboard_cookie(string $id): string {
-    $value = '';
-    // Serialize refreshes so parallel dashboard requests do not trigger repeated logins.
-    master_access_store(static function(array $data) use ($id,&$value): array {
-        $session = $data['sessions'][$id] ?? null;
-        if (!$session) throw new RuntimeException('Session expirée.');
-        if (($session['dashboard_expires'] ?? 0) > time()) { $value=$session['dashboard_cookie']; return $data; }
-        $credentials=master_tool_credentials();
-        $curl=curl_init('https://xavierfenaux.com/api/auth/login');
-        curl_setopt_array($curl, [CURLOPT_RESOLVE=>['xavierfenaux.com:443:127.0.0.1'],CURLOPT_RETURNTRANSFER=>true,CURLOPT_POST=>true,CURLOPT_TIMEOUT=>12,CURLOPT_CONNECTTIMEOUT=>3,CURLOPT_HTTPHEADER=>['Content-Type: application/json'],CURLOPT_POSTFIELDS=>json_encode(['username'=>$credentials['username'],'password'=>$credentials['password']]),CURLOPT_HEADERFUNCTION=>static function($curl,string $line) use (&$value): int {
-            if (preg_match('/^Set-Cookie:\s*xf_dashboard_session=([^;\r\n]+)/i',$line,$matches)) $value=$matches[1];
-            return strlen($line);
-        }]);
-        curl_exec($curl); $status=curl_getinfo($curl,CURLINFO_HTTP_CODE); curl_close($curl);
-        if ($status !== 200 || !$value) throw new RuntimeException('Connexion au radar temporairement indisponible.');
-        $data['sessions'][$id]['dashboard_cookie']=$value;
-        $data['sessions'][$id]['dashboard_expires']=time()+10*3600;
-        return $data;
-    });
-    return $value;
 }

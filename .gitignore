@@ -5,3 +5,4 @@ remote-backup-before-umami-*/
 .htpasswd_dashboard
 .ovhconfig
 .deploy/
+/dashboard-mvp/

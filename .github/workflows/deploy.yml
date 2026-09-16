@@ -28,7 +28,6 @@ jobs:
             --exclude='.git' \
             --exclude='.github' \
             --exclude='.env' \
-            --exclude='dashboard-mvp/**' \
             --exclude='.well-known/acme-challenge' \
             --exclude='www/dashboard/strategy/*.html' \
             --timeout=60 \
@@ -42,6 +41,6 @@ jobs:
           ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new \
             root@76.13.48.6 "bash /var/www/xavierfenaux/ops/setup-master.sh"
 
-      - name: Note migrated dashboard services
+      - name: Note remaining migrated services
         run: |
-          echo "Xavier dashboard services run on VPS2/Contabo and are proxied by Nginx on the website VPS."
+          echo "Clips and IVT Radar run on VPS2/Contabo and are proxied by Nginx on the website VPS."

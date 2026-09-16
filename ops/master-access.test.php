@@ -12,10 +12,10 @@ try {
     expect(master_access_resolve($cookies,'xavierfenaux.com')['id']===$id,'persistent cookie resolves without PHP session');
     expect(master_access_resolve($cookies,'www.xavierfenaux.com')['id']===$id,'www shares master session');
     expect(master_access_resolve($cookies,'evil.example')===null,'untrusted audience rejected');
-    $ticket=master_access_ticket($id,'radar.ftfenaux.com','/newsletter/');
+    $ticket=master_access_ticket($id,'radar.ftfenaux.com','/');
     try { master_access_exchange($ticket,'evil.example'); throw new RuntimeException('wrong audience accepted'); } catch (InvalidArgumentException $expected) {}
     $grant=master_access_exchange($ticket,'radar.ftfenaux.com');
-    expect($grant['path']==='/newsletter/','destination preserved');
+    expect($grant['path']==='/','destination preserved');
     $bridge=[MASTER_BRIDGE_COOKIE=>$grant['token']];
     expect(master_access_resolve($bridge,'radar.ftfenaux.com')['id']===$id,'bridge resolves same principal');
     expect(master_access_resolve($bridge,'ftfenaux.com')===null,'grant is host-bound');

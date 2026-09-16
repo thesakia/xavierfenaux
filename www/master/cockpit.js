@@ -5,7 +5,7 @@ const labels = {
   home: "Vue d’ensemble",
   social: "Mes statistiques",
   content: "Créer du contenu",
-  markets: "Ma veille & mes lives",
+  markets: "Ma veille",
   tools: "Tous mes outils",
   accounts: "Mes comptes & données",
 };
@@ -175,14 +175,14 @@ function home() {
         "content",
         "clapperboard",
         "Préparer mes contenus",
-        "Un extrait du Morning Mood, une newsletter ou le prochain tournage.",
+        "Un extrait du Morning Mood ou ton prochain post X.",
         "Retrouver Maya",
       ],
       [
         "markets",
         "radar",
         "Préparer ma journée",
-        "Les radars, les sujets à surveiller et les supports pour tes lives.",
+        "La veille IVT et les sujets à surveiller.",
         "Ouvrir ma veille",
       ],
     ]
@@ -245,10 +245,6 @@ function socialPage() {
   );
 }
 const toolCopy = {
-  "dashboard-radar": [
-    "radar",
-    "Les marchés à surveiller, le contexte et les idées à examiner avant la séance.",
-  ],
   "ivt-radar": [
     "scan-eye",
     "Les actualités et sujets IVT qui méritent ton attention ce matin.",
@@ -257,29 +253,9 @@ const toolCopy = {
     "scissors",
     "Transforme un Morning Mood en extraits courts à relire puis exporter.",
   ],
-  "ivt-newsletter": [
-    "mail",
-    "Retrouve le brouillon du jour, ajuste le texte et prépare ta newsletter.",
-  ],
   "strategy-x": [
     "notebook-pen",
     "Choisis un sujet, un angle et une accroche pour ton prochain post X.",
-  ],
-  "tournage-ivt": [
-    "video",
-    "Prépare tes séquences et garde le fil pendant ton enregistrement.",
-  ],
-  live: [
-    "presentation",
-    "Ouvre ton support et déroule ta présentation pendant le live.",
-  ],
-  ivtday: [
-    "calendar-days",
-    "Ton support pour les événements et les présentations IVT Day.",
-  ],
-  actualites: [
-    "archive",
-    "Retrouve un ancien sujet ou une référence pour préparer un nouveau contenu.",
   ],
   analytics: [
     "mouse-pointer-2",
@@ -308,7 +284,7 @@ function taskList() {
     saved = JSON.parse(localStorage.getItem("xavier-tasks:" + today()) || "{}");
   } catch {}
   return [
-    ["brief", "Lire mon brief", "Le contexte avant la séance.", "/dashboard"],
+    ["veille", "Lire ma veille", "Les sujets IVT du jour.", "https://radar.ftfenaux.com/"],
     [
       "clip",
       "Choisir un extrait",
@@ -337,7 +313,7 @@ function contentPage() {
     guideBand(
       "maya",
       "On part de ce que tu as déjà.",
-      "Un passage du Morning Mood peut devenir un clip. Un sujet du radar peut nourrir ta newsletter. Choisis le format, je t’indique les étapes.",
+      "Un passage du Morning Mood peut devenir un clip. Un sujet du radar peut nourrir ton prochain post X. Choisis le format, je t’indique les étapes.",
       "lilac",
       "content",
     ) +
@@ -347,12 +323,6 @@ function contentPage() {
         "scissors",
         "Un extrait vidéo",
         "À partir d’un épisode ou d’un enregistrement.",
-      ],
-      [
-        "ivt-newsletter",
-        "mail",
-        "Une newsletter",
-        "À partir de la veille et du brouillon du jour.",
       ],
       [
         "strategy-x",
@@ -379,17 +349,17 @@ function contentPage() {
 function marketsPage() {
   return (
     heading(
-      "Ma veille & mes lives",
-      "Les infos du matin et tes supports, à portée de main.",
+      "Ma veille",
+      "Les sujets IVT du matin, à portée de main.",
     ) +
     guideBand(
       "lea",
       "Le bon ordre pour démarrer.",
-      "Lis le contexte du marché, retiens les sujets utiles, puis ouvre ton support si tu prépares un live.",
+      "Lis le contexte du marché, retiens les sujets utiles et choisis les angles à approfondir.",
       "coral",
       "markets",
     ) +
-    `<div class="split"><section><div class="section-title"><h2>Mon petit rituel</h2><span class="chip">Aujourd’hui</span></div>${taskList()}</section><section><div class="section-title"><h2>Rendez-vous du matin</h2></div><div class="task"><span class="chip">07:15</span><label>Veille IVT<small>Horaire prévu du radar quotidien.</small></label></div><div class="task"><span class="chip">07:30</span><label>Newsletter<small>Horaire prévu du brouillon à relire.</small></label></div></section></div><div class="section-title"><h2>Veille, marchés & présentations</h2></div>` +
+    `<div class="split"><section><div class="section-title"><h2>Mon petit rituel</h2><span class="chip">Aujourd’hui</span></div>${taskList()}</section><section><div class="section-title"><h2>Rendez-vous du matin</h2></div><div class="task"><span class="chip">07:15</span><label>Veille IVT<small>Horaire prévu du radar quotidien.</small></label></div></section></div><div class="section-title"><h2>Ma veille IVT</h2></div>` +
     serviceRows(
       state.services.filter((s) =>
         ["Marches", "Presentation", "Evenement"].includes(s.category),
@@ -604,8 +574,8 @@ const guides = {
     "Ton cockpit se parcourt selon ce que tu veux faire.",
     [
       "Mes statistiques : retrouve les abonnés, l’activité et les résultats de tes réseaux.",
-      "Créer du contenu : prépare un clip, une newsletter ou un post.",
-      "Ma veille & mes lives : ouvre les radars et les supports de présentation.",
+      "Créer du contenu : prépare un clip ou un post.",
+      "Ma veille : retrouve les sujets du jour dans IVT Radar.",
     ],
     "Tu sais où aller sans avoir à retenir le nom de chaque outil.",
   ],
@@ -637,7 +607,6 @@ const guides = {
     "Commence avec un contenu déjà prêt.",
     [
       "Pour un clip : ouvre Clips Morning Mood et sélectionne un épisode.",
-      "Pour un email : ouvre Newsletter IVT et reprends le brouillon du jour.",
       "Pour X : ouvre Stratégie X et choisis un angle.",
     ],
     "Un contenu à relire et à valider avant publication.",
@@ -647,11 +616,11 @@ const guides = {
     "Prépare ta séance.",
     "Quelques minutes pour retrouver le contexte.",
     [
-      "Ouvre Radar Xavier pour lire le brief et les sujets à examiner.",
-      "Regarde IVT Radar pour compléter ta veille.",
-      "Si tu pars en live, ouvre Deck Live et parcours le support avant de commencer.",
+      "Ouvre IVT Radar pour lire les sujets du jour.",
+      "Repère les actualités pertinentes pour ta communauté.",
+      "Garde les angles à approfondir dans tes prochains contenus.",
     ],
-    "Une journée préparée, avec tes informations et tes supports sous la main.",
+    "Une journée préparée, avec les sujets utiles sous la main.",
   ],
 };
 function showGuide(id, tool = false) {

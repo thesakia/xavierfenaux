@@ -7,10 +7,7 @@ if (($_SERVER['MASTER_AUTH_REQUEST'] ?? '') !== '1') { http_response_code(404); 
 try {
     $access=master_access_current();
     if (!$access) { http_response_code(401); exit; }
-    if (($_SERVER['MASTER_TOOL'] ?? '') === 'dashboard') header('X-Master-Dashboard: ' . master_dashboard_cookie($access['id']));
-    else {
-        $credentials=master_tool_credentials();
-        header('X-Master-Basic: Basic ' . base64_encode($credentials['username'] . ':' . $credentials['password']));
-    }
+    $credentials=master_tool_credentials();
+    header('X-Master-Basic: Basic ' . base64_encode($credentials['username'] . ':' . $credentials['password']));
     http_response_code(204);
 } catch (Throwable $error) { error_log('Master access check failed.'); http_response_code(503); }

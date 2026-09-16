@@ -56,7 +56,7 @@ $services = array_map(static function(array $s): array { unset($s['statusCheck']
         <a href="#home" data-view="home"><i data-lucide="layout-dashboard"></i>Vue d’ensemble</a>
         <a href="#social" data-view="social"><i data-lucide="chart-no-axes-combined"></i>Mes statistiques</a>
         <a href="#content" data-view="content"><i data-lucide="clapperboard"></i>Créer du contenu</a>
-        <a href="#markets" data-view="markets"><i data-lucide="radar"></i>Ma veille &amp; mes lives</a>
+        <a href="#markets" data-view="markets"><i data-lucide="radar"></i>Ma veille</a>
         <a href="#tools" data-view="tools"><i data-lucide="grid-2x2"></i>Tous mes outils</a>
         <a href="#accounts" data-view="accounts" class="mobile-accounts"><i data-lucide="plug"></i>Mes comptes</a>
       </nav>
@@ -76,7 +76,7 @@ $services = array_map(static function(array $s): array { unset($s['statusCheck']
   <div id="toast" class="toast" role="status" hidden></div>
   <script id="boot" type="application/json"><?= json_encode(['services'=>$services, 'csrf'=>$csrf, 'flash'=>$flash], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?></script>
   <script defer src="/master/metrics.js?v=2"></script>
-  <script defer src="/master/cockpit.js?v=2"></script>
+  <script defer src="/master/cockpit.js?v=3"></script>
 <?php endif; ?>
 </body>
 </html>
