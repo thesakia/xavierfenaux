@@ -68,9 +68,9 @@ function master_services(): array
             'id' => 'analytics',
             'name' => 'Analytics',
             'category' => 'Pilotage',
-            'href' => '/master/analytics.php',
-            'launchLabel' => 'Ouvrir analytics',
-            'statusCheck' => ['type' => 'http', 'url' => 'https://analytics.ftfenaux.com/'],
+            'href' => '#analytics',
+            'launchLabel' => 'Voir les statistiques',
+            'statusCheck' => ['type' => 'file', 'path' => '/var/lib/xavier-master/analytics.json'],
             'summary' => 'Suivi d audience Umami pour verifier les visites et l impact des pages.',
             'result' => 'Une lecture rapide des pages vues, sources et tendances apres publication.',
             'tutorial' => [

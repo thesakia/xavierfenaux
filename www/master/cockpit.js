@@ -4,6 +4,7 @@ const main = document.getElementById("main");
 const labels = {
   home: "Vue d’ensemble",
   social: "Mes statistiques",
+  analytics: "Analytics",
   content: "Créer du contenu",
   markets: "Ma veille",
   tools: "Tous mes outils",
@@ -17,6 +18,8 @@ const state = {
   metric: "followers",
   social: null,
   socialError: "",
+  analytics: null,
+  analyticsError: "",
   statusError: "",
   services: boot.services,
   query: "",
@@ -62,7 +65,7 @@ const period = () => ({
 });
 const icons = () => window.lucide?.createIcons();
 const external = (url, label, cls = "secondary") =>
-  `<a class="${cls}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${label}${icon("arrow-up-right")}</a>`;
+  `<a class="${cls}" href="${esc(url)}"${url.startsWith("#") ? "" : ' target="_blank" rel="noopener noreferrer"'}>${label}${icon(url.startsWith("#") ? "arrow-right" : "arrow-up-right")}</a>`;
 const accountList = () =>
   (state.social?.accounts || []).filter(
     (a) =>
@@ -163,7 +166,7 @@ function home() {
     ) +
     `<div class="section-title"><div><h2>Ta communauté, en un regard</h2><p>Les ${state.days} derniers jours · d’après les données disponibles</p></div><a class="text-button" href="#social">Toutes mes stats ${icon("arrow-right")}</a></div>` +
     kpis() +
-    `<div class="split">${chartSection()}${channels()}</div><div class="section-title"><div><h2>Une idée, une action</h2><p>Choisis ce que tu veux faire.</p></div></div><section class="actions-grid">${[
+    `<div class="split">${chartSection()}${channels()}</div>${siteSummary()}<div class="section-title"><div><h2>Une idée, une action</h2><p>Choisis ce que tu veux faire.</p></div></div><section class="actions-grid">${[
       [
         "social",
         "chart-no-axes-combined",
@@ -192,6 +195,41 @@ function home() {
       )
       .join("")}</section>`
   );
+}
+function siteReportNotice() {
+  const data = state.analytics;
+  if (!data) return `<p class="${state.analyticsError ? "error-banner" : "table-hint"}" role="status">${esc(state.analyticsError || "Lecture des statistiques du site…")}${state.analyticsError ? ' <button data-retry>Réessayer</button>' : ""}</p>`;
+  const stale = Date.now() - Date.parse(data.generatedAt) > 15 * 60 * 1000;
+  const stamp = new Date(data.generatedAt).toLocaleString("fr-FR", { timeZone: "Europe/Paris", dateStyle: "short", timeStyle: "short" });
+  return `<p class="table-hint">Umami · relevé du ${esc(stamp)} (Paris) · toutes les 5 minutes</p>${state.analyticsError || stale ? `<p class="error-banner" role="status">${esc(state.analyticsError || "Le relevé a plus de 15 minutes. Les chiffres ci-dessous n’ont pas encore été actualisés.")} <button data-retry>Réessayer</button></p>` : ""}`;
+}
+function siteSummary() {
+  const s = state.analytics?.summary;
+  return `<section class="site-summary" aria-label="Audience de xavierfenaux.com"><div class="section-title"><div><h2>Ton site, en un regard</h2><p>xavierfenaux.com</p></div><a href="#analytics" class="text-button">Analytics ${icon("arrow-right")}</a></div><dl class="site-summary-numbers">${[["visitors_24h", "Visiteurs · 24 h"], ["visitors_7d", "Visiteurs · 7 j."], ["pageviews_7d", "Pages vues · 7 j."]].map(([key, label]) => `<div><dt>${label}</dt><dd>${fmt(s?.[key])}</dd></div>`).join("")}</dl>${siteReportNotice()}</section>`;
+}
+function analyticsPage() {
+  const data = state.analytics;
+  const intro = heading("Analytics", "L’audience de xavierfenaux.com", `<button class="icon-button" data-retry title="Actualiser les statistiques du site" aria-label="Actualiser les statistiques du site">${icon("refresh-cw")}</button>`) + siteReportNotice();
+  if (!data) return intro;
+  const table = (rows, key, value, label) => `<div class="site-table"><table><thead><tr><th>${label}</th><th>Pages vues · 7 j.</th></tr></thead><tbody>${rows.length ? rows.map(row => `<tr><td>${esc(row[key] === "(direct)" ? "Accès direct" : row[key])}</td><td>${fmt(row[value])}</td></tr>`).join("") : '<tr><td colspan="2">Aucune visite enregistrée sur cette période.</td></tr>'}</tbody></table></div>`;
+  return intro + `<section class="kpis" aria-label="Statistiques du site">${[
+    ["visitors_24h", "Visiteurs · 24 heures", "users-round"],
+    ["visitors_7d", "Visiteurs · 7 jours", "users-round"],
+    ["pageviews_7d", "Pages vues · 7 jours", "files"],
+    ["clicks_7d", "Clics suivis · 7 jours", "mouse-pointer-2"],
+  ].map(([key, label, i]) => `<article class="kpi"><div class="kpi-title">${label}${icon(i)}</div><strong class="kpi-value">${fmt(data.summary[key])}</strong><small>xavierfenaux.com</small></article>`).join("")}</section>
+  <section class="surface"><div class="section-title"><div><h2>Les pages vues au fil des jours</h2><p>Les 14 derniers jours · journées UTC</p></div></div><div class="chart-wrap"><canvas id="site-chart" role="img" aria-label="Pages vues par jour. Les valeurs sont disponibles dans le tableau jour par jour."></canvas></div></section>
+  <div class="split site-details"><section><div class="section-title"><h2>Les pages les plus lues</h2></div>${table(data.pages, "path", "views", "Page")}</section><section><div class="section-title"><h2>D’où viennent les visiteurs ?</h2></div>${table(data.sources, "referrer", "visits", "Source")}</section></div>
+  <details class="site-daily"><summary>Les chiffres jour par jour</summary><div class="site-table"><table><thead><tr><th>Date UTC</th><th>Pages vues</th><th>Clics suivis</th></tr></thead><tbody>${data.days.map(day => `<tr><td>${esc(shortDate(day))}</td><td>${fmt(data.daily[day]?.pageviews)}</td><td>${fmt(data.daily[day]?.clicks)}</td></tr>`).join("")}</tbody></table></div></details><p class="table-hint">Visiteurs estimés à partir des sessions Umami. Une personne peut utiliser plusieurs appareils. Les clics comptent uniquement les événements suivis.</p>`;
+}
+function drawSiteChart() {
+  const canvas = document.getElementById("site-chart"), data = state.analytics;
+  if (!canvas || !data || !window.Chart) return;
+  state.chart = new Chart(canvas, {
+    type: "bar",
+    data: { labels: data.days.map(shortDate), datasets: [{ label: "Pages vues", data: data.days.map(day => data.daily[day]?.pageviews ?? null), backgroundColor: "#21785b", borderRadius: 3, maxBarThickness: 32 }] },
+    options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { grid: { display: false }, ticks: { maxTicksLimit: 7 } } } },
+  });
 }
 function filters() {
   return `<div class="filter-bar"><div class="segmented" aria-label="Période">${[7, 30, 90].map((d) => `<button data-days="${d}" aria-pressed="${state.days === d}">${d} jours</button>`).join("")}</div><select id="owner-filter" aria-label="Compte"><option value="all">Xavier + IVT</option value="Xavier" ${state.owner === "Xavier" ? "selected" : ""}>Xavier</option><option value="IVT" ${state.owner === "IVT" ? "selected" : ""}>Interactiv Trading</option></select><select id="network-filter" aria-label="Réseau"><option value="all">Tous les réseaux</option>${(
@@ -430,6 +468,7 @@ function render() {
     {
       home,
       social: socialPage,
+      analytics: analyticsPage,
       content: contentPage,
       markets: marketsPage,
       tools: toolsPage,
@@ -437,6 +476,7 @@ function render() {
     }[state.view]();
   icons();
   drawChart();
+  drawSiteChart();
 }
 function drawChart() {
   const canvas = document.getElementById("social-chart");
@@ -538,6 +578,7 @@ async function refresh(schedule = false) {
         : {},
     ),
     request("/master/status.php"),
+    request("/master/analytics-data.php"),
   ]);
   if (result[0].status === "fulfilled") {
     state.social = result[0].value;
@@ -552,9 +593,13 @@ async function refresh(schedule = false) {
   } else
     state.statusError = "La disponibilité des outils n’a pas pu être vérifiée.";
   state.loading = false;
+  if (result[2].status === "fulfilled") {
+    state.analytics = result[2].value;
+    state.analyticsError = "";
+  } else state.analyticsError = result[2].reason.message;
   button.disabled = false;
   button.classList.remove("spinning");
-  document.getElementById("sync-label").textContent = state.socialError
+  document.getElementById("sync-label").textContent = state.socialError || state.analyticsError || state.statusError
     ? "Actualisation incomplète"
     : "Cockpit actualisé à " +
       new Date().toLocaleTimeString("fr-FR", {
@@ -846,6 +891,7 @@ document.querySelectorAll("dialog").forEach((d) =>
   }),
 );
 function route() {
+  document.querySelectorAll("dialog[open]").forEach((dialog) => dialog.close());
   const next = location.hash.slice(1) || "home";
   state.view = labels[next] ? next : "home";
   render();
