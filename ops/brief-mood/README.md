@@ -11,10 +11,10 @@ the public certificate to VPS1 before then, with coordinated Nginx reloads.
 
 ## Daily Workflow
 
-- Research starts at 03:15 Europe/Paris, every day including weekends.
+- Research starts at 03:00 Europe/Paris, every day including weekends.
 - The server sends at 04:00 Europe/Paris to `xfenaux@gmail.com` and
   `fenauxft@gmail.com`, separately. DST follows the IANA timezone.
-- The 43-minute preparation timeout leaves a margin before delivery. Failed or
+- The 58-minute preparation timeout leaves a margin before delivery. Failed or
   incomplete research produces an explicit failure email, never yesterday's text.
 - These are production systemd timers, independent of the desktop app being open.
   A separate Codex thread heartbeat checks the outcome at 04:10 and is quiet on
