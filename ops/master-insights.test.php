@@ -17,7 +17,7 @@ try {
     expect($ig['views']===0 && $ig['reactions']===12 && !isset($ig['shares']),'zero preserved, unavailable omitted');
     expect(insights_instagram_row(['data'=>[['name'=>'views','values'=>[['value'=>100]]]]],$yesterday)===null,'no guessed total from unknown response');
     $calls=0;
-    $collected = insights_collect('instagram-xavier',['access_token'=>'secret-test','user_id'=>'42'],static function($url) use (&$calls): array {
+    $collected = insights_collect('instagram-ivt',['access_token'=>'secret-test','user_id'=>'42'],static function($url) use (&$calls): array {
         if (str_contains($url,'/media?')) return ['data'=>[]];
         parse_str(parse_url($url,PHP_URL_QUERY),$query);
         expect((int)$query['until']-(int)$query['since']===86400,'Instagram exact UTC day');

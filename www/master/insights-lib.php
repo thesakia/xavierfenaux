@@ -8,7 +8,7 @@ function insights_count(mixed $value): ?int
 
 function insights_post(string $account, array $input): array
 {
-    $hosts = ['tiktok-ivt'=>['www.tiktok.com','tiktok.com'], 'instagram-xavier'=>['www.instagram.com','instagram.com'],
+    $hosts = ['tiktok-ivt'=>['www.tiktok.com','tiktok.com'], 'instagram-ivt'=>['www.instagram.com','instagram.com'],
         'youtube-ivt'=>['www.youtube.com','youtube.com','youtu.be'], 'twitch-xavier'=>['www.twitch.tv','twitch.tv']];
     $parts = parse_url((string)($input['url'] ?? ''));
     if (!$parts || ($parts['scheme'] ?? '') !== 'https' || !in_array($parts['host'] ?? '', $hosts[$account] ?? [], true) || isset($parts['user']) || isset($parts['port'])) throw new RuntimeException('Lien de publication invalide.');
@@ -43,7 +43,7 @@ function insights_youtube_rows(array $report): array
 
 function insights_instagram_row(array $report, string $day): ?array
 {
-    $input = ['account'=>'instagram-xavier', 'date'=>$day];
+    $input = ['account'=>'instagram-ivt', 'date'=>$day];
     $map = ['views'=>'views','likes'=>'reactions','comments'=>'comments','shares'=>'shares','saves'=>'saves'];
     foreach ($report['data'] ?? [] as $metric) {
         $key = $map[$metric['name'] ?? ''] ?? null;
@@ -66,7 +66,7 @@ function insights_collect(string $account, array $token, ?callable $request = nu
         } catch (Throwable $e) { $result['warnings'][] = 'Les statistiques quotidiennes YouTube ne sont pas accessibles. Verifie les droits Analytics.'; }
         return $result;
     }
-    if ($account === 'instagram-xavier') {
+    if ($account === 'instagram-ivt') {
         // Fetch each UTC interval separately: total_value over seven days is NOT seven daily values.
         $utc = new DateTimeImmutable('today', new DateTimeZone('UTC'));
         for ($i=1; $i<=7; $i++) {

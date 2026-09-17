@@ -89,7 +89,7 @@ if ($loggedIn) {
   <div id="toast" class="toast" role="status" hidden></div>
   <script id="boot" type="application/json"><?= json_encode(['services'=>$services, 'csrf'=>$csrf, 'flash'=>$flash, 'social'=>$socialBoot], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?></script>
   <script defer src="/master/metrics.js?v=4"></script>
-  <script defer src="/master/cockpit.js?v=12"></script>
+  <script defer src="/master/cockpit.js?v=13"></script>
 <?php endif; ?>
 </body>
 </html>

@@ -5,7 +5,7 @@ function connection_providers(): array
 {
     return [
         'x-xavier'=>['key'=>'x', 'authorize'=>'https://x.com/i/oauth2/authorize', 'token'=>'https://api.x.com/2/oauth2/token', 'scope'=>'tweet.read users.read offline.access', 'pkce'=>true],
-        'instagram-xavier'=>['key'=>'instagram', 'authorize'=>'https://www.instagram.com/oauth/authorize', 'token'=>'https://api.instagram.com/oauth/access_token', 'scope'=>'instagram_business_basic,instagram_business_manage_insights'],
+        'instagram-ivt'=>['key'=>'instagram', 'authorize'=>'https://www.instagram.com/oauth/authorize', 'token'=>'https://api.instagram.com/oauth/access_token', 'scope'=>'instagram_business_basic,instagram_business_manage_insights'],
         'tiktok-ivt'=>['key'=>'tiktok', 'authorize'=>'https://www.tiktok.com/v2/auth/authorize/', 'token'=>'https://open.tiktokapis.com/v2/oauth/token/', 'scope'=>'user.info.basic,user.info.profile,user.info.stats,video.list'],
         'youtube-ivt'=>['key'=>'youtube', 'authorize'=>'https://accounts.google.com/o/oauth2/v2/auth', 'token'=>'https://oauth2.googleapis.com/token', 'scope'=>'https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/yt-analytics.readonly', 'pkce'=>true],
         'twitch-xavier'=>['key'=>'twitch', 'authorize'=>'https://id.twitch.tv/oauth2/authorize', 'token'=>'https://id.twitch.tv/oauth2/token', 'scope'=>'moderator:read:followers'],
@@ -17,7 +17,7 @@ function connection_capabilities(string $account): array
 {
     return [
         'x-xavier'=>['metrics'=>'Abonnés, impressions, interactions dans X Analytics', 'limitation'=>'La session X du navigateur ne donne pas accès à ses statistiques depuis le serveur. API X payante non activée.', 'automatic'=>false],
-        'instagram-xavier'=>['metrics'=>'Abonnés, publications, vues, j’aime, commentaires, partages, enregistrements', 'limitation'=>'Compte professionnel et autorisation Insights requis. Détail quotidien récupéré sur les 7 derniers jours, puis conservé.', 'automatic'=>true],
+        'instagram-ivt'=>['metrics'=>'Abonnés, publications, vues, j’aime, commentaires, partages, enregistrements', 'limitation'=>'Compte professionnel et autorisation Insights requis. Détail quotidien récupéré sur les 7 derniers jours, puis conservé.', 'automatic'=>true],
         'tiktok-ivt'=>['metrics'=>'Abonnés, nombre de vidéos, j’aime du compte ; vues, j’aime, commentaires et partages par vidéo', 'limitation'=>'Les compteurs des vidéos sont cumulés depuis leur publication, pas des résultats quotidiens. Jusqu’à 100 vidéos récentes.', 'automatic'=>true],
         'youtube-ivt'=>['metrics'=>'Abonnés, vues, j’aime, commentaires, partages, abonnés gagnés et perdus, temps de visionnage', 'limitation'=>'Connexion Google avec Analytics pour les 90 derniers jours. Une clé publique ne donne que les compteurs du profil.', 'automatic'=>true],
         'twitch-xavier'=>['metrics'=>'Followers, spectateurs du direct et vues des replays', 'limitation'=>'Le nombre de spectateurs est un instantané du direct. Les statistiques privées détaillées restent dans Twitch.', 'automatic'=>true],
@@ -36,7 +36,7 @@ function connection_setup(string $account): array
 {
     $common = ['callback'=>'https://xavierfenaux.com/master/connect.php'];
     $options = [
-        'instagram-xavier'=>['mode'=>'oauth', 'portal'=>'https://developers.facebook.com/apps/', 'note'=>'Compte Instagram professionnel (créateur ou entreprise). Application Meta avec Instagram Login et accès au profil et aux statistiques. Le propriétaire doit autoriser le compte ou être ajouté comme testeur.'],
+        'instagram-ivt'=>['mode'=>'oauth', 'portal'=>'https://developers.facebook.com/apps/', 'note'=>'Compte Instagram professionnel (créateur ou entreprise). Application Meta avec Instagram Login et accès au profil et aux statistiques. Le propriétaire doit autoriser le compte ou être ajouté comme testeur.'],
         'tiktok-ivt'=>['mode'=>'oauth', 'portal'=>'https://developers.tiktok.com/apps/', 'note'=>'Application TikTok avec Login Kit et Display API. Les permissions de profil, statistiques et vidéos doivent être approuvées, ou le compte ajouté au sandbox pour les tests.'],
         'youtube-ivt'=>['mode'=>'oauth', 'portal'=>'https://console.cloud.google.com/apis/credentials', 'note'=>'Client OAuth Google de type application Web, avec YouTube Data API et YouTube Analytics API activées. Une clé API seule suffit pour les compteurs publics, dans le quota gratuit.'],
         'twitch-xavier'=>['mode'=>'oauth', 'portal'=>'https://dev.twitch.tv/console/apps', 'note'=>'Application Twitch confidentielle avec cette URL de retour. Le propriétaire doit avoir activé la double authentification.'],
@@ -129,7 +129,7 @@ function connection_access(string $account, array $token): array
 {
     if ($account === 'youtube-ivt' && ($token['mode'] ?? '') === 'api') return $token;
     if (($token['expires_at'] ?? 0) > time() + 300) return $token;
-    if ($account === 'instagram-xavier' && ($token['expires_at'] ?? 0) > time()) {
+    if ($account === 'instagram-ivt' && ($token['expires_at'] ?? 0) > time()) {
         $fresh = connection_http('https://graph.instagram.com/refresh_access_token?' . http_build_query(['grant_type'=>'ig_refresh_token', 'access_token'=>$token['access_token']]));
     } elseif (!empty($token['refresh_token'])) {
         $fresh = connection_exchange($account, ['grant_type'=>'refresh_token', 'refresh_token'=>$token['refresh_token']]);
@@ -156,9 +156,9 @@ function connection_profile(string $account, array $token): array
             $record['followers'] = $user['public_metrics']['followers_count'] ?? null;
             $record['totalPosts'] = $user['public_metrics']['tweet_count'] ?? null;
             break;
-        case 'instagram-xavier':
+        case 'instagram-ivt':
             $user = connection_http('https://graph.instagram.com/me?fields=user_id,username,followers_count,media_count', $bearer);
-            if (strtolower($user['username'] ?? '') !== 'xfenaux') throw new RuntimeException('Connecte le compte Instagram @xfenaux.');
+            if (strtolower($user['username'] ?? '') !== 'interactiv_trading') throw new RuntimeException('Connecte le compte Instagram @interactiv_trading.');
             $identity = ['id'=>$user['user_id'] ?? $user['id'], 'label'=>'@' . $user['username']];
             $record['followers'] = $user['followers_count'] ?? null; $record['totalPosts'] = $user['media_count'] ?? null;
             break;

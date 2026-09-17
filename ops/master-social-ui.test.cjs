@@ -18,8 +18,8 @@ const offset = n => { const d = new Date(day + "T12:00:00Z"); d.setUTCDate(d.get
     assert.equal(await page.locator('#main #provider-id').count(), 0);
     assert.equal(await page.locator('.social-kpi').count(), 6);
     await page.screenshot({path:path.join(root,".deploy/social-workspace-empty-desktop.png"),fullPage:true});
-    await page.locator('.network-tabs a[href="#social/instagram-xavier"]').click();
-    await page.waitForURL('**/#social/instagram-xavier');
+    await page.locator('.network-tabs a[href="#social/instagram-ivt"]').click();
+    await page.waitForURL('**/#social/instagram-ivt');
     await page.waitForFunction(() => document.querySelector('.social-identity h2')?.textContent === 'Instagram');
     await page.locator('[data-days="7"]').click();
     assert.equal(await page.locator('[data-days="7"]').getAttribute('aria-pressed'), 'true');
@@ -27,15 +27,15 @@ const offset = n => { const d = new Date(day + "T12:00:00Z"); d.setUTCDate(d.get
     await page.waitForFunction(() => document.querySelector('.social-identity h2')?.textContent === 'Instagram');
     await page.locator('.network-tabs a[href="#social"]').click();
     await page.locator('#owner-filter').selectOption('IVT');
-    assert.equal(await page.locator('.network-summary').count(), 2);
-    await page.locator('.network-tabs a[href="#social/instagram-xavier"]').click();
+    assert.equal(await page.locator('.network-summary').count(), 3);
+    await page.locator('.network-tabs a[href="#social/instagram-ivt"]').click();
     await page.locator('.social-period [data-connect]').click();
     assert.equal(await page.locator('#provider-secret').count(), 0);
     await page.locator('#data-dialog [data-close]').first().click();
     // Record the real account directory, but replace data only inside this test context.
     const live = await page.evaluate(async () => (await fetch('/master/social.php')).json());
     const records = live.accounts.flatMap((a, i) => Array.from({length:14}, (_, j) => ({account:a.id,date:offset(j-13),followers:1000*(i+1)+j,posts:1,reactions:5,views:20,comments:2,shares:1,source:'Browser test fixture'})));
-    const fixture = {...live, records, details:{'instagram-xavier':{postsComplete:false,postsUpdatedAt:new Date().toISOString(),posts:[{id:'test-1',account:'instagram-xavier',title:'Un sujet de marché <sans HTML>',url:'https://www.instagram.com/p/test/',publishedAt:day+'T09:00:00Z',updatedAt:new Date().toISOString(),basis:'lifetime',reactions:4321,comments:17}]},'tiktok-ivt':{postsComplete:false,postsUpdatedAt:new Date().toISOString(),posts:[{id:'test-2',account:'tiktok-ivt',title:'Test vidéo TikTok',url:'https://www.tiktok.com/@interactivtrading/video/123',publishedAt:day+'T08:00:00Z',updatedAt:new Date().toISOString(),basis:'lifetime',views:98765,reactions:6543,comments:22,shares:8}]}},connections:{...live.connections, 'instagram-xavier':{...live.connections['instagram-xavier'], active:true, configured:true, connectedAt:new Date().toISOString()}}};
+    const fixture = {...live, records, details:{'instagram-ivt':{postsComplete:false,postsUpdatedAt:new Date().toISOString(),posts:[{id:'test-1',account:'instagram-ivt',title:'Un sujet de marché <sans HTML>',url:'https://www.instagram.com/p/test/',publishedAt:day+'T09:00:00Z',updatedAt:new Date().toISOString(),basis:'lifetime',reactions:4321,comments:17}]},'tiktok-ivt':{postsComplete:false,postsUpdatedAt:new Date().toISOString(),posts:[{id:'test-2',account:'tiktok-ivt',title:'Test vidéo TikTok',url:'https://www.tiktok.com/@interactivtrading/video/123',publishedAt:day+'T08:00:00Z',updatedAt:new Date().toISOString(),basis:'lifetime',views:98765,reactions:6543,comments:22,shares:8}]}},connections:{...live.connections, 'instagram-ivt':{...live.connections['instagram-ivt'], active:true, configured:true, connectedAt:new Date().toISOString()}}};
     await page.route('**/master/social.php', route => route.fulfill({json:fixture}));
     await page.goto(origin + '/master/#social');
     await page.reload();
@@ -56,7 +56,7 @@ const offset = n => { const d = new Date(day + "T12:00:00Z"); d.setUTCDate(d.get
     await page.screenshot({path:path.join(root,'.deploy/social-workspace-fixture-desktop.png'),fullPage:true});
     for (const width of [390,768,1440]) {
       await page.setViewportSize({width,height:900});
-      for (const hash of ['#social','#social/instagram-xavier','#social/tiktok-ivt','#social/youtube-ivt','#social/spotify-xavier','#accounts']) {
+      for (const hash of ['#social','#social/instagram-ivt','#social/tiktok-ivt','#social/youtube-ivt','#social/spotify-xavier','#accounts']) {
         await page.goto(origin+'/master/'+hash);
         await page.waitForFunction(() => document.querySelector('#main .account-card, #main .social-kpi'));
         const overflow = await page.evaluate(() => ({ width:innerWidth, scroll:document.documentElement.scrollWidth, elements:[...document.querySelectorAll('#main *')].filter(e => e.getBoundingClientRect().right > innerWidth + 1 && e.getBoundingClientRect().width > 0).slice(0,8).map(e => ({tag:e.tagName,cls:e.className,right:e.getBoundingClientRect().right})) }));
@@ -64,7 +64,7 @@ const offset = n => { const d = new Date(day + "T12:00:00Z"); d.setUTCDate(d.get
       }
     }
     await page.setViewportSize({width:390,height:844});
-    await page.goto(origin+'/master/#social/instagram-xavier');
+    await page.goto(origin+'/master/#social/instagram-ivt');
     await page.waitForFunction(() => document.querySelector('.social-identity h2')?.textContent === 'Instagram');
     assert.equal(await page.locator('.social-period [data-connect]').count(),0,'connect button disappears when active');
     assert.match(await page.locator('.social-period').innerText(), /Connecté/);

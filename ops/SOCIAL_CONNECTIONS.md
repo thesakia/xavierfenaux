@@ -37,7 +37,7 @@ bringing figures into the cockpit. Opening it never marks the cockpit connected.
 
 There is no Buffer/Publer relay or API dependency. Those products are UX references
 only. The social workspace at `/master/#social` includes an aggregate view and
-deep-linked network views (`#social/instagram-xavier`, etc.), period filters,
+deep-linked network views (`#social/instagram-ivt`, etc.), period filters,
 per-metric coverage, audience distribution, daily history and CSV export.
 Percentage changes require identical accounts and complete comparable periods;
 podcast listens are excluded from the aggregate video-views KPI and chart.

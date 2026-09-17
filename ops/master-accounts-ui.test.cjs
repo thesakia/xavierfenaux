@@ -65,11 +65,11 @@ const origin = process.env.MASTER_TEST_ORIGIN || 'https://xavierfenaux.com';
       if (width === 390) await page.screenshot({ path: path.join(root, '.deploy/accounts-mobile.png'), fullPage: true });
     }
     // A successful social response renders even while analytics and health are pending.
-    fixture.connections['instagram-xavier'].active = true;
-    fixture.connections['instagram-xavier'].configured = true;
+    fixture.connections['instagram-ivt'].active = true;
+    fixture.connections['instagram-ivt'].configured = true;
     release();
-    await page.waitForFunction(() => !document.querySelector('.account-card [data-connect="instagram-xavier"]'));
-    assert.equal(await page.locator('[data-disconnect="instagram-xavier"]').count(), 1);
+    await page.waitForFunction(() => !document.querySelector('.account-card [data-connect="instagram-ivt"]'));
+    assert.equal(await page.locator('[data-disconnect="instagram-ivt"]').count(), 1);
     releaseServices();
     await page.waitForFunction(() => !document.getElementById('refresh').disabled);
     // Other configured networks submit real OAuth initiation forms, with CSRF.

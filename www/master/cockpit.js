@@ -1052,7 +1052,7 @@ function route() {
   document.querySelectorAll("dialog[open]").forEach((dialog) => dialog.close());
   const [next = "home", network = "all"] = (location.hash.slice(1) || "home").split("/");
   state.view = labels[next] ? next : "home";
-  const known = ["x-xavier", "instagram-xavier", "tiktok-ivt", "youtube-ivt", "twitch-xavier", "spotify-xavier"];
+  const known = ["x-xavier", "instagram-ivt", "tiktok-ivt", "youtube-ivt", "twitch-xavier", "spotify-xavier"];
   state.network = state.view === "social" && known.includes(network) ? network : "all";
   state.owner = "all";
   render();
