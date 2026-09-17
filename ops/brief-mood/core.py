@@ -219,7 +219,10 @@ def draft_issues(d, r):
     all_text=' '.join([body,*[s['heading'] for s in d['sections']],d['podcast_title'],d['podcast_description'],d['podcast_script']])
     for bad in ['*','_','—','---','plombé par','la faute à','[source','http://','https://']:
         if bad.casefold() in all_text.casefold():problems.append('Forme interdite : '+bad)
-    if re.search(r'[+−-]\s*\d+(?:[,.]\d+)?\s*%',all_text):problems.append('Variation chiffrée signée interdite.')
+    # A range separator is not a negative sign; the source audit still checks
+    # whether any numerical range describes a forbidden equity/index movement.
+    signed_text=re.sub(r'(\d+(?:[,.]\d+)?\s*%)\s*[-–]\s*(?=\d+(?:[,.]\d+)?\s*%)',r'\1 à ',all_text)
+    if re.search(r'[+−-]\s*\d+(?:[,.]\d+)?\s*%',signed_text):problems.append('Variation chiffrée signée interdite.')
     if not 10<=len(d['podcast_title'])<=120 or len(d['podcast_description'])<80:problems.append('Métadonnées podcast incomplètes.')
     return problems
 

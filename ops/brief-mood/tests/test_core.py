@@ -78,6 +78,19 @@ def test_draft_forbidden_variation():
     assert any('Variation' in x for x in core.draft_issues(d,research()))
 
 
+@pytest.mark.parametrize('value',['3,75 %-4,00 %','3.75% - 4.00%','3,75 %–4,00 %'])
+def test_rate_range_is_not_a_signed_market_move(value):
+    d=draft();d['intro']='La fourchette de taux est de '+value+'.'
+    d['podcast_script']=d['intro']
+    assert not any('Variation' in x for x in core.draft_issues(d,research()))
+
+
+@pytest.mark.parametrize('value',['-4 %','−4 %','+4 %','- 4,00 %'])
+def test_actual_signed_market_moves_still_blocked(value):
+    d=draft();d['intro']='Le titre affiche '+value+'.'
+    assert any('Variation' in x for x in core.draft_issues(d,research()))
+
+
 def test_generated_signature_is_not_duplicated():
     d=draft();d['closing']+='\n\nXavier';d['podcast_script']+='\n\nXavier'
     e={'draft':d,'polarities':''}
