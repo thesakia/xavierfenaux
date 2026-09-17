@@ -73,9 +73,9 @@ def test_plain_export_never_invents_polarities():
     assert core.text(e).count(e['polarities'])==1
 
 
-def test_draft_forbidden_variation():
+def test_draft_allows_numerical_variation_for_editorial_audit():
     d=draft();d['intro']='Action +12 % ce matin.'
-    assert any('Variation' in x for x in core.draft_issues(d,research()))
+    assert not any('Variation' in x for x in core.draft_issues(d,research()))
 
 
 @pytest.mark.parametrize('value',['3,75 %-4,00 %','3.75% - 4.00%','3,75 %–4,00 %'])
@@ -86,9 +86,9 @@ def test_rate_range_is_not_a_signed_market_move(value):
 
 
 @pytest.mark.parametrize('value',['-4 %','−4 %','+4 %','- 4,00 %'])
-def test_actual_signed_market_moves_still_blocked(value):
+def test_signed_market_moves_are_not_automatically_blocked(value):
     d=draft();d['intro']='Le titre affiche '+value+'.'
-    assert any('Variation' in x for x in core.draft_issues(d,research()))
+    assert not any('Variation' in x for x in core.draft_issues(d,research()))
 
 
 def test_generated_signature_is_not_duplicated():
@@ -129,6 +129,21 @@ def test_incomplete_audit_blocks_ready(monkeypatch):
     monkeypatch.setattr(core,'model',Mock(side_effect=[d,{'passed':True,'issues':[],'checked_ids':[], 'source_checks':[]}]))
     with pytest.raises(ValueError):core.write_and_audit(eid,r,attempt=1)
     assert core.get(eid)['state']!='ready'
+
+
+def test_failure_notice_does_not_block_recovered_brief(monkeypatch):
+    for key,value in {'SMTP_PASSWORD':'test-only','SMTP_HOST':'smtp.example.com','SMTP_USER':'test','MAIL_FROM':'test@example.com'}.items():monkeypatch.setenv(key,value)
+    from unittest.mock import MagicMock
+    smtp=Mock();smtp.send_message.return_value={}
+    connection=MagicMock();connection.__enter__.return_value=smtp
+    monkeypatch.setattr(core.smtplib,'SMTP_SSL',Mock(return_value=connection))
+    core.send_day()
+    eid=core.create();core.update(eid,state='ready',draft=draft())
+    core.send_day();core.send_day()
+    assert smtp.send_message.call_count==4
+    messages=[call.args[0] for call in smtp.send_message.call_args_list]
+    assert len({str(m['Message-ID']) for m in messages})==4
+    assert 'indisponible' not in str(messages[-1]['Subject'])
 
 
 def test_audit_correction_is_bounded(monkeypatch):

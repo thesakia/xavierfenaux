@@ -219,10 +219,6 @@ def draft_issues(d, r):
     all_text=' '.join([body,*[s['heading'] for s in d['sections']],d['podcast_title'],d['podcast_description'],d['podcast_script']])
     for bad in ['*','_','—','---','plombé par','la faute à','[source','http://','https://']:
         if bad.casefold() in all_text.casefold():problems.append('Forme interdite : '+bad)
-    # A range separator is not a negative sign; the source audit still checks
-    # whether any numerical range describes a forbidden equity/index movement.
-    signed_text=re.sub(r'(\d+(?:[,.]\d+)?\s*%)\s*[-–]\s*(?=\d+(?:[,.]\d+)?\s*%)',r'\1 à ',all_text)
-    if re.search(r'[+−-]\s*\d+(?:[,.]\d+)?\s*%',signed_text):problems.append('Variation chiffrée signée interdite.')
     if not 10<=len(d['podcast_title'])<=120 or len(d['podcast_description'])<80:problems.append('Métadonnées podcast incomplètes.')
     return problems
 
@@ -239,7 +235,7 @@ def write_and_audit(eid, research, attempt=0):
         errors=draft_issues(draft,research)
     if errors:raise ValueError('Contrôle éditorial : '+' '.join(errors))
     update(eid,draft=draft,stage='Contre-vérification des sources')
-    audit=model('Vérification indépendante et stricte. Ouvre les sources, contrôle chaque affirmation des DEUX livrables contre les preuves et dates, clôture versus hors-séance, résultats publiés versus attendus, absence de recyclage sans fait nouveau, absence de variation boursière chiffrée même non signée, attribution de l’histoire finale, français et interdits. passed=false si un fait est douteux, inaccessible sans corroboration, inventé ou non soutenu. checked_ids contient tous les ids réellement vérifiés. source_checks liste les URLs réellement lues et leur résultat, y compris le mot de la fin ET la source de clôture. La signature et les polarités sont ajoutées par le programme : vérifie les textes finaux fournis. issues contient seulement les défauts bloquants, pas les contrôles réussis. Ne valide pas par complaisance.',{**evidence,'draft':draft,'final_brief':text({'draft':draft,'polarities':e['polarities']}),'final_podcast':text({'draft':draft,'polarities':e['polarities']},True),'history':history()},AUDIT,'audit')
+    audit=model('Vérification indépendante et stricte. Ouvre les sources, contrôle chaque affirmation des DEUX livrables contre les preuves et dates, clôture versus hors-séance, résultats publiés versus attendus, absence de recyclage sans fait nouveau, pertinence et exactitude des variations chiffrées, attribution de l’histoire finale, français et interdits. Les variations chiffrées sont AUTORISÉES si utiles, sourcées et contextualisées ; ne bloque jamais un texte pour la seule présence de points, pourcentages ou signes. Evite seulement les listes décoratives de performances. passed=false si un fait est douteux, inaccessible sans corroboration, inventé ou non soutenu. checked_ids contient tous les ids réellement vérifiés. source_checks liste les URLs réellement lues et leur résultat, y compris le mot de la fin ET la source de clôture. La signature et les polarités sont ajoutées par le programme : vérifie les textes finaux fournis. issues contient seulement les défauts bloquants, pas les contrôles réussis. Ne valide pas par complaisance.',{**evidence,'draft':draft,'final_brief':text({'draft':draft,'polarities':e['polarities']}),'final_podcast':text({'draft':draft,'polarities':e['polarities']},True),'history':history()},AUDIT,'audit')
     expected={n['id'] for n in research['news']}
     urls={s['url'] for n in research['news'] for s in n['sources']}
     urls.add(research['closing']['source']['url'])
@@ -316,8 +312,8 @@ def send_day(day=None):
         if not os.environ.get('SMTP_PASSWORD'):raise RuntimeError('Envoi SMTP non configuré.')
         for recipient in RECIPIENTS:
             with connect() as c:
-                done=c.execute('SELECT state FROM deliveries WHERE day=? AND recipient=?',(day,recipient)).fetchone()
-            if done and done['state']=='accepted':continue
+                done=c.execute('SELECT state,detail FROM deliveries WHERE day=? AND recipient=?',(day,recipient)).fetchone()
+            if done and done['state']=='accepted' and not (done['detail']=='failure' and edition):continue
             if done and done['state'] in ('sending','uncertain'):
                 raise RuntimeError('Envoi incertain : vérifier le serveur mail avant toute relance.')
             url='https://xavierfenaux.com/brief-mood/'+('?edition='+payload['edition'] if payload['edition'] else '')
@@ -327,7 +323,7 @@ def send_day(day=None):
             message['From']='Brief Mood <'+sender+'>'
             message['To']=recipient
             message['Reply-To']=sender
-            message['Message-ID']='<brief-'+hashlib.sha256((day+'|'+recipient).encode()).hexdigest()+'@'+sender.split('@')[1]+'>'
+            message['Message-ID']='<brief-'+hashlib.sha256((day+'|'+recipient+'|'+payload['kind']).encode()).hexdigest()+'@'+sender.split('@')[1]+'>'
             intro='Le Brief Mood du jour est disponible.' if edition else 'La préparation du Brief Mood demande une vérification.'
             body=intro+'\n\nOuvrir dans le cockpit : '+url+'\n'
             if edition:body+='Préparation terminée le '+dt.datetime.fromisoformat(edition['updated']).astimezone(PARIS).strftime('%d/%m/%Y à %H:%M')+' (Paris).\n'

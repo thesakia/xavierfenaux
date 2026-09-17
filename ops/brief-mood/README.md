@@ -32,7 +32,8 @@ the public certificate to VPS1 before then, with coordinated Nginx reloads.
 research dossier separates published events from scheduled announcements, includes
 the previous actual US session and concrete company news, and records evidence
 and sources. The source audit also checks qualitative market reactions against
-the appropriate session. Numeric index/equity changes are excluded from the text.
+the appropriate session. Numeric index/equity changes are allowed sparingly when
+useful, sourced and contextualized; their presence alone never blocks an edition.
 
 Ready edition history and imported published examples are given to subsequent
 research/audit runs. Known examples from September 11 and 16 were imported at
@@ -54,7 +55,9 @@ Sender: `Brief Mood <fenauxft@gmail.com>`. No credentials belong in Git, logs,
 API responses, prompts or the browser. The model subprocess receives a minimal
 environment without SMTP credentials.
 
-SQLite journals sends per day/recipient. A confirmed recipient is not sent again.
+SQLite journals sends per day/recipient. A confirmed brief is not sent again.
+A confirmed failure notice does not prevent one subsequent recovered brief;
+the two message kinds have different deterministic Message-IDs.
 `sending` or `uncertain` is never retried automatically because SMTP may already
 have accepted the message. Definitive connection/authentication failures may be
 retried up to the systemd start limit. `accepted` means the authenticated SMTP
