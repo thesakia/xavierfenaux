@@ -44,8 +44,10 @@ def apple_url(url, *, api=False):
 
 
 def check_space(path, size, copies=3):
-    if size <= 0 or size > MAX_UPLOAD:
-        raise ValueError(f'Fichier vide ou trop volumineux (maximum {MAX_UPLOAD // 1024**2} Mo).')
+    if size <= 0:
+        raise ValueError('Le fichier reçu est vide. Réessaie une fois sa préparation terminée.')
+    if size > MAX_UPLOAD:
+        raise ValueError(f'La vidéo à importer fait {size / 1024**2:.0f} Mo (maximum {MAX_UPLOAD // 1024**2} Mo).')
     if shutil.disk_usage(path.parent).free < RESERVE + size * copies:
         raise ValueError('Pas assez de place pour importer la video et creer son master.')
 
@@ -175,6 +177,19 @@ def resolve_video(client, short_id):
                              'public.movie', 'public.video'):
             continue
         asset = field(record, 'resOriginalRes') or {}
+        rendition = False
+        if int(asset.get('size') or 0) > MAX_UPLOAD:
+            # Apple can expose a much larger original than its shared MP4.
+            # Prefer the compatible rendition, but never its low-res thumbnail.
+            for prefix in ('resVidMed', 'resVidHDRMed'):
+                candidate = field(record, prefix + 'Res') or {}
+                candidate_type = field(record, prefix + 'FileType', '')
+                width, height = field(record, prefix + 'Width', 0), field(record, prefix + 'Height', 0)
+                if (candidate.get('downloadURL') and 0 < int(candidate.get('size') or 0) <= MAX_UPLOAD
+                        and min(int(width or 0), int(height or 0)) >= 720
+                        and candidate_type in ('public.mpeg-4', 'com.apple.quicktime-movie', 'com.apple.m4v-video')):
+                    asset, file_type, rendition = candidate, candidate_type, True
+                    break
         if not asset.get('downloadURL'):
             raise ValueError('La video est encore en cours de preparation chez Apple. Reessaie dans quelques minutes.')
         name = 'video-icloud.mov' if file_type == 'com.apple.quicktime-movie' else 'video-icloud.mp4'
@@ -185,6 +200,8 @@ def resolve_video(client, short_id):
                 name = PurePosixPath(decoded.replace('\\', '/')).name[:200] or name
             except (ValueError, UnicodeError):
                 pass
+        if rendition:
+            name = str(PurePosixPath(name).with_suffix('.mov' if file_type == 'com.apple.quicktime-movie' else '.mp4'))
         url = asset['downloadURL'].replace('${f}', quote(name, safe=''))
         apple_url(url)
         candidates[record['recordName']] = (url, name, int(asset.get('size') or 0))

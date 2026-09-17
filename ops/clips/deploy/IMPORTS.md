@@ -11,14 +11,18 @@ are limited by `CLIPS_MAX_UPLOAD_MB`, and processing disk space is reserved.
 It atomically stores the public share ID and queues a server-side import, returning
 202 without holding the browser connection open. No Apple password, developer
 account, browser session or third-party downloader is required. Private shares,
-Drive links, expired links and multiple-video shares are rejected. Only an
-original video is downloaded; thumbnails or lower-resolution previews are never
-silently substituted.
+Drive links, expired links and multiple-video shares are rejected. Prefer the
+original video when it fits the upload limit. If it is oversized, select Apple's
+shared MP4 rendition, or its HDR medium rendition, within the same size limit
+and with at least 720 pixels on the shorter side. Small previews are never used.
+The shared rendition can be smaller and lower-resolution than the original;
+the stored filename uses its actual container extension.
 
 The resolver follows the anonymous CloudKit flow used by Apple's Photos web app:
 `records/resolve` returns `anonymousPublicAccess`, the zone and database scope;
 `records/query` reads that shared zone using `sharing_url_key` and the public
-access token, then downloads the `CPLMaster.resOriginalRes` asset. Only Apple
+access token, then downloads the selected `CPLMaster.resOriginalRes`,
+`resVidMedRes` or `resVidHDRMedRes` asset. Only Apple
 CloudKit API hosts and icloud-content.com media hosts are allowed, with HTTPS,
 public DNS address checks and redirect/size/time limits. This is Apple's web
 protocol, not a guaranteed supported third-party API; Apple changes may require

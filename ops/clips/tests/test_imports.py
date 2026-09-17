@@ -174,6 +174,38 @@ def test_complete_icloud_import(studio, monkeypatch):
     assert db.meta('import-progress:' + eid) is None
 
 
+def rendition_records(original_size=20, rendition_size=5, width=720):
+    data=records();fields=data['records'][0]['fields']
+    fields['resOriginalRes']['value']['size']=original_size
+    fields.update({
+        'resVidMedRes':{'value':{'downloadURL':ASSET.replace('/test/','/medium/'),'size':rendition_size}},
+        'resVidMedFileType':{'value':'public.mpeg-4'},
+        'resVidMedWidth':{'value':width},'resVidMedHeight':{'value':1280},
+    })
+    return data
+
+
+def test_icloud_large_original_uses_shared_mp4(studio,monkeypatch):
+    monkeypatch.setattr(imports,'MAX_UPLOAD',10)
+    client,eid,tmp=studio
+    apple=mock_client(monkeypatch,media_records=rendition_records())
+    monkeypatch.setattr(imports.httpx,'Client',lambda **kw:apple)
+    assert client.post(f'/api/episodes/{eid}/icloud',json={'url':SHARE}).status_code==202
+    worker.process(db.episode(eid))
+    assert db.episode(eid)['state']=='sync_queued'
+    assert db.episode(eid)['video_name']=='IMG_42.mp4'
+    assert db.episode(eid)['video_bytes']==5
+
+
+@pytest.mark.parametrize('original_size,rendition_size,width,expected',[(5,4,720,5),(20,11,720,20),(20,5,360,20)])
+def test_icloud_preserves_original_or_rejects_unsuitable_rendition(monkeypatch,original_size,rendition_size,width,expected):
+    monkeypatch.setattr(imports,'MAX_UPLOAD',10)
+    with mock_client(monkeypatch,media_records=rendition_records(original_size,rendition_size,width)) as client:
+        _,name,size=imports.resolve_video(client,SHARE_ID)
+    assert size==expected
+    assert name=='IMG_42.MOV'
+
+
 @pytest.mark.parametrize('bad', [{'results': [{'serverErrorCode': 'NOT_FOUND'}]}, {'results': [{'zoneID': {}, 'rootRecord': {}}]}])
 def test_expired_private_shares(monkeypatch, bad):
     with mock_client(monkeypatch, resolve=bad) as client, pytest.raises(ValueError):
