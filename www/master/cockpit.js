@@ -331,12 +331,28 @@ function socialExtraMetrics(a) {
   const stream = live ? `<div><dt>Direct Twitch</dt><dd>${live.online ? fmt(live.viewers)+" spectateurs" : "Hors ligne"}</dd><small>${esc(new Date(live.checkedAt).toLocaleString("fr-FR"))}</small></div>` : "";
   return values || stream ? `<dl class="social-extra-metrics">${values}${stream}</dl>` : "";
 }
+function publicationTitle(post, network) {
+  const raw = String(post.title || "").trim();
+  if (!["TikTok", "Instagram", "X"].includes(network)) return raw || "Publication sans titre";
+  // Caption-only networks have no separate editorial title: keep the opening sentence.
+  const opening = raw.replace(/[\u200B\uFEFF]/g, "")
+    .replace(/https?:\/\/\S+/gu, "")
+    .replace(/(^|\s)#[\p{L}\p{N}_]+/gu, "$1")
+    .split(/\r?\n/).map(line => line.trim()).find(Boolean) || "";
+  const sentence = [...new Intl.Segmenter("fr", { granularity: "sentence" }).segment(opening)][0]?.segment.trim() || "";
+  if (!sentence) return "Publication sans titre";
+  const chars = Array.from(sentence);
+  if (chars.length <= 120) return sentence;
+  const short = chars.slice(0, 117).join("");
+  const space = short.lastIndexOf(" ");
+  return (space > 80 ? short.slice(0, space) : short).trimEnd() + "…";
+}
 function socialPosts() {
   const accounts = accountList(), p = period();
   const rows = accounts.flatMap(a => (state.social?.details?.[a.id]?.posts || []).filter(post => {
     const date = post.publishedAt.slice(0,10);
     return date >= p.start && date <= p.end;
-  }).map(post => ({...post, network:a.network, color:a.color})));
+  }).map(post => ({...post, title:publicationTitle(post, a.network), network:a.network, color:a.color})));
   rows.sort((a,b)=>b.publishedAt.localeCompare(a.publishedAt));
   const available = accounts.filter(a => state.social?.details?.[a.id]?.postsUpdatedAt);
   return `<section class="social-posts"><div class="section-title"><div><h2>Résultats des publications</h2><p>Publiées du ${shortDate(p.start)} au ${shortDate(p.end)} · compteurs cumulés depuis leur publication</p></div><span class="chip">${rows.length} publications</span></div>${rows.length ? `<div class="table-scroll"><table><thead><tr><th>Publication</th><th>Réseau</th><th>Vues</th><th>J’aime</th><th>Commentaires</th><th>Partages</th></tr></thead><tbody>${rows.slice(0,150).map(post=>`<tr><td><a href="${esc(post.url)}" target="_blank" rel="noopener noreferrer">${esc(post.title || "Publication sans titre")}${icon("arrow-up-right")}</a><small>${shortDate(post.publishedAt.slice(0,10))} · relevé ${esc(new Date(post.updatedAt).toLocaleString("fr-FR"))}</small></td><td>${esc(post.network)}</td>${["views","reactions","comments","shares"].map(k=>`<td>${fmt(post[k])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>` : `<p class="table-hint">${available.length ? "Aucune publication disponible sur cette période." : "Les résultats apparaîtront après connexion et première lecture des publications."}</p>`}${available.map(a=>`<p class="table-hint">${esc(a.network)} · ${state.social.details[a.id].postsComplete ? "Toutes les publications renvoyées par le réseau" : "Publications récentes uniquement"} · dernière lecture ${esc(new Date(state.social.details[a.id].postsUpdatedAt).toLocaleString("fr-FR"))}</p>`).join("")}<p class="table-hint">Ces compteurs ne sont pas ajoutés aux résultats quotidiens : une vue reçue aujourd’hui peut concerner une ancienne vidéo.</p></section>`;
