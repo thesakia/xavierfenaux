@@ -200,7 +200,8 @@ def text(e, podcast=False):
     polarities = '\n\n🧭 Polarités\n'+e['polarities'].strip() if e['polarities'].strip() else ''
     def unsigned(value):return re.sub(r'(?:\n\s*[Xx]avier\s*)+$','',value).rstrip()
     if podcast:return unsigned(d['podcast_script'])+polarities+'\n\nXavier'
-    return '\n\n'.join([d['intro'],*[s['heading']+'\n'+s['body'] for s in d['sections']]])+polarities+'\n\n💡 Le mot de la fin\n'+unsigned(d['closing'])+'\n\nXavier'
+    closing=re.sub(r'^\s*(?:[^\w\s]+\s*)?(?:Le\s+)?mot de la fin\s*:?\s*\n+', '', unsigned(d['closing']), flags=re.IGNORECASE)
+    return '\n\n'.join([d['intro'],*[s['heading']+'\n'+s['body'] for s in d['sections']]])+polarities+'\n\n💡 Le mot de la fin\n'+closing+'\n\nXavier'
 
 
 def draft_issues(d, r):

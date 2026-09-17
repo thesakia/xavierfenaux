@@ -98,6 +98,14 @@ def test_generated_signature_is_not_duplicated():
     assert core.text(e,True).count('Xavier')==1
 
 
+@pytest.mark.parametrize('heading',['📝 Mot de la fin','💡 Le mot de la fin','Mot de la fin :'])
+def test_generated_closing_heading_is_not_duplicated(heading):
+    d=draft();d['closing']=heading+'\n\n'+d['closing']
+    result=core.text({'draft':d,'polarities':''})
+    assert result.casefold().count('mot de la fin')==1
+    assert 'Une discipline constante' in result
+
+
 def test_revisions_do_not_treat_today_as_recycled_news():
     today=core.now().date()
     with core.connect() as c:
