@@ -55,6 +55,7 @@ if ($loggedIn) {
       <label for="password">Mot de passe</label><input id="password" name="password" type="password" autocomplete="current-password" required>
       <button class="primary" type="submit">Entrer dans mon cockpit <span aria-hidden="true">&rarr;</span></button>
       <small>Xavier Fenaux &amp; Interactiv Trading</small>
+      <small><a href="/master/legal.php?page=terms">Conditions d'utilisation</a> &middot; <a href="/master/legal.php">Confidentialit&eacute;</a></small>
     </form>
   </main>
 <?php else: ?>
@@ -80,7 +81,7 @@ if ($loggedIn) {
     <div class="main-shell">
       <header class="topbar"><span id="breadcrumb">Mon espace <b>/</b> Vue d’ensemble</span><div><span id="today"></span><button id="refresh" class="icon-button" title="Actualiser les données" aria-label="Actualiser les données"><i data-lucide="refresh-cw"></i></button><a class="mobile-logout icon-button" href="/master/?logout=1" title="Se déconnecter" aria-label="Se déconnecter"><i data-lucide="log-out"></i></a></div></header>
       <main id="main" tabindex="-1"></main>
-      <footer><span>Xavier Fenaux <b>×</b> Interactiv Trading</span><span id="sync-label" role="status">Lecture des données…</span></footer>
+      <footer><span>Xavier Fenaux <b>×</b> Interactiv Trading &middot; <a href="/master/legal.php?page=terms">Conditions</a> &middot; <a href="/master/legal.php">Confidentialit&eacute;</a></span><span id="sync-label" role="status">Lecture des données…</span></footer>
     </div>
   </div>
   <dialog id="guide-dialog" aria-labelledby="guide-title"><button class="dialog-close icon-button" data-close title="Fermer" aria-label="Fermer"><i data-lucide="x"></i></button><div id="guide-body"></div></dialog>
