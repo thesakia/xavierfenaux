@@ -66,7 +66,7 @@ function delivery() {
             `<p class="${esc(d.state)}"><b>${esc(d.recipient)}</b>${d.state === "accepted" ? (d.detail === "failure" ? "Alerte confiée au serveur mail" : "Brief confié au serveur mail") : "Envoi non confirmé"}</p>`,
         )
         .join("")
-    : "<p>Prochain envoi à 04:00<br>Heure de Paris</p>";
+    : "<p>Préparation à 03:00 Paris<br>Envoi dès validation</p>";
 }
 function renderHistory() {
   $("#history").innerHTML =

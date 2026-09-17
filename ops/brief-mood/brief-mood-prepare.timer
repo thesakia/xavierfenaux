@@ -1,5 +1,5 @@
 [Unit]
-Description=Research Brief Mood before the 04:00 Paris delivery
+Description=Research Brief Mood at 03:00 Paris and deliver on completion
 [Timer]
 OnCalendar=*-*-* 03:00:00 Europe/Paris
 AccuracySec=1s

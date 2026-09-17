@@ -15,6 +15,7 @@ import subprocess
 import tempfile
 import time
 import uuid
+import unicodedata
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
@@ -183,6 +184,27 @@ def validate_research(r, day):
                 if published.tzinfo is None or published>now()+dt.timedelta(minutes=5):
                     raise ValueError('Date de source invérifiable.')
     if not public_url(r['closing']['source']['url']):raise ValueError('Mot de la fin non sourcé.')
+    for old in prior_closings(day):
+        if (closing_source(r['closing']['source']['url'])==closing_source(old['source'])
+                or normalized_closing(r['closing']['story'])==normalized_closing(old['story'])):
+            raise ValueError('Mot de la fin déjà utilisé le '+old['day']+' : choisir une autre histoire et une autre source.')
+
+
+def normalized_closing(value):
+    return re.sub(r'[^\w]+',' ',unicodedata.normalize('NFKC',value).casefold()).strip()
+
+
+def closing_source(url):
+    p=urlsplit(url)
+    return (p.hostname or '').lower()+p.path.rstrip('/')
+
+
+def prior_closings(day=None):
+    with connect() as c:
+        rows=c.execute("SELECT day,research,draft FROM editions WHERE state='ready' AND day<? AND research IS NOT NULL ORDER BY day DESC",(day or now().date().isoformat(),)).fetchall()
+    return [{'day':r['day'],'story':json.loads(r['research'])['closing']['story'],
+             'source':json.loads(r['research'])['closing']['source']['url'],
+             'text':json.loads(r['draft'])['closing']} for r in rows if r['draft']]
 
 
 def history():
@@ -191,7 +213,7 @@ def history():
         rows = c.execute("SELECT day,research,draft FROM editions WHERE state='ready' AND day<? ORDER BY created DESC LIMIT 20",(today,)).fetchall()
         archived = [dict(r) for r in c.execute('SELECT day,text FROM archive WHERE day<? ORDER BY day DESC LIMIT 15',(today,))]
     return {'editions':[{'day':r['day'],'topics':[{k:n[k] for k in ('topic_key','title','facts','event_date')} for n in json.loads(r['research'])['news']],
-                         'closing':json.loads(r['draft'])['closing']} for r in rows], 'published_examples':archived}
+                         'closing':json.loads(r['draft'])['closing']} for r in rows], 'published_examples':archived,'closing_archive':prior_closings()}
 
 
 def text(e, podcast=False):
@@ -221,6 +243,8 @@ def draft_issues(d, r):
     for bad in ['*','_','—','---','plombé par','la faute à','[source','http://','https://']:
         if bad.casefold() in all_text.casefold():problems.append('Forme interdite : '+bad)
     if not 10<=len(d['podcast_title'])<=120 or len(d['podcast_description'])<80:problems.append('Métadonnées podcast incomplètes.')
+    if any(normalized_closing(d['closing'])==normalized_closing(old['text']) for old in prior_closings()):
+        problems.append('Mot de la fin déjà publié : choisir une autre histoire.')
     return problems
 
 

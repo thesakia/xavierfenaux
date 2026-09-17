@@ -12,10 +12,11 @@ the public certificate to VPS1 before then, with coordinated Nginx reloads.
 ## Daily Workflow
 
 - Research starts at 03:00 Europe/Paris, every day including weekends.
-- The server sends at 04:00 Europe/Paris to `xfenaux@gmail.com` and
-  `fenauxft@gmail.com`, separately. DST follows the IANA timezone.
-- The 58-minute preparation timeout leaves a margin before delivery. Failed or
-  incomplete research produces an explicit failure email, never yesterday's text.
+- The server sends to `xfenaux@gmail.com` and `fenauxft@gmail.com` as soon as
+  preparation succeeds, via systemd OnSuccess. There is no fixed 04:00 send.
+  The preparation timer follows the Europe/Paris IANA timezone.
+- The 58-minute preparation timeout bounds the run. Failed or
+  incomplete research produces an explicit failure email via OnFailure, never yesterday's text.
 - These are production systemd timers, independent of the desktop app being open.
   A separate Codex thread heartbeat checks the outcome at 04:10 and is quiet on
   success. It must never send a duplicate email.
@@ -40,6 +41,10 @@ research/audit runs. Known examples from September 11 and 16 were imported at
 setup. This is not a claim that all historical X posts have been imported.
 Fresh developments in a continuing story must be distinguished from repetition.
 Missing polarities are never invented; the email indicates they need completion.
+Each day uses a new closing story. All stored prior ready editions supply a
+closing archive; exact story, repeated source (ignoring tracking query strings),
+and repeated final-text checks complement the semantic source audit. The prompt
+also requests a different protagonist from the previous day.
 Model checks reduce errors but are not a guarantee of factual correctness;
 Xavier can inspect each source and approve the edition.
 An unsuccessful source audit gets one correction pass and a fresh audit.
@@ -78,7 +83,8 @@ server accepted the message, not proof it was read or placed in the inbox.
 4. Run tests using the isolated test virtualenv and production dependencies.
 5. Verify one real research/write/audit run, desktop/mobile pages, exports and
    authenticated SMTP delivery before considering installation complete.
-6. Enable both `brief-mood-prepare.timer` and `brief-mood-send.timer`. Check the
+6. Enable `brief-mood-prepare.timer`; disable the obsolete `brief-mood-send.timer`.
+   The prepare service triggers the send service on success or failure. Check the
    next trigger with `systemctl list-timers` and `systemd-analyze calendar`.
 
 Useful controls: `systemctl start brief-mood-prepare.service` and
@@ -95,5 +101,5 @@ job. There is no automatic bypass of source or editorial validation.
 Website master files: `/var/backups/xavier-master-before-brief-mood.tgz` on VPS1.
 Nginx originals: `/etc/nginx/xavierfenaux.before-brief-mood.conf` on VPS1 and
 `/etc/nginx/xavier-services.before-brief-mood.conf` on VPS2.
-Disabling Brief Mood's two timers and web service does not affect Radar, Clips,
+Disabling Brief Mood's preparation timer and web service does not affect Radar, Clips,
 Recall or the public website.

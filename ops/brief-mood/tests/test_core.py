@@ -39,6 +39,37 @@ def test_parallel_creation_refused():
     with pytest.raises(ValueError):core.create()
 
 
+def previous_closing():
+    eid=core.create();r=research();d=draft()
+    core.update(eid,state='ready',research=r,draft=d)
+    with core.connect() as c:
+        c.execute('UPDATE editions SET day=? WHERE id=?',((core.now().date()-dt.timedelta(days=1)).isoformat(),eid))
+    return r,d
+
+
+def test_reused_closing_source_is_blocked_even_with_tracking():
+    previous_closing();r=research()
+    r['closing']['story']='Une autre formulation de la même anecdote.'
+    r['closing']['source']['url']+='?utm_source=other'
+    with pytest.raises(ValueError,match='Mot de la fin déjà'):
+        core.validate_research(r,core.now().date().isoformat())
+
+
+def test_reused_story_with_new_url_is_blocked():
+    previous_closing();r=research();r['closing']['source']['url']='https://example.com/other'
+    with pytest.raises(ValueError,match='Mot de la fin déjà'):
+        core.validate_research(r,core.now().date().isoformat())
+
+
+def test_new_closing_is_allowed_and_history_is_supplied():
+    previous_closing();r=research()
+    r['closing']['source']['url']='https://example.com/other'
+    r['closing']['story']='Une histoire différente, documentée ailleurs.'
+    core.validate_research(r,core.now().date().isoformat())
+    assert len(core.history()['closing_archive'])==1
+    assert any('Mot de la fin déjà' in p for p in core.draft_issues(draft(),r))
+
+
 def test_old_interrupted_job_does_not_block_next_day():
     eid=core.create()
     with core.connect() as c:c.execute('UPDATE editions SET updated=? WHERE id=?',((core.now()-dt.timedelta(hours=3)).isoformat(),eid))

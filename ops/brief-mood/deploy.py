@@ -30,5 +30,6 @@ for path in root.glob('*.service'):
     shutil.copy2(path,Path('/etc/systemd/system')/path.name)
 for path in root.glob('*.timer'):
     shutil.copy2(path,Path('/etc/systemd/system')/path.name)
+subprocess.run(['systemctl','disable','--now','brief-mood-send.timer'],check=False)
 subprocess.run(['systemctl','daemon-reload'],check=True)
 print('Brief Mood runtime installed; SMTP configuration imported privately.')

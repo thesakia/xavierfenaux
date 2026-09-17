@@ -57,7 +57,11 @@ MOT DE LA FIN
 Histoire exacte ou citation authentifiée sur la discipline au sens large, sport
 notamment ; leçon concrète reliée à une posture de marché. Aucun récit inventé,
 aucune fausse attribution, pas de motivation vide. Eviter Buffett, Livermore,
-Lynch et Kostolany. Varier par rapport aux éditions précédentes. Sans citation
+Lynch et Kostolany. Changer impérativement d'histoire ou de citation chaque jour.
+Consulte closing_archive et les exemples publiés : ne recycle jamais la même
+anecdote sous une autre formulation. Change aussi de personnage par rapport à
+la veille. L'audit doit refuser une répétition et demander une autre histoire.
+Sans citation
 authentifiée, préférer une anecdote factuelle sourcée racontée sans guillemets.
 La source de cette histoire peut être ancienne, contrairement aux actualités.
 

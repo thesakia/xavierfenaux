@@ -1,6 +1,8 @@
 [Unit]
 Description=Prepare the verified morning Brief Mood
 After=network-online.target
+OnSuccess=brief-mood-send.service
+OnFailure=brief-mood-send.service
 
 [Service]
 Type=oneshot
