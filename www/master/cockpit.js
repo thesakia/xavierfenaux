@@ -14,6 +14,8 @@ const labels = {
 const state = {
   view: "home",
   days: 30,
+  postSort: "publishedAt",
+  postSortDirection: "desc",
   owner: "all",
   network: "all",
   metric: "followers",
@@ -347,15 +349,29 @@ function publicationTitle(post, network) {
   const space = short.lastIndexOf(" ");
   return (space > 80 ? short.slice(0, space) : short).trimEnd() + "…";
 }
+function comparePublications(a, b, key, direction) {
+  const numeric = ["views", "reactions", "comments", "shares"].includes(key);
+  const left = numeric ? a[key] : Date.parse(a.publishedAt);
+  const right = numeric ? b[key] : Date.parse(b.publishedAt);
+  const hasLeft = Number.isFinite(left), hasRight = Number.isFinite(right);
+  if (hasLeft !== hasRight) return hasLeft ? -1 : 1;
+  const difference = hasLeft ? left - right : 0;
+  return (direction === "asc" ? difference : -difference) || b.publishedAt.localeCompare(a.publishedAt) || String(a.id).localeCompare(String(b.id));
+}
+function publicationSortHeader(key, label) {
+  const active = state.postSort === key;
+  const direction = active ? (state.postSortDirection === "asc" ? "ascending" : "descending") : "none";
+  return `<th aria-sort="${direction}"><button type="button" class="post-sort" data-post-sort="${key}" title="Trier par ${label.toLowerCase()}">${label}${icon(active ? (state.postSortDirection === "asc" ? "arrow-up" : "arrow-down") : "arrow-up-down")}</button></th>`;
+}
 function socialPosts() {
   const accounts = accountList(), p = period();
   const rows = accounts.flatMap(a => (state.social?.details?.[a.id]?.posts || []).filter(post => {
     const date = post.publishedAt.slice(0,10);
     return date >= p.start && date <= p.end;
   }).map(post => ({...post, title:publicationTitle(post, a.network), network:a.network, color:a.color})));
-  rows.sort((a,b)=>b.publishedAt.localeCompare(a.publishedAt));
+  rows.sort((a,b)=>comparePublications(a,b,state.postSort,state.postSortDirection));
   const available = accounts.filter(a => state.social?.details?.[a.id]?.postsUpdatedAt);
-  return `<section class="social-posts"><div class="section-title"><div><h2>Résultats des publications</h2><p>Publiées du ${shortDate(p.start)} au ${shortDate(p.end)} · compteurs cumulés depuis leur publication</p></div><span class="chip">${rows.length} publications</span></div>${rows.length ? `<div class="table-scroll"><table><thead><tr><th>Publication</th><th>Réseau</th><th>Vues</th><th>J’aime</th><th>Commentaires</th><th>Partages</th></tr></thead><tbody>${rows.slice(0,150).map(post=>`<tr><td><a href="${esc(post.url)}" target="_blank" rel="noopener noreferrer">${esc(post.title || "Publication sans titre")}${icon("arrow-up-right")}</a><small>${shortDate(post.publishedAt.slice(0,10))} · relevé ${esc(new Date(post.updatedAt).toLocaleString("fr-FR"))}</small></td><td>${esc(post.network)}</td>${["views","reactions","comments","shares"].map(k=>`<td>${fmt(post[k])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>` : `<p class="table-hint">${available.length ? "Aucune publication disponible sur cette période." : "Les résultats apparaîtront après connexion et première lecture des publications."}</p>`}${available.map(a=>`<p class="table-hint">${esc(a.network)} · ${state.social.details[a.id].postsComplete ? "Toutes les publications renvoyées par le réseau" : "Publications récentes uniquement"} · dernière lecture ${esc(new Date(state.social.details[a.id].postsUpdatedAt).toLocaleString("fr-FR"))}</p>`).join("")}<p class="table-hint">Ces compteurs ne sont pas ajoutés aux résultats quotidiens : une vue reçue aujourd’hui peut concerner une ancienne vidéo.</p></section>`;
+return `<section class="social-posts"><div class="section-title"><div><h2>Résultats des publications</h2><p>Publiées du ${shortDate(p.start)} au ${shortDate(p.end)} · compteurs cumulés depuis leur publication</p></div><span class="chip">${rows.length} publications</span></div>${rows.length ? `<div class="table-scroll"><table><thead><tr>${publicationSortHeader("publishedAt","Publication / date")}<th>Réseau</th>${publicationSortHeader("views","Vues")}${publicationSortHeader("reactions","J’aime")}${publicationSortHeader("comments","Commentaires")}${publicationSortHeader("shares","Partages")}</tr></thead><tbody>${rows.slice(0,150).map(post=>`<tr><td><a href="${esc(post.url)}" target="_blank" rel="noopener noreferrer">${esc(post.title || "Publication sans titre")}${icon("arrow-up-right")}</a><small>${shortDate(post.publishedAt.slice(0,10))} · relevé ${esc(new Date(post.updatedAt).toLocaleString("fr-FR"))}</small></td><td>${esc(post.network)}</td>${["views","reactions","comments","shares"].map(k=>`<td>${fmt(post[k])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>` : `<p class="table-hint">${available.length ? "Aucune publication disponible sur cette période." : "Les résultats apparaîtront après connexion et première lecture des publications."}</p>`}${available.map(a=>`<p class="table-hint">${esc(a.network)} · ${state.social.details[a.id].postsComplete ? "Toutes les publications renvoyées par le réseau" : "Publications récentes uniquement"} · dernière lecture ${esc(new Date(state.social.details[a.id].postsUpdatedAt).toLocaleString("fr-FR"))}</p>`).join("")}<p class="table-hint">Ces compteurs ne sont pas ajoutés aux résultats quotidiens : une vue reçue aujourd’hui peut concerner une ancienne vidéo.</p></section>`;
 }
 function socialPage() {
   const a = state.social?.accounts.find(a => a.id === state.network);
@@ -874,7 +890,15 @@ function exportRecords() {
 document.addEventListener("click", (e) => {
   const button = e.target.closest("button,a");
   if (!button) return;
-  if (button.hasAttribute("data-close")) button.closest("dialog").close();
+  if (button.dataset.postSort) {
+    const key = button.dataset.postSort;
+    if (!["publishedAt", "views", "reactions", "comments", "shares"].includes(key)) return;
+    state.postSortDirection = state.postSort === key && state.postSortDirection === "desc" ? "asc" : "desc";
+    state.postSort = key;
+    render();
+    document.querySelector(`[data-post-sort="${key}"]`)?.focus({preventScroll:true});
+  }
+  else if (button.hasAttribute("data-close")) button.closest("dialog").close();
   else if (button.dataset.guide) showGuide(button.dataset.guide);
   else if (button.dataset.tool) showGuide(button.dataset.tool, true);
   else if (button.dataset.connect) showConnection(button.dataset.connect);

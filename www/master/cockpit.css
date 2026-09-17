@@ -1623,3 +1623,7 @@ details p {
     scroll-behavior: auto !important;
   }
 }
+.social-posts .post-sort { display: inline-flex; align-items: center; gap: 5px; border: 0; border-radius: 0; padding: 4px 0; background: transparent; color: inherit; font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.social-posts .post-sort svg { width: 13px; height: 13px; flex: 0 0 13px; margin: 0; }
+.social-posts th[aria-sort="ascending"] .post-sort, .social-posts th[aria-sort="descending"] .post-sort { color: #18765b; }
+.social-posts .post-sort:focus-visible { outline: 2px solid #18765b; outline-offset: 4px; }

@@ -39,7 +39,7 @@ if ($loggedIn) {
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#f7f9f8">
   <title>Le cockpit de Xavier</title>
-  <link rel="stylesheet" href="/master/cockpit.css?v=8">
+  <link rel="stylesheet" href="/master/cockpit.css?v=9">
   <script defer src="/master/lucide.min.js"></script>
   <?php if ($loggedIn): ?><script defer src="/master/chart.umd.js"></script><?php endif; ?>
 </head>
@@ -89,7 +89,7 @@ if ($loggedIn) {
   <div id="toast" class="toast" role="status" hidden></div>
   <script id="boot" type="application/json"><?= json_encode(['services'=>$services, 'csrf'=>$csrf, 'flash'=>$flash, 'social'=>$socialBoot], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?></script>
   <script defer src="/master/metrics.js?v=4"></script>
-  <script defer src="/master/cockpit.js?v=11"></script>
+  <script defer src="/master/cockpit.js?v=12"></script>
 <?php endif; ?>
 </body>
 </html>
