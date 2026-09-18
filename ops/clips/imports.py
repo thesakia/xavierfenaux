@@ -22,6 +22,10 @@ BUSY_STATES = ('uploading', 'sync_queued', 'syncing', 'rendering',
 CK_PATH = '/database/1/com.apple.photos.cloud/production/'
 
 
+class ICloudPending(ValueError):
+    """Apple advertises a video but has not exposed its media yet."""
+
+
 def share_id(url):
     p = urlparse(url.strip())
     if (p.scheme != 'https' or p.hostname not in ('share.icloud.com', 'www.icloud.com', 'icloud.com')
@@ -191,7 +195,7 @@ def resolve_video(client, short_id):
                     asset, file_type, rendition = candidate, candidate_type, True
                     break
         if not asset.get('downloadURL'):
-            raise ValueError('La video est encore en cours de preparation chez Apple. Reessaie dans quelques minutes.')
+            raise ICloudPending('La video est encore en cours de preparation chez Apple. Reessaie dans quelques minutes.')
         name = 'video-icloud.mov' if file_type == 'com.apple.quicktime-movie' else 'video-icloud.mp4'
         encoded = field(record, 'filenameEnc')
         if encoded:
@@ -205,9 +209,23 @@ def resolve_video(client, short_id):
         url = asset['downloadURL'].replace('${f}', quote(name, safe=''))
         apple_url(url)
         candidates[record['recordName']] = (url, name, int(asset.get('size') or 0))
-    if len(candidates) != 1:
-        raise ValueError('Le lien doit contenir une seule video disponible, pas un album de photos.')
+    if not candidates:
+        if field(root, 'videosCount', 0) == 1:
+            raise ICloudPending('Apple annonce une video, mais elle n\'est pas encore accessible a Clips. Reessaie dans quelques minutes avec le meme lien.')
+        raise ValueError('Aucune video reconnue dans ce partage iCloud. Verifie le contenu du lien.')
+    if len(candidates) > 1:
+        raise ValueError('Ce lien contient plusieurs videos. Partage uniquement celle de cet episode.')
     return next(iter(candidates.values()))
+
+
+def resolve_when_ready(client, short_id):
+    for attempt in range(3):
+        try:
+            return resolve_video(client, short_id)
+        except ICloudPending:
+            if attempt == 2:
+                raise
+            time.sleep(10)
 
 
 def download_video(client, url, target, size, progress):
@@ -262,7 +280,7 @@ def process(e):
             if not short_id:
                 raise ValueError('Le lien iCloud est absent. Colle a nouveau le lien.')
             with httpx.Client(timeout=httpx.Timeout(60, connect=20), follow_redirects=False, trust_env=False) as client:
-                url, name, size = resolve_video(client, short_id)
+                url, name, size = resolve_when_ready(client, short_id)
                 download_video(client, url, source, size,
                                lambda received, total: db.meta('import-progress:' + eid,
                                                               {'received': received, 'total': total}))

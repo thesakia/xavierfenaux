@@ -232,6 +232,49 @@ def test_media_redirect_and_incomplete_download(studio, monkeypatch):
         imports.download_video(client, ASSET, path, 5, lambda *a: None)
 
 
+def test_icloud_announced_video_not_yet_listed(monkeypatch):
+    with mock_client(monkeypatch, media_records={'records': []}) as client:
+        with pytest.raises(imports.ICloudPending, match='Apple annonce une video'):
+            imports.resolve_video(client, SHARE_ID)
+
+
+def test_icloud_photo_only_message(monkeypatch):
+    root = resolved()
+    root['results'][0]['rootRecord']['fields']['videosCount']['value'] = 0
+    with mock_client(monkeypatch, resolve=root, media_records={'records': []}) as client:
+        with pytest.raises(ValueError, match='Aucune video reconnue') as exc:
+            imports.resolve_video(client, SHARE_ID)
+        assert not isinstance(exc.value, imports.ICloudPending)
+
+
+@pytest.mark.parametrize('failures', [1, 3])
+def test_icloud_preparation_retries_are_bounded(monkeypatch, failures):
+    calls, sleeps = [], []
+    def resolve(client, short_id):
+        calls.append(short_id)
+        if len(calls) <= failures:
+            raise imports.ICloudPending('Preparation')
+        return ASSET, 'video.mp4', 5
+    monkeypatch.setattr(imports, 'resolve_video', resolve)
+    monkeypatch.setattr(imports.time, 'sleep', sleeps.append)
+    if failures == 3:
+        with pytest.raises(imports.ICloudPending):
+            imports.resolve_when_ready(None, SHARE_ID)
+    else:
+        assert imports.resolve_when_ready(None, SHARE_ID)[1] == 'video.mp4'
+    assert len(calls) == min(failures + 1, 3)
+    assert sleeps == [10] * (len(calls) - 1)
+
+
+def test_icloud_permanent_errors_not_retried(monkeypatch):
+    def resolve(*args):
+        raise ValueError('Lien expire')
+    monkeypatch.setattr(imports, 'resolve_video', resolve)
+    monkeypatch.setattr(imports.time, 'sleep', lambda _: pytest.fail('No retry expected'))
+    with pytest.raises(ValueError, match='Lien expire'):
+        imports.resolve_when_ready(None, SHARE_ID)
+
+
 def test_failed_import_can_be_replaced(studio, monkeypatch):
     client, eid, tmp = studio
     apple = mock_client(monkeypatch, resolve={'results': [{'serverErrorCode': 'NOT_FOUND'}]})
