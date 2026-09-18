@@ -123,7 +123,7 @@ function render() {
     : `<li>${edition?.state === "failed" ? "Vérification non validée" : "Vérifications en attente"}</li>`;
   if (!ready && edition?.audit) {
     const r = edition.research;
-    const required = new Set(r ? [...r.news.flatMap(n => n.sources.map(s => s.url)), r.session_source.url, r.closing.source.url] : []);
+    const required = new Set(r ? [...r.news.flatMap(n => n.sources.map(s => s.url)), r.session_source.url, ...(r.closing.source ? [r.closing.source.url] : [])] : []);
     const verified = new Set(edition.audit.source_checks.filter(s => s.verified).map(s => s.url));
     $("#checks").innerHTML += edition.audit.issues.map(issue => `<li>${esc(issue)}</li>`).join("");
     $("#checks").innerHTML += [...required].filter(url => !verified.has(url)).map(url => `<li>Source à revérifier : <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname)}</a></li>`).join("");
@@ -136,7 +136,7 @@ function render() {
   if (tab === "sources" && edition?.research) {
     const r = edition.research;
     $("#document").innerHTML =
-      `<p class="note">Dernière séance US : ${esc(r.previous_us_session)} · ${r.news.length} sujets</p>${r.news.map((n) => `<article class="source-item"><div class="category">${esc(n.section)} · ${esc(n.event_date)} · ${n.status === "scheduled" ? "À venir" : "Publié"}</div><label><input type="checkbox" data-news="${esc(n.id)}" ${selected.has(n.id) ? "checked" : ""}>${esc(n.title)}</label><p>${esc(n.facts)}</p><p><strong>Pourquoi ça compte.</strong> ${esc(n.why)}</p><details><summary>Sources et nouveauté</summary><p>${esc(n.novelty)}</p>${n.sources.map((s) => `<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title)} ↗</a><small>${esc(s.published_at)}</small><p>${esc(s.evidence)}</p>`).join("")}</details></article>`).join("")}<article class="source-item"><h3>Mot de la fin</h3><p>${esc(r.closing.story)}</p><a target="_blank" rel="noopener noreferrer" href="${esc(r.closing.source.url)}">${esc(r.closing.source.title)} ↗</a></article>${r.gaps.length ? '<div class="note"><strong>Couverture incomplète</strong><br>' + r.gaps.map(esc).join("<br>") + "</div>" : ""}`;
+      `<p class="note">Dernière séance US : ${esc(r.previous_us_session)} · ${r.news.length} sujets</p>${r.news.map((n) => `<article class="source-item"><div class="category">${esc(n.section)} · ${esc(n.event_date)} · ${n.status === "scheduled" ? "À venir" : "Publié"}</div><label><input type="checkbox" data-news="${esc(n.id)}" ${selected.has(n.id) ? "checked" : ""}>${esc(n.title)}</label><p>${esc(n.facts)}</p><p><strong>Pourquoi ça compte.</strong> ${esc(n.why)}</p><details><summary>Sources et nouveauté</summary><p>${esc(n.novelty)}</p>${n.sources.map((s) => `<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title)} ↗</a><small>${esc(s.published_at)}</small><p>${esc(s.evidence)}</p>`).join("")}</details></article>`).join("")}<article class="source-item"><h3>Mot de la fin</h3><p>${esc(r.closing.story)}</p>${r.closing.source ? `<a target="_blank" rel="noopener noreferrer" href="${esc(r.closing.source.url)}">${esc(r.closing.source.title)} ↗</a>` : '<small>Réflexion originale</small>'}</article>${r.gaps.length ? '<div class="note"><strong>Couverture incomplète</strong><br>' + r.gaps.map(esc).join("<br>") + "</div>" : ""}`;
     document
       .querySelectorAll("[data-news]")
       .forEach(

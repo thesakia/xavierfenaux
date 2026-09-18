@@ -58,10 +58,14 @@ research/audit runs. Known examples from September 11 and 16 were imported at
 setup. This is not a claim that all historical X posts have been imported.
 Fresh developments in a continuing story must be distinguished from repetition.
 Missing polarities are never invented; the email indicates they need completion.
-Each day uses a new closing story. All stored prior ready editions supply a
+Each day varies the closing theme and format, not merely the protagonist.
+Discipline, sport, quotations and a trading moral are not mandatory. Original
+reflections without external factual claims may have a null closing source;
+anecdotes, quotations and external factual claims still require source auditing.
+All stored prior ready editions supply a
 closing archive; exact story, repeated source (ignoring tracking query strings),
 and repeated final-text checks complement the semantic source audit. The prompt
-also requests a different protagonist from the previous day.
+requests a different protagonist from the previous day when using an anecdote.
 Model checks reduce errors but are not a guarantee of factual correctness;
 Xavier can inspect each source and approve the edition.
 An unsuccessful source audit gets one correction pass and a fresh audit.

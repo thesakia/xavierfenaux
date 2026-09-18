@@ -70,6 +70,22 @@ def test_new_closing_is_allowed_and_history_is_supplied():
     assert any('Mot de la fin déjà' in p for p in core.draft_issues(draft(),r))
 
 
+def test_original_reflection_without_external_claims_needs_no_fake_source():
+    r=research();r['closing']={'story':'Accepter de ne pas savoir.', 'lesson':'Quelle information ferait changer notre avis ?', 'source':None}
+    core.validate_research(r,core.now().date().isoformat())
+    assert core.research_urls(r)=={r['session_source']['url']}
+    eid=core.create();d=draft();d['closing']='Accepter de ne pas savoir.'
+    core.update(eid,state='ready',research=r,draft=d)
+    with core.connect() as c:
+        c.execute('UPDATE editions SET day=? WHERE id=?',((core.now().date()-dt.timedelta(days=1)).isoformat(),eid))
+    assert core.prior_closings()[0]['source'] is None
+    r['closing']['story']='Changer de perspective avant de choisir.'
+    core.validate_research(r,core.now().date().isoformat())
+    r['closing']['story']='Accepter de ne pas savoir.'
+    with pytest.raises(ValueError,match='Mot de la fin déjà'):
+        core.validate_research(r,core.now().date().isoformat())
+
+
 def test_old_interrupted_job_does_not_block_next_day():
     eid=core.create()
     with core.connect() as c:c.execute('UPDATE editions SET updated=? WHERE id=?',((core.now()-dt.timedelta(hours=3)).isoformat(),eid))

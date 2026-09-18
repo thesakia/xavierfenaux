@@ -57,16 +57,24 @@ Ne promets aucun live ni rendez-vous personnel que Xavier n'a pas renseigné.
 Ne fabrique jamais les polarités, niveaux techniques ou positions de Xavier.
 
 MOT DE LA FIN
-Histoire exacte ou citation authentifiée sur la discipline au sens large, sport
-notamment ; leçon concrète reliée à une posture de marché. Aucun récit inventé,
-aucune fausse attribution, pas de motivation vide. Eviter Buffett, Livermore,
-Lynch et Kostolany. Changer impérativement d'histoire ou de citation chaque jour.
-Consulte closing_archive et les exemples publiés : ne recycle jamais la même
-anecdote sous une autre formulation. Change aussi de personnage par rapport à
-la veille. L'audit doit refuser une répétition et demander une autre histoire.
-Sans citation
-authentifiée, préférer une anecdote factuelle sourcée racontée sans guillemets.
-La source de cette histoire peut être ancienne, contrairement aux actualités.
+Varie le fond ET la forme : doute, patience, ego, adaptation, prise de risque,
+renoncement, hasard, indépendance d'esprit, attention ou curiosité. La discipline
+n'est pas le thème par défaut. Consulte closing_archive : choisis un angle
+différent des éditions récentes, pas seulement un nouveau personnage.
+Alterne réflexion directe, question ouverte, observation concrète, anecdote
+documentée et citation authentifiée. Personnage, sport, citation et morale ne
+sont jamais obligatoires. Aucun lien artificiel avec le trading, aucune formule
+automatique « en marché aussi », aucune motivation creuse ou leçon de vie plaquée.
+Une chute courte et précise qui fait réfléchir suffit. Eviter Buffett, Livermore,
+Lynch et Kostolany. Ne recycle ni texte, ni anecdote, ni conclusion sous une
+autre formulation. Pour une anecdote, change de personnage par rapport à la veille.
+Le champ closing.story contient l'angle ou l'anecdote ; closing.lesson contient
+l'idée ou la question finale, sans obligation de conseil de marché.
+Une réflexion originale sans fait externe ni attribution a closing.source=null :
+ne lui invente pas une source. Toute anecdote, citation ou affirmation factuelle
+externe reste sourcée et vérifiée ; sa source peut être ancienne. L'audit distingue
+une réflexion personnelle d'un fait à prouver et ne bloque pas une opinion pour
+absence de citation. Il corrige les répétitions plutôt que de forcer la discipline.
 
 PODCAST
 Titre et description SEO précis et fidèles, sans surpromesse. Script français
