@@ -199,7 +199,31 @@ def test_audit_correction_is_bounded(monkeypatch):
 def test_word_limit_includes_headings():
     d=draft()
     d['sections'][0]['heading']='🏢 '+('titre '*400)
-    assert any('Longueur' in x for x in core.draft_issues(d,research()))
+    assert any('Longueur' in x for x in core.length_notes(d))
+    assert not any('Longueur' in x for x in core.draft_issues(d,research()))
+
+
+def test_length_repair_is_repeated_then_factually_audited(monkeypatch):
+    eid=core.create();r=research();d=draft()
+    audit={'passed':True,'issues':[],'checked_ids':[n['id'] for n in r['news']],
+           'source_checks':[{'url':r['session_source']['url'],'verified':True}]}
+    monkeypatch.setattr(core,'length_notes',lambda _:['Longueur 901 mots'])
+    engine=Mock(side_effect=[d,d,d,d,audit])
+    monkeypatch.setattr(core,'model',engine)
+    core.write_and_audit(eid,r)
+    assert engine.call_count==5
+    assert core.get(eid)['state']=='ready'
+    assert core.get(eid)['audit']['editorial_notes']==['Longueur 901 mots']
+
+
+def test_editorial_repairs_never_bypass_missing_sources(monkeypatch):
+    eid=core.create();r=research();d=draft()
+    d['sections'][0]['news_ids']=['unknown']
+    monkeypatch.setattr(core,'model',Mock(return_value=d))
+    with pytest.raises(ValueError,match='actualité absente'):
+        core.write_and_audit(eid,r)
+    assert core.get(eid)['state']!='ready'
+    assert core.get(eid)['draft'] is not None
 
 
 def test_uncertain_smtp_is_not_retried(monkeypatch):

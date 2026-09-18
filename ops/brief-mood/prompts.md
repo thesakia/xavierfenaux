@@ -40,7 +40,10 @@ pertinent. Ne réutilise pas un sujet déjà couvert dans l'historique, sauf fai
 nouveau démontrable : explicite alors uniquement ce qui a changé et sa source.
 
 REDACTION
-600 à 900 mots hors polarités. Accroche courte, blocs thématiques avec un emoji
+Objectif de 600 à 900 mots hors polarités, viser 700 à 800 titres compris.
+La longueur est une préférence éditoriale, jamais un motif de refus de l'audit
+factuel ou de l'envoi à elle seule. Resserre les répétitions avant livraison.
+Accroche courte, blocs thématiques avec un emoji
 au début de chaque titre, plusieurs blocs entreprises développés (au moins 4),
 autres marchés, agenda, polarités fournies par Xavier, mot de la fin, signature
 Xavier. Style factuel et direct, phrases courtes, français intégral. Pas de gras,

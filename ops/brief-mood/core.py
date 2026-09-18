@@ -226,11 +226,14 @@ def text(e, podcast=False):
     return '\n\n'.join([d['intro'],*[s['heading']+'\n'+s['body'] for s in d['sections']]])+polarities+'\n\n💡 Le mot de la fin\n'+closing+'\n\nXavier'
 
 
+def length_notes(d):
+    count=len(text({'draft':d,'polarities':''}).split())
+    return [] if 600<=count<=900 else [f'Longueur {count} mots ; viser 700 à 800 mots, titres compris, hors polarités.']
+
+
 def draft_issues(d, r):
     problems=[]
     body=' '.join([d['intro'],*[s['body'] for s in d['sections']],d['closing']])
-    count=len(text({'draft':d,'polarities':''}).split())
-    if not 600<=count<=900:problems.append(f'Longueur {count} mots, attendu 600 à 900.')
     ids={n['id'] for n in r['news']}
     cited={i for s in d['sections'] for i in s['news_ids']}
     if not cited<=ids:problems.append('Référence à une actualité absente.')
@@ -253,11 +256,14 @@ def write_and_audit(eid, research, attempt=0):
     update(eid,stage='Rédaction du brief et du podcast')
     evidence={'day':e['day'],'research':research,'notes':e['notes'],'polarities':e['polarities'],
               'previous_audit':e['audit'] if attempt else None}
-    draft=model('Rédige les deux livrables à partir EXCLUSIVEMENT de ces faits vérifiés. Ne réinsère pas les polarités ni la signature : le programme les ajoute. Les news_ids relient chaque bloc à ses preuves. Le podcast peut être plus long que le brief. Respecte strictement les 600-900 mots du brief.',evidence,DRAFT,'draft',False)
-    errors=draft_issues(draft,research)
-    if errors:
-        draft=model('Corrige ce brouillon, sans ajouter de faits. Erreurs à éliminer : '+json.dumps(errors,ensure_ascii=False),{**evidence,'draft':draft},DRAFT,'repair',False)
+    draft=model('Rédige les deux livrables à partir EXCLUSIVEMENT de ces faits vérifiés. Ne réinsère pas les polarités ni la signature : le programme les ajoute. Les news_ids relient chaque bloc à ses preuves. Le podcast peut être plus long que le brief. Vise 700 à 800 mots pour le brief, titres compris, pour rester dans la cible 600-900.',evidence,DRAFT,'draft',False)
+    for repair in range(3):
+        update(eid,draft=draft,stage='Ajustement éditorial')
         errors=draft_issues(draft,research)
+        notes=length_notes(draft)
+        if not errors and not notes:break
+        draft=model('Corrige ce brouillon, sans ajouter de faits. Conserve les sources, les nuances et au moins quatre sujets entreprises. Si le texte est trop long, supprime les répétitions et resserre les formulations, sans tronquer les phrases. Si trop court, développe uniquement les faits déjà vérifiés. Vise 700-800 mots pour le brief, titres compris ; pas pour le podcast. Corrections : '+json.dumps(errors+notes,ensure_ascii=False),{**evidence,'draft':draft},DRAFT,'repair-'+str(repair+1),False)
+    errors=draft_issues(draft,research)
     if errors:raise ValueError('Contrôle éditorial : '+' '.join(errors))
     update(eid,draft=draft,stage='Contre-vérification des sources')
     audit=model('Vérification indépendante et stricte. Ouvre les sources, contrôle chaque affirmation des DEUX livrables contre les preuves et dates, clôture versus hors-séance, résultats publiés versus attendus, absence de recyclage sans fait nouveau, pertinence et exactitude des variations chiffrées, attribution de l’histoire finale, français et interdits. Les variations chiffrées sont AUTORISÉES si utiles, sourcées et contextualisées ; ne bloque jamais un texte pour la seule présence de points, pourcentages ou signes. Evite seulement les listes décoratives de performances. passed=false si un fait est douteux, inaccessible sans corroboration, inventé ou non soutenu. checked_ids contient tous les ids réellement vérifiés. source_checks liste les URLs réellement lues et leur résultat, y compris le mot de la fin ET la source de clôture. La signature et les polarités sont ajoutées par le programme : vérifie les textes finaux fournis. issues contient seulement les défauts bloquants, pas les contrôles réussis. Ne valide pas par complaisance.',{**evidence,'draft':draft,'final_brief':text({'draft':draft,'polarities':e['polarities']}),'final_podcast':text({'draft':draft,'polarities':e['polarities']},True),'history':history()},AUDIT,'audit')
@@ -276,6 +282,7 @@ def write_and_audit(eid, research, attempt=0):
             update(eid,research=repaired)
             return write_and_audit(eid,repaired,attempt=1)
         raise ValueError('Vérification non validée : '+' '.join(audit['issues'][:5] or ['Toutes les sources n’ont pas été confirmées.']))
+    audit['editorial_notes']=length_notes(draft)
     update(eid,research=research,draft=draft,audit=audit,state='ready',stage='Prêt',error=None)
 
 
