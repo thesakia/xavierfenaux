@@ -41,6 +41,17 @@ def test_unknown_edition(client):
     assert client.get('/api/editions/unknown',headers={'x-brief-user':'xav'}).status_code==404
 
 
+def test_failed_draft_can_be_read_exported_and_reviewed_without_bypassing_audit(client):
+    from test_core import draft
+    eid=core.create();core.update(eid,state='failed',draft=draft(),error='Source à vérifier')
+    headers={'x-brief-user':'xav','x-brief-csrf':'test','cookie':'brief_csrf=test'}
+    assert client.get('/api/editions/'+eid,headers=headers).json()['brief_text']
+    exported=client.get('/api/editions/'+eid+'/export',headers=headers)
+    assert exported.status_code==200 and '-brouillon.txt' in exported.headers['content-disposition']
+    assert client.post('/api/editions/'+eid+'/approve',json={},headers=headers).status_code==200
+    assert core.get(eid)['approved']==1 and core.get(eid)['state']=='failed'
+
+
 def test_inputs_bounded(client):
     headers={'x-brief-user':'xav','x-brief-csrf':'test','cookie':'brief_csrf=test'}
     assert client.post('/api/editions',json={'notes':'a'*5001},headers=headers).status_code==422

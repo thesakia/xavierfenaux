@@ -42,6 +42,16 @@ editorial correction passes address length and formatting before the independent
 factual audit. Remaining length deviations are recorded in audit.editorial_notes
 but do not prevent delivery. Unverified facts and missing sources still block it.
 Intermediate drafts are saved so a failed run does not discard the writing.
+Drafts remain visible, copyable and downloadable while checks run or fail.
+Marking a failed draft as read never changes its verification state or sends it.
+
+After a positive factual audit, unconfirmed source URLs trigger up to two
+targeted searches for canonical pages or reliable replacements. Every replacement
+must explicitly support all associated claims; facts and texts remain unchanged.
+Original failed checks and replacement evidence remain in the audit trail.
+`core.py recover` retries this step for today's latest failed edition only,
+requiring a positive factual audit, and sends it through the idempotent mailer
+only after full source coverage and validation.
 
 Ready edition history and imported published examples are given to subsequent
 research/audit runs. Known examples from September 11 and 16 were imported at

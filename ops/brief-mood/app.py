@@ -124,7 +124,7 @@ class Polarities(BaseModel):
 @app.put('/api/editions/{eid}/polarities')
 def polarities(eid:str,body:Polarities):
     e=edition(eid)
-    if e['state']!='ready':raise HTTPException(409,'Attendre la fin de la préparation.')
+    if not e['draft'] or e['state'] in ('queued','working'):raise HTTPException(409,'Attendre la fin de la préparation.')
     core.update(eid,polarities=body.polarities)
     return {'saved':True}
 
@@ -132,7 +132,7 @@ def polarities(eid:str,body:Polarities):
 @app.post('/api/editions/{eid}/approve')
 def approve(eid:str):
     e=edition(eid)
-    if e['state']!='ready':raise HTTPException(409,'Le dossier n’a pas passé les vérifications.')
+    if not e['draft'] or e['state'] in ('queued','working'):raise HTTPException(409,'Brouillon indisponible ou en cours de rédaction.')
     core.update(eid,approved=1)
     return {'approved':True}
 
@@ -140,8 +140,9 @@ def approve(eid:str):
 @app.get('/api/editions/{eid}/export')
 def export(eid:str,podcast:bool=False):
     e=edition(eid)
-    if e['state']!='ready':raise HTTPException(409,'Édition non validée par les contrôles.')
-    return PlainTextResponse(core.text(e,podcast),headers={'Content-Disposition':f'attachment; filename="brief-mood-{e["day"]}{"-podcast" if podcast else ""}.txt"'})
+    if not e['draft']:raise HTTPException(409,'Le brouillon n’est pas encore rédigé.')
+    suffix='-brouillon' if e['state']!='ready' else ''
+    return PlainTextResponse(core.text(e,podcast),headers={'Content-Disposition':f'attachment; filename="brief-mood-{e["day"]}{"-podcast" if podcast else ""}{suffix}.txt"'})
 
 
 app.mount('/static',StaticFiles(directory=core.ROOT/'static'),name='static')

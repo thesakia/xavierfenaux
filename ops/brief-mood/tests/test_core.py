@@ -203,6 +203,39 @@ def test_word_limit_includes_headings():
     assert not any('Longueur' in x for x in core.draft_issues(d,research()))
 
 
+def test_verified_alternative_replaces_every_reference_without_changing_facts(monkeypatch):
+    eid=core.create();r=research();d=draft()
+    old=r['session_source']['url'];replacement={**r['session_source'],'url':'https://www.example.com/canonical'}
+    a={'passed':True,'issues':[],'checked_ids':[n['id'] for n in r['news']],
+       'source_checks':[{'url':old,'verified':False,'detail':'URL inaccessible'}]}
+    monkeypatch.setattr(core,'model',Mock(return_value={'replacements':[{'original_url':old,'source':replacement,'verified':True,'supports_all_claims':True,'detail':'Tous les faits confirmés sur la page canonique.'}]}))
+    fixed,audit=core.repair_source_links(eid,r,d,a)
+    assert core.research_urls(fixed)=={replacement['url']}
+    assert [n['facts'] for n in fixed['news']]==[n['facts'] for n in r['news']]
+    assert r['session_source']['url']==old
+    assert audit['source_checks'][0]['verified'] is False
+    assert len(audit['source_recovery'])==1
+
+
+def test_incomplete_alternative_cannot_satisfy_coverage(monkeypatch):
+    eid=core.create();r=research();d=draft();old=r['session_source']['url']
+    a={'passed':True,'issues':[],'checked_ids':[n['id'] for n in r['news']],'source_checks':[]}
+    engine=Mock(return_value={'replacements':[{'original_url':old,'source':r['session_source'],'verified':True,'supports_all_claims':False,'detail':'Une seule affirmation confirmée.'}]})
+    monkeypatch.setattr(core,'model',engine)
+    fixed,audit=core.repair_source_links(eid,r,d,a)
+    assert audit['source_checks']==[]
+    assert core.research_urls(fixed)=={old}
+    assert engine.call_count==2
+
+
+def test_source_recovery_does_not_override_a_failed_fact_audit(monkeypatch):
+    eid=core.create();r=research();d=draft()
+    a={'passed':False,'issues':['Fait erroné'],'checked_ids':[],'source_checks':[]}
+    engine=Mock();monkeypatch.setattr(core,'model',engine)
+    assert core.repair_source_links(eid,r,d,a)==(r,a)
+    engine.assert_not_called()
+
+
 def test_length_repair_is_repeated_then_factually_audited(monkeypatch):
     eid=core.create();r=research();d=draft()
     audit={'passed':True,'issues':[],'checked_ids':[n['id'] for n in r['news']],

@@ -87,6 +87,8 @@ function renderHistory() {
 }
 function render() {
   const ready = edition?.state === "ready";
+  const hasDraft = Boolean(edition?.draft);
+  const preparing = ["queued", "working"].includes(edition?.state);
   $("#edition-date").textContent = day(edition?.day || state.today);
   $("#stage").textContent = edition
     ? edition.stage +
@@ -100,8 +102,10 @@ function render() {
     : "Aucune édition sélectionnée";
   $("#alert").hidden = !edition?.error;
   $("#alert").textContent = edition?.error || "";
-  for (const id of ["copy", "download", "approve", "save-polarities"])
-    $("#" + id).disabled = !ready || busy;
+  for (const id of ["copy", "download"])
+    $("#" + id).disabled = !hasDraft || busy;
+  for (const id of ["approve", "save-polarities"])
+    $("#" + id).disabled = !hasDraft || preparing || busy;
   $("#approve").innerHTML =
     `<i data-lucide="check"></i>${edition?.approved ? "Relu par Xavier" : "Marquer comme relu"}`;
   $("#generate").disabled =
@@ -111,12 +115,19 @@ function render() {
     !edition?.research ||
     edition.day !== state.today ||
     ["queued", "working"].includes(edition.state);
-  $("#word-count").textContent = ready
-    ? `${(edition.brief_text || "").trim().split(/\s+/).length} mots · ${edition.polarities.trim() ? "Polarités renseignées" : "Polarités à compléter"}`
+  $("#word-count").textContent = hasDraft
+    ? `${ready ? "" : "Brouillon · "}${(edition.brief_text || "").trim().split(/\s+/).length} mots · ${edition.polarities.trim() ? "Polarités renseignées" : "Polarités à compléter"}`
     : "";
-  $("#checks").innerHTML = edition?.audit?.passed
-    ? "<li>✓ Dossier de sources contre-vérifié</li><li>✓ Dates et statuts des annonces contrôlés</li><li>✓ Forme et longueur contrôlées</li>"
+  $("#checks").innerHTML = ready
+    ? "<li>✓ Dossier de sources contre-vérifié</li><li>✓ Dates et statuts des annonces contrôlés</li>"
     : `<li>${edition?.state === "failed" ? "Vérification non validée" : "Vérifications en attente"}</li>`;
+  if (!ready && edition?.audit) {
+    const r = edition.research;
+    const required = new Set(r ? [...r.news.flatMap(n => n.sources.map(s => s.url)), r.session_source.url, r.closing.source.url] : []);
+    const verified = new Set(edition.audit.source_checks.filter(s => s.verified).map(s => s.url));
+    $("#checks").innerHTML += edition.audit.issues.map(issue => `<li>${esc(issue)}</li>`).join("");
+    $("#checks").innerHTML += [...required].filter(url => !verified.has(url)).map(url => `<li>Source à revérifier : <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname)}</a></li>`).join("");
+  }
   document
     .querySelectorAll("[data-tab]")
     .forEach((b) =>
@@ -135,10 +146,10 @@ function render() {
               ? selected.add(c.dataset.news)
               : selected.delete(c.dataset.news)),
       );
-  } else if (ready) {
+  } else if (hasDraft) {
     const d = edition.draft;
     $("#document").innerHTML =
-      (tab === "podcast"
+      (!ready ? '<p class="note">Brouillon disponible · Vérification en cours ou à reprendre. Non envoyé.</p>' : '') + (tab === "podcast"
         ? `<div class="podcast-meta"><h3>${esc(d.podcast_title)}</h3><p>${esc(d.podcast_description)}</p></div>`
         : "") +
       `<pre>${esc(tab === "podcast" ? edition.podcast_text : edition.brief_text)}</pre>`;

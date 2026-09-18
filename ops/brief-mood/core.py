@@ -119,6 +119,8 @@ DRAFT = obj({'intro':S,'sections':arr(obj({'heading':S,'body':S,'news_ids':arr(S
              'closing':S,'podcast_title':S,'podcast_description':S,'podcast_script':S})
 AUDIT = obj({'passed':{'type':'boolean'},'issues':arr(S),
              'checked_ids':arr(S),'source_checks':arr(obj({'url':S,'verified':{'type':'boolean'},'detail':S}))})
+SOURCE_RECOVERY = obj({'replacements':arr(obj({'original_url':S,'source':SOURCE,
+                       'verified':{'type':'boolean'},'supports_all_claims':{'type':'boolean'},'detail':S}))})
 
 
 def model(task, evidence, schema, name, web=True):
@@ -251,6 +253,65 @@ def draft_issues(d, r):
     return problems
 
 
+def research_urls(research):
+    return {s['url'] for n in research['news'] for s in n['sources']} | {
+        research['session_source']['url'],research['closing']['source']['url']}
+
+
+def repair_source_links(eid, research, draft, audit):
+    # Repair evidence references only after the independent factual audit passed.
+    if not audit['passed'] or audit['issues'] or not {n['id'] for n in research['news']}<=set(audit['checked_ids']):
+        return research,audit
+    research=json.loads(json.dumps(research));audit=json.loads(json.dumps(audit))
+    for attempt in range(2):
+        verified={s['url'] for s in audit['source_checks'] if s['verified']}
+        missing=research_urls(research)-verified
+        if not missing:break
+        update(eid,stage='Recherche de sources de remplacement',draft=draft)
+        result=model('Les faits et les deux textes ont passé un audit indépendant, mais certaines URLs du dossier restent non confirmées. Ouvre les URLs alternatives déjà trouvées par cet audit et recherche si nécessaire des sources primaires ou des reprises intégrales fiables. Pour CHAQUE original_url manquante, vérifie TOUS les faits qui lui sont associés dans le dossier ET les textes (y compris clôture, dates, chiffres, nuances). Retourne une source directement lue avec titre, date réelle et preuve précise en français. verified et supports_all_claims ne valent true que si cette lecture confirme tous ces faits sans modifier les textes. Une même source peut être utilisée dans plusieurs sujets : contrôle chaque occurrence. Ne change aucun fait et ne coche jamais vrai pour satisfaire le programme. Si rien ne corrobore, retourne false et explique le manque. Les liens de remplacement doivent être publics et exacts, sans inventer de métadonnées.',
+                     {'day':get(eid)['day'],'research':research,'draft':draft,'audit':audit,'missing_urls':sorted(missing)},SOURCE_RECOVERY,'source-recovery-'+str(attempt+1))
+        sources=[research['session_source'],research['closing']['source'],*[s for n in research['news'] for s in n['sources']]]
+        for item in result['replacements']:
+            if item['original_url'] not in missing or not item['verified'] or not item['supports_all_claims']:continue
+            replacement=item['source']
+            if not public_url(replacement['url']) or len(replacement['evidence'])<30:continue
+            for source in sources:
+                if source['url']==item['original_url']:
+                    source.clear();source.update(replacement)
+            audit['source_checks'].append({'url':replacement['url'],'verified':True,'detail':item['detail']})
+            audit.setdefault('source_recovery',[]).append(item)
+        validate_research(research,get(eid)['day'])
+        update(eid,research=research,audit=audit)
+    return research,audit
+
+
+def recover_today():
+    with (DATA/'generation.lock').open('a') as lock:
+        try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except BlockingIOError:raise ValueError('Une préparation est déjà en cours.')
+        with connect() as c:
+            row=c.execute('SELECT id FROM editions WHERE day=? ORDER BY created DESC LIMIT 1',(now().date().isoformat(),)).fetchone()
+        if not row:raise ValueError('Aucune édition du jour à reprendre.')
+        e=get(row['id']);a=e['audit'];r=e['research'];d=e['draft']
+        if e['state']!='failed' or not d or not a or not a['passed'] or a['issues']:
+            raise ValueError('Reprise ciblée impossible sans brouillon et audit factuel positif.')
+        update(e['id'],state='working',error=None)
+        try:
+            r,a=repair_source_links(e['id'],r,d,a)
+            verified={s['url'] for s in a['source_checks'] if s['verified']}
+            if not research_urls(r)<=verified or not {n['id'] for n in r['news']}<=set(a['checked_ids']):
+                raise ValueError('Sources de remplacement encore insuffisantes : '+', '.join(sorted(research_urls(r)-verified)))
+            validate_research(r,e['day'])
+            errors=draft_issues(d,r)
+            if errors:raise ValueError(' '.join(errors))
+            a['editorial_notes']=length_notes(d)
+            update(e['id'],research=r,audit=a,state='ready',stage='Prêt',error=None)
+        except Exception as exc:
+            update(e['id'],state='failed',stage='À vérifier',error=str(exc)[:1800])
+            raise
+    send_day()
+
+
 def write_and_audit(eid, research, attempt=0):
     e=get(eid)
     update(eid,stage='Rédaction du brief et du podcast')
@@ -267,6 +328,7 @@ def write_and_audit(eid, research, attempt=0):
     if errors:raise ValueError('Contrôle éditorial : '+' '.join(errors))
     update(eid,draft=draft,stage='Contre-vérification des sources')
     audit=model('Vérification indépendante et stricte. Ouvre les sources, contrôle chaque affirmation des DEUX livrables contre les preuves et dates, clôture versus hors-séance, résultats publiés versus attendus, absence de recyclage sans fait nouveau, pertinence et exactitude des variations chiffrées, attribution de l’histoire finale, français et interdits. Les variations chiffrées sont AUTORISÉES si utiles, sourcées et contextualisées ; ne bloque jamais un texte pour la seule présence de points, pourcentages ou signes. Evite seulement les listes décoratives de performances. passed=false si un fait est douteux, inaccessible sans corroboration, inventé ou non soutenu. checked_ids contient tous les ids réellement vérifiés. source_checks liste les URLs réellement lues et leur résultat, y compris le mot de la fin ET la source de clôture. La signature et les polarités sont ajoutées par le programme : vérifie les textes finaux fournis. issues contient seulement les défauts bloquants, pas les contrôles réussis. Ne valide pas par complaisance.',{**evidence,'draft':draft,'final_brief':text({'draft':draft,'polarities':e['polarities']}),'final_podcast':text({'draft':draft,'polarities':e['polarities']},True),'history':history()},AUDIT,'audit')
+    research,audit=repair_source_links(eid,research,draft,audit)
     expected={n['id'] for n in research['news']}
     urls={s['url'] for n in research['news'] for s in n['sources']}
     urls.add(research['closing']['source']['url'])
@@ -388,7 +450,8 @@ def send_day(day=None):
 if __name__=='__main__':
     import argparse
     parser=argparse.ArgumentParser()
-    parser.add_argument('action',choices=['generate','send','init'])
+    parser.add_argument('action',choices=['generate','send','init','recover'])
     args=parser.parse_args();init()
     if args.action=='generate':generate(create())
     if args.action=='send':send_day()
+    if args.action=='recover':recover_today()
