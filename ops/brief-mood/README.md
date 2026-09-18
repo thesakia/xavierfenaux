@@ -36,6 +36,13 @@ and sources. The source audit also checks qualitative market reactions against
 the appropriate session. Numeric index/equity changes are allowed sparingly when
 useful, sourced and contextualized; their presence alone never blocks an edition.
 
+Length is an editorial target, not a delivery gate. Drafting aims for 700-800
+words including headings, within the preferred 600-900 range. Up to three
+editorial correction passes address length and formatting before the independent
+factual audit. Remaining length deviations are recorded in audit.editorial_notes
+but do not prevent delivery. Unverified facts and missing sources still block it.
+Intermediate drafts are saved so a failed run does not discard the writing.
+
 Ready edition history and imported published examples are given to subsequent
 research/audit runs. Known examples from September 11 and 16 were imported at
 setup. This is not a claim that all historical X posts have been imported.
