@@ -341,12 +341,46 @@ def write_and_audit(eid, research, attempt=0):
             update(eid,stage='Correction après vérification')
             repaired=model('Corrige le dossier à partir de cet audit indépendant. Remplace les URLs inaccessibles par des preuves directement lisibles, retire les sources redondantes inutilisables. Corrige les affirmations non étayées. Si le mot final est invérifiable, recherche une autre histoire documentée et vérifiable. Conserve au moins huit faits dont quatre entreprises. Ne change pas les faits exacts. Les textes seront ensuite rédigés et audités de nouveau.',
                            {'day':e['day'],'research':research,'audit':audit,'unverified_urls':sorted(urls-verified)},RESEARCH,'evidence-repair')
-            validate_research(repaired,e['day'])
+            repaired=complete_research(eid,repaired)
             update(eid,research=repaired)
             return write_and_audit(eid,repaired,attempt=1)
         raise ValueError('Vérification non validée : '+' '.join(audit['issues'][:5] or ['Toutes les sources n’ont pas été confirmées.']))
     audit['editorial_notes']=length_notes(draft)
     update(eid,research=research,draft=draft,audit=audit,state='ready',stage='Prêt',error=None)
+
+
+def complete_research(eid, research):
+    day=get(eid)['day']
+    for attempt in range(4):
+        research=json.loads(json.dumps(research))
+        # Classification is not a factual defect: move an explicitly scheduled
+        # event to the agenda without changing its date, status or evidence.
+        for news in research.get('news',[]):
+            if news.get('status')=='scheduled':news['section']='agenda'
+        update(eid,research=research,stage='Vérification et complément des actualités')
+        try:
+            validate_research(research,day)
+            return research
+        except (ValueError,KeyError,TypeError) as exc:
+            if attempt==3:raise
+            research=model('Corrige ce dossier par une nouvelle recherche ciblée. Une news ancienne, future présentée comme publiée ou non vérifiable doit être retirée et remplacée par une actualité fraîche et corroborée. Ne maquille jamais sa date pour la conserver. Classe les événements attendus dans agenda, avec status scheduled. Complète les entreprises si nécessaire. Conserve les faits exacts et vérifie toutes les contraintes, pas seulement la première erreur. Erreur : '+str(exc),
+                           {'day':day,'research':research,'history':history()},RESEARCH,'research-repair-'+str(attempt+1))
+
+
+def daily():
+    """Retry the same day's saved work before escalating a failed delivery."""
+    for attempt in range(3):
+        day=now().date().isoformat()
+        with connect() as c:
+            if c.execute("SELECT 1 FROM editions WHERE day=? AND state='ready'",(day,)).fetchone():return
+            row=c.execute('SELECT id,state FROM editions WHERE day=? ORDER BY created DESC LIMIT 1',(day,)).fetchone()
+        eid=row['id'] if row and row['state']=='failed' else create()
+        try:
+            generate(eid)
+            return
+        except Exception:
+            if attempt==2:raise
+            time.sleep(30)
 
 
 def generate(eid, selected=None):
@@ -357,7 +391,7 @@ def generate(eid, selected=None):
             update(eid,state='working',stage='Recherche US, Asie et agenda',error=None)
             e=get(eid)
             if e['day']!=now().date().isoformat():raise ValueError('Cette édition ne correspond plus à la journée en cours.')
-            if selected is None:
+            if selected is None and not e['research']:
                 # Reuse the proven Radar RSS parser, without changing its sources or database.
                 import sys
                 sys.path.insert(0,'/opt/ivt-radar')
@@ -369,16 +403,13 @@ def generate(eid, selected=None):
                 seeds=collect_sources({'sources':[{'name':'Google News US','url':'https://news.google.com/rss/search?q='+quote(q)+'&hl=en-US&gl=US&ceid=US:en'} for q in queries]})
                 research=model('Effectue maintenant une recherche approfondie et lis les sources. Les RSS ne sont que des pistes. Respecte le jour cible et la fraîcheur réelle des événements. 10-16 faits, dont 4 entreprises minimum, agenda distinct, dossier de clôture et couverture des autres marchés. Chaque source a une date ISO8601 avec fuseau et evidence est une paraphrase précise de ce qui a été vérifié, pas une citation longue. Si la recherche est insuffisante ne comble pas les trous.',
                     {'day':e['day'],'started_at':now().isoformat(),'notes':e['notes'],'history':history(),'rss_leads':seeds},RESEARCH,'research')
-                try:validate_research(research,e['day'])
-                except (ValueError,KeyError,TypeError) as exc:
-                    research=model('Corrige le dossier et ses champs sans inventer de faits. Vérifie si nécessaire les sources. Erreur du contrôle : '+str(exc),
-                        {'day':e['day'],'research':research},RESEARCH,'research-repair')
-                    validate_research(research,e['day'])
-                update(eid,research=research)
+                research=complete_research(eid,research)
             else:
                 research=e['research']
-                research['news']=[n for n in research['news'] if n['id'] in selected]
-                validate_research(research,e['day'])
+                if selected is not None:
+                    research['news']=[n for n in research['news'] if n['id'] in selected]
+                    validate_research(research,e['day'])
+                else:research=complete_research(eid,research)
             write_and_audit(eid,research)
         except Exception as exc:
             update(eid,state='failed',stage='À vérifier',error=str(exc)[:1800])
@@ -451,8 +482,9 @@ def send_day(day=None):
 if __name__=='__main__':
     import argparse
     parser=argparse.ArgumentParser()
-    parser.add_argument('action',choices=['generate','send','init','recover'])
+    parser.add_argument('action',choices=['generate','send','init','recover','daily'])
     args=parser.parse_args();init()
     if args.action=='generate':generate(create())
     if args.action=='send':send_day()
     if args.action=='recover':recover_today()
+    if args.action=='daily':daily()

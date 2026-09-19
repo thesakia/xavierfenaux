@@ -39,6 +39,50 @@ def test_parallel_creation_refused():
     with pytest.raises(ValueError):core.create()
 
 
+def test_scheduled_company_is_moved_to_agenda_without_changing_facts(monkeypatch):
+    eid=core.create();r=research()
+    n={**r['news'][0],'id':'upcoming','topic_key':'upcoming','status':'scheduled',
+       'event_date':(core.now().date()+dt.timedelta(days=2)).isoformat()}
+    r['news'].append(n)
+    monkeypatch.setattr(core,'model',Mock(side_effect=AssertionError('No research call for classification')))
+    fixed=core.complete_research(eid,r)
+    assert fixed['news'][-1]=={**n,'section':'agenda'}
+    assert r['news'][-1]['section']=='entreprises'
+    assert core.get(eid)['research']==fixed
+
+
+def test_invalid_news_are_researched_again_and_progress_saved(monkeypatch):
+    eid=core.create();r=research();bad=json.loads(json.dumps(r))
+    bad['news'][0]['event_date']='2000-01-01'
+    model=Mock(side_effect=[bad,r]);monkeypatch.setattr(core,'model',model)
+    assert core.complete_research(eid,bad)==r
+    assert model.call_count==2
+    assert core.get(eid)['research']==r
+
+
+def test_daily_retries_same_edition_and_stops_after_success(monkeypatch):
+    eid=core.create();core.update(eid,state='failed')
+    calls=[]
+    def generate(current):
+        calls.append(current)
+        if len(calls)==1:
+            core.update(current,state='failed');raise ValueError('retry')
+        core.update(current,state='ready')
+    monkeypatch.setattr(core,'generate',generate)
+    monkeypatch.setattr(core.time,'sleep',lambda _:None)
+    core.daily();core.daily()
+    assert calls==[eid,eid]
+
+
+def test_daily_does_not_reuse_yesterday(monkeypatch):
+    eid=core.create();core.update(eid,state='ready')
+    with core.connect() as c:c.execute('UPDATE editions SET day=? WHERE id=?',('2000-01-01',eid))
+    calls=[]
+    monkeypatch.setattr(core,'generate',lambda current:calls.append(current))
+    core.daily()
+    assert len(calls)==1 and calls[0]!=eid
+
+
 def previous_closing():
     eid=core.create();r=research();d=draft()
     core.update(eid,state='ready',research=r,draft=d)

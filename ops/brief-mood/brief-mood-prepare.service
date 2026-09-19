@@ -14,8 +14,8 @@ Environment=HOME=/opt/ivt-radar
 Environment=CODEX_HOME=/var/lib/ivt-radar/codex
 Environment=PATH=/opt/ivt-radar-tools/node_modules/.bin:/usr/local/bin:/usr/bin:/bin
 Environment=TZ=Europe/Paris
-ExecStart=/opt/ivt-radar/.venv/bin/python core.py generate
-TimeoutStartSec=58min
+ExecStart=/opt/ivt-radar/.venv/bin/python core.py daily
+TimeoutStartSec=3h
 UMask=0077
 NoNewPrivileges=true
 PrivateTmp=true
