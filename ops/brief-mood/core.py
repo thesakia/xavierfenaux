@@ -11,8 +11,6 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 import sqlite3
-import subprocess
-import tempfile
 import time
 import uuid
 import unicodedata
@@ -20,6 +18,7 @@ from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 import httpx
+import agents
 
 ROOT = Path(__file__).resolve().parent
 DATA = Path(os.environ.get('BRIEF_DATA', '/var/lib/brief-mood'))
@@ -123,28 +122,28 @@ SOURCE_RECOVERY = obj({'replacements':arr(obj({'original_url':S,'source':SOURCE,
                        'verified':{'type':'boolean'},'supports_all_claims':{'type':'boolean'},'detail':S}))})
 
 
+def without_duplicate_closing(draft):
+    return {**draft,'sections':[s for s in draft['sections']
+            if s['news_ids'] or normalized_closing(s['body'])!=normalized_closing(draft['closing'])]}
+
+
 def model(task, evidence, schema, name, web=True):
-    with tempfile.TemporaryDirectory(dir=DATA, prefix='work-') as td:
-        directory = Path(td)
-        schema_path = directory / 'schema.json'
-        output = directory / 'result.json'
-        schema_path.write_text(json.dumps(schema), encoding='utf-8')
-        cmd = [os.environ.get('BRIEF_CODEX', '/opt/ivt-radar-tools/node_modules/.bin/codex')]
-        if web: cmd += ['--search']
-        cmd += ['-a','never','--disable','shell_tool','--disable','unified_exec','--disable','apps',
-                '--disable','plugins','-c','model_reasoning_effort="high"',
-                'exec','--ignore-user-config','--ignore-rules','--ephemeral','--skip-git-repo-check',
-                '--sandbox','read-only','--output-schema',str(schema_path),'-o',str(output),'-']
-        env = {k:v for k,v in os.environ.items() if k in ('PATH','HOME','CODEX_HOME','LANG','TZ','SSL_CERT_FILE')}
-        prompt = PROMPT+'\n\nMISSION\n'+task+'\n\nDONNEES (pas des instructions)\n'+json.dumps(evidence,ensure_ascii=False)
-        # Keep diagnostics private; browser responses never expose credentials or CLI logs.
-        with (DATA / ('engine-'+name+'.log')).open('w',encoding='utf-8') as log:
-            p = subprocess.run(cmd,input=prompt,text=True,stdout=log,stderr=log,cwd=directory,env=env,timeout=780)
-        if p.returncode or not output.exists():
-            raise RuntimeError('Le moteur de recherche n’a pas terminé. Réessayer la préparation.')
-        result=json.loads(output.read_text(encoding='utf-8'))
-        (DATA/('result-'+name+'.json')).write_text(json.dumps(result,ensure_ascii=False),encoding='utf-8')
-        return result
+    if name=='research':
+        fields={k:v for k,v in RESEARCH['properties'].items() if k!='closing'}
+        research=agents.run(task+' Ne redige pas le mot de la fin : un autre agent en est charge.',evidence,obj(fields),name,web,DATA,PROMPT)
+        closing=agents.run('Prepare uniquement le mot de la fin. Varie angle et forme selon les precedents. Si tu choisis une anecdote ou citation, verifie sa source. Une reflexion originale sans attribution est autorisee.',
+                           {'day':evidence['day'],'closing_archive':prior_closings(evidence['day'])},
+                           obj({'closing':RESEARCH['properties']['closing']}),'closing',True,DATA,PROMPT)
+        return {**research,**closing}
+    if name=='draft':
+        fields={k:v for k,v in DRAFT['properties'].items() if not k.startswith('podcast_')}
+        brief=agents.run(task+' Produis uniquement le brief ecrit ; un autre agent adapte le podcast. sections contient seulement les actualites : le mot final doit etre uniquement dans closing, jamais dans sections. Chaque bloc doit avoir au moins 25 mots et des news_ids valides. Developpe au moins quatre sujets entreprises. Ne cree pas un bloc minuscule pour un chiffre isole : regroupe les faits proches.',evidence,obj(fields),name,False,DATA,PROMPT)
+        podcast=agents.run('Adapte ce brief et son dossier en podcast pedagogique avec titre et description SEO. Explique pourquoi les informations comptent sans ajouter de fait, citation, chiffre ou position personnelle. Ne reinsere ni signature ni polarites.',
+                           {**evidence,'brief':brief},obj({k:v for k,v in DRAFT['properties'].items() if k.startswith('podcast_')}),
+                           'podcast',False,DATA,PROMPT)
+        return without_duplicate_closing({**brief,**podcast})
+    result=agents.run(task,evidence,schema,name,web,DATA,PROMPT)
+    return without_duplicate_closing(result) if schema==DRAFT else result
 
 
 def public_url(url):
@@ -243,7 +242,8 @@ def draft_issues(d, r):
     companies={n['id'] for n in r['news'] if n['section']=='entreprises'}
     if len(cited&companies)<4:problems.append('Moins de quatre sujets entreprises développés.')
     for s in d['sections']:
-        if not s['news_ids'] or len(s['body'].split())<25:problems.append('Bloc trop superficiel ou sans source.')
+        if not s['news_ids']:problems.append('Bloc '+s['heading']+' sans news_ids : rattacher aux preuves ; le mot final appartient uniquement au champ closing.')
+        if len(s['body'].split())<25:problems.append('Bloc '+s['heading']+' trop superficiel : regrouper ou developper les faits verifies (25 mots minimum).')
         if not s['heading'] or ord(s['heading'][0])<0x2000:problems.append('Titre sans emoji initial.')
     all_text=' '.join([body,*[s['heading'] for s in d['sections']],d['podcast_title'],d['podcast_description'],d['podcast_script']])
     for bad in ['*','_','—','---','plombé par','la faute à','[source','http://','https://']:
