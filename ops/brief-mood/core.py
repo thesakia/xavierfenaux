@@ -325,7 +325,7 @@ def write_and_audit(eid, research, attempt=0):
         update(eid,draft=draft,stage='Ajustement éditorial')
         errors=draft_issues(draft,research)
         notes=length_notes(draft)
-        if not errors and not notes:break
+        if not errors:break
         draft=model('Corrige ce brouillon, sans ajouter de faits. Conserve les sources, les nuances et au moins quatre sujets entreprises. Si le texte est trop long, supprime les répétitions et resserre les formulations, sans tronquer les phrases. Si trop court, développe uniquement les faits déjà vérifiés. Vise 700-800 mots pour le brief, titres compris ; pas pour le podcast. Corrections : '+json.dumps(errors+notes,ensure_ascii=False),{**evidence,'draft':draft},DRAFT,'repair-'+str(repair+1),False)
     errors=draft_issues(draft,research)
     if errors:raise ValueError('Contrôle éditorial : '+' '.join(errors))

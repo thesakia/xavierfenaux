@@ -296,15 +296,15 @@ def test_source_recovery_does_not_override_a_failed_fact_audit(monkeypatch):
     engine.assert_not_called()
 
 
-def test_length_repair_is_repeated_then_factually_audited(monkeypatch):
+def test_length_alone_never_delays_factual_audit(monkeypatch):
     eid=core.create();r=research();d=draft()
     audit={'passed':True,'issues':[],'checked_ids':[n['id'] for n in r['news']],
            'source_checks':[{'url':r['session_source']['url'],'verified':True}]}
     monkeypatch.setattr(core,'length_notes',lambda _:['Longueur 901 mots'])
-    engine=Mock(side_effect=[d,d,d,d,audit])
+    engine=Mock(side_effect=[d,audit])
     monkeypatch.setattr(core,'model',engine)
     core.write_and_audit(eid,r)
-    assert engine.call_count==5
+    assert engine.call_count==2
     assert core.get(eid)['state']=='ready'
     assert core.get(eid)['audit']['editorial_notes']==['Longueur 901 mots']
 
