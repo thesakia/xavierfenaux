@@ -24,6 +24,7 @@ const status = {
   queued: "En attente",
   working: "Préparation",
   ready: "Disponible",
+  ready_with_warnings: "Disponible · À vérifier",
   failed: "À vérifier",
 };
 function toast(text) {
@@ -66,7 +67,7 @@ function delivery() {
             `<p class="${esc(d.state)}"><b>${esc(d.recipient)}</b>${d.state === "accepted" ? (d.detail === "failure" ? "Alerte confiée au serveur mail" : "Brief confié au serveur mail") : "Envoi non confirmé"}</p>`,
         )
         .join("")
-    : "<p>Préparation à 03:00 Paris<br>Envoi dès validation</p>";
+    : "<p>Préparation à 03:00 Paris<br>Envoi dès disponibilité</p>";
 }
 function renderHistory() {
   $("#history").innerHTML =
@@ -86,7 +87,9 @@ function renderHistory() {
   delivery();
 }
 function render() {
-  const ready = edition?.state === "ready";
+  const ready = ["ready", "ready_with_warnings"].includes(edition?.state);
+  const warnings = edition?.warnings || [];
+  const verified = edition?.state === "ready" && !warnings.length;
   const hasDraft = Boolean(edition?.draft);
   const preparing = ["queued", "working"].includes(edition?.state);
   $("#edition-date").textContent = day(edition?.day || state.today);
@@ -100,8 +103,8 @@ function render() {
           })
         : "")
     : "Aucune édition sélectionnée";
-  $("#alert").hidden = !edition?.error;
-  $("#alert").textContent = edition?.error || "";
+  $("#alert").hidden = !edition?.error && !warnings.length;
+  $("#alert").textContent = warnings.length ? `Disponible avec avertissements · ${warnings.length} point${warnings.length > 1 ? "s" : ""} à vérifier.` : edition?.error || "";
   for (const id of ["copy", "download"])
     $("#" + id).disabled = !hasDraft || busy;
   for (const id of ["approve", "save-polarities"])
@@ -118,15 +121,16 @@ function render() {
   $("#word-count").textContent = hasDraft
     ? `${ready ? "" : "Brouillon · "}${(edition.brief_text || "").trim().split(/\s+/).length} mots · ${edition.polarities.trim() ? "Polarités renseignées" : "Polarités à compléter"}`
     : "";
-  $("#checks").innerHTML = ready
+  $("#checks").innerHTML = verified
     ? "<li>✓ Dossier de sources contre-vérifié</li><li>✓ Dates et statuts des annonces contrôlés</li>"
-    : `<li>${edition?.state === "failed" ? "Vérification non validée" : "Vérifications en attente"}</li>`;
+    : `<li>${ready ? "Disponible avec des points à vérifier" : edition?.state === "failed" ? "Vérification non validée" : "Vérifications en attente"}</li>`;
+  $("#checks").innerHTML += warnings.map(w => `<li>${esc(w)}</li>`).join("");
   if (!ready && edition?.audit) {
     const r = edition.research;
     const required = new Set(r ? [...r.news.flatMap(n => n.sources.map(s => s.url)), r.session_source.url, ...(r.closing.source ? [r.closing.source.url] : [])] : []);
     const verified = new Set(edition.audit.source_checks.filter(s => s.verified).map(s => s.url));
     $("#checks").innerHTML += edition.audit.issues.map(issue => `<li>${esc(issue)}</li>`).join("");
-    $("#checks").innerHTML += [...required].filter(url => !verified.has(url)).map(url => `<li>Source à revérifier : <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname)}</a></li>`).join("");
+    $("#checks").innerHTML += [...required].filter(url => !verified.has(url)).map(url => `<li>Source à revérifier : <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(url)}</a></li>`).join("");
   }
   document
     .querySelectorAll("[data-tab]")
@@ -149,7 +153,7 @@ function render() {
   } else if (hasDraft) {
     const d = edition.draft;
     $("#document").innerHTML =
-      (!ready ? '<p class="note">Brouillon disponible · Vérification en cours ou à reprendre. Non envoyé.</p>' : '') + (tab === "podcast"
+      (warnings.length ? '<p class="note">Disponible avec avertissements · Consulter les points à vérifier ci-dessus.</p>' : !ready ? '<p class="note">Brouillon disponible · Vérification en cours ou à reprendre. Non envoyé.</p>' : '') + (tab === "podcast"
         ? `<div class="podcast-meta"><h3>${esc(d.podcast_title)}</h3><p>${esc(d.podcast_description)}</p></div>`
         : "") +
       `<pre>${esc(tab === "podcast" ? edition.podcast_text : edition.brief_text)}</pre>`;
@@ -159,6 +163,15 @@ function render() {
       `<div class="empty ${active ? "loading" : ""}"><i data-lucide="${active ? "loader-circle" : "notebook-pen"}"></i><h3>${active ? esc(edition.stage) : edition?.state === "failed" ? "Édition à vérifier" : "Le prochain Brief Mood commence ici"}</h3></div>`;
   }
   renderHistory();
+  document.querySelectorAll("#document a, #checks a").forEach(a => {
+    try {
+      const url = new URL(a.getAttribute("href"));
+      if (url.protocol !== "https:" || url.username || url.password) throw Error();
+    } catch {
+      a.removeAttribute("href");
+      a.removeAttribute("target");
+    }
+  });
   icons();
 }
 async function load(id, preserveInputs = false) {

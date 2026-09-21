@@ -21,6 +21,7 @@ def worker(stop):
             try:
                 selected=[n['id'] for n in json.loads(row['research'])['news']] if row['research'] else None
                 core.generate_with_retries(row['id'],selected,stop)
+                if core.get(row['id'])['state'] in core.AVAILABLE:core.send_day()
             except Exception:
                 pass  # Failure detail is persisted by generate; do not crash the worker.
 
@@ -105,7 +106,7 @@ class Revise(Create):
 @app.post('/api/editions/{eid}/revise')
 def revise(eid:str,body:Revise):
     old=edition(eid)
-    if old['state'] not in ('ready','failed') or not old['research']:raise HTTPException(409,'Recherche indisponible.')
+    if old['state'] not in (*core.AVAILABLE,'failed') or not old['research']:raise HTTPException(409,'Recherche indisponible.')
     if old['day']!=core.now().date().isoformat():raise HTTPException(409,'Relancer la recherche du jour pour actualiser les faits.')
     research=old['research']
     if not set(body.selected)<={n['id'] for n in research['news']}:raise HTTPException(400,'Sélection inconnue.')
@@ -141,8 +142,8 @@ def approve(eid:str):
 def export(eid:str,podcast:bool=False):
     e=edition(eid)
     if not e['draft']:raise HTTPException(409,'Le brouillon n’est pas encore rédigé.')
-    suffix='-brouillon' if e['state']!='ready' else ''
-    return PlainTextResponse(core.text(e,podcast),headers={'Content-Disposition':f'attachment; filename="brief-mood-{e["day"]}{"-podcast" if podcast else ""}{suffix}.txt"'})
+    suffix='-brouillon' if e['state'] not in core.AVAILABLE else ''
+    return PlainTextResponse(core.warning_notice(e)+core.text(e,podcast),headers={'Content-Disposition':f'attachment; filename="brief-mood-{e["day"]}{"-podcast" if podcast else ""}{suffix}.txt"'})
 
 
 app.mount('/static',StaticFiles(directory=core.ROOT/'static'),name='static')

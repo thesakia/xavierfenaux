@@ -22,7 +22,7 @@ brief and its evidence, not the research session's conversation.
 
 Lighter agents fall back to Sol on execution/JSON failures. Editorial generation
 after a failed factual audit uses Sol directly. The independent auditor and the
-existing verified-delivery policy remain unchanged. No model can send mail.
+audits remain independent. No model can send mail directly.
 
 Override models with `BRIEF_MODEL_<ROLE>` in the private service environment.
 Only choose models available to the server account. Agent usage and wall time
@@ -45,3 +45,13 @@ Failed factual audits first trigger a targeted draft correction, preserving
 unaffected passages, followed by a new independent audit. Only if that fails
 does the pipeline repair the research dossier and regenerate. Resuming a failed
 edition also applies its saved audit before checking the same text again.
+
+## Availability and warnings
+
+At the user's request, unresolved checks do not suppress a written daily brief.
+It becomes `ready_with_warnings`: the original audit outcome is preserved, and
+the email, cockpit and exported file carry explicit points to verify. A failure
+after writing the brief (including podcast generation) preserves that content.
+The send service can recover a saved current-day draft after an interrupted
+generator, but cannot publish it while the generation lock is held. Empty or
+old editions are never substituted. Daily SMTP idempotency is unchanged.

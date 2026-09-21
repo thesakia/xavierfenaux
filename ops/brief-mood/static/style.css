@@ -348,6 +348,7 @@ textarea:focus {
 }
 .checks li {
   margin-bottom: 9px;
+  overflow-wrap: anywhere;
 }
 .source-item {
   border-bottom: 1px solid #e0e8e3;

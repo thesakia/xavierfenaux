@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parent
 DATA = Path(os.environ.get('BRIEF_DATA', '/var/lib/brief-mood'))
 PARIS = ZoneInfo('Europe/Paris')
 RECIPIENTS = ('xfenaux@gmail.com', 'fenauxft@gmail.com')
+AVAILABLE = ('ready', 'ready_with_warnings')
 PROMPT = (ROOT / 'prompts.md').read_text(encoding='utf-8')
 
 
@@ -64,6 +65,8 @@ def init():
           id INTEGER PRIMARY KEY, edition TEXT NOT NULL, at TEXT NOT NULL,
           attempt INTEGER NOT NULL, outcome TEXT NOT NULL);
         ''')
+        if 'warnings' not in {r['name'] for r in c.execute('PRAGMA table_info(editions)')}:
+            c.execute("ALTER TABLE editions ADD COLUMN warnings TEXT NOT NULL DEFAULT '[]'")
 
 
 def get(eid):
@@ -72,14 +75,14 @@ def get(eid):
     if not row:
         raise KeyError('Édition introuvable')
     row = dict(row)
-    for key in ('research', 'draft', 'audit'):
+    for key in ('research', 'draft', 'audit', 'warnings'):
         row[key] = json.loads(row[key]) if row[key] else None
     return row
 
 
 def update(eid, **fields):
-    assert set(fields) <= {'state','stage','research','draft','audit','error','approved','polarities'}
-    for key in ('research','draft','audit'):
+    assert set(fields) <= {'state','stage','research','draft','audit','error','approved','polarities','warnings'}
+    for key in ('research','draft','audit','warnings'):
         if key in fields:
             fields[key] = json.dumps(fields[key], ensure_ascii=False)
     fields['updated'] = now().isoformat()
@@ -141,6 +144,8 @@ def model(task, evidence, schema, name, web=True):
     if name=='draft':
         fields={k:v for k,v in DRAFT['properties'].items() if not k.startswith('podcast_')}
         brief=agents.run(task+' Produis uniquement le brief ecrit ; un autre agent adapte le podcast. sections contient seulement les actualites : le mot final doit etre uniquement dans closing, jamais dans sections. Chaque bloc doit avoir au moins 25 mots et des news_ids valides. Developpe au moins quatre sujets entreprises. Ne cree pas un bloc minuscule pour un chiffre isole : regroupe les faits proches.',evidence,obj(fields),name,False,DATA,PROMPT)
+        if evidence.get('_edition_id'):
+            update(evidence['_edition_id'],draft={**brief,'podcast_title':'','podcast_description':'','podcast_script':''},audit=None)
         podcast=agents.run('Adapte ce brief et son dossier en podcast pedagogique avec titre et description SEO. Explique pourquoi les informations comptent sans ajouter de fait, citation, chiffre ou position personnelle. Ne reinsere ni signature ni polarites.',
                            {**evidence,'brief':brief},obj({k:v for k,v in DRAFT['properties'].items() if k.startswith('podcast_')}),
                            'podcast',False,DATA,PROMPT)
@@ -206,7 +211,7 @@ def closing_source(url):
 
 def prior_closings(day=None):
     with connect() as c:
-        rows=c.execute("SELECT day,research,draft FROM editions WHERE state='ready' AND day<? AND research IS NOT NULL ORDER BY day DESC",(day or now().date().isoformat(),)).fetchall()
+        rows=c.execute("SELECT day,research,draft FROM editions WHERE state IN ('ready','ready_with_warnings') AND day<? AND research IS NOT NULL ORDER BY day DESC",(day or now().date().isoformat(),)).fetchall()
     return [{'day':r['day'],'story':json.loads(r['research'])['closing']['story'],
              'source':(json.loads(r['research'])['closing']['source'] or {}).get('url'),
              'text':json.loads(r['draft'])['closing']} for r in rows if r['draft']]
@@ -215,7 +220,7 @@ def prior_closings(day=None):
 def history():
     today=now().date().isoformat()
     with connect() as c:
-        rows = c.execute("SELECT day,research,draft FROM editions WHERE state='ready' AND day<? ORDER BY created DESC LIMIT 20",(today,)).fetchall()
+        rows = c.execute("SELECT day,research,draft FROM editions WHERE state IN ('ready','ready_with_warnings') AND day<? AND research IS NOT NULL ORDER BY created DESC LIMIT 20",(today,)).fetchall()
         archived = [dict(r) for r in c.execute('SELECT day,text FROM archive WHERE day<? ORDER BY day DESC LIMIT 15',(today,))]
     return {'editions':[{'day':r['day'],'topics':[{k:n[k] for k in ('topic_key','title','facts','event_date')} for n in json.loads(r['research'])['news']],
                          'closing':json.loads(r['draft'])['closing']} for r in rows], 'published_examples':archived,'closing_archive':prior_closings()}
@@ -234,6 +239,49 @@ def text(e, podcast=False):
 def length_notes(d):
     count=len(text({'draft':d,'polarities':''}).split())
     return [] if 600<=count<=900 else [f'Longueur {count} mots ; viser 700 à 800 mots, titres compris, hors polarités.']
+
+
+def record_warning(eid, message):
+    warnings=get(eid)['warnings'] or []
+    if message not in warnings:update(eid,warnings=[*warnings,message])
+
+
+def publish_with_warnings(eid, reason=None):
+    """Availability is separate from factual verification; never forge an audit."""
+    e=get(eid);d=e['draft']
+    if e['day']!=now().date().isoformat() or not isinstance(d,dict):return False
+    if not isinstance(d.get('sections'),list) or not d['sections']:return False
+    if not all(isinstance(s,dict) and isinstance(s.get('heading'),str) and isinstance(s.get('body'),str) for s in d['sections']):return False
+    if not any(s['body'].strip() for s in d['sections']):return False
+    if not all(isinstance(d.get(k),str) for k in ('intro','closing','podcast_title','podcast_description','podcast_script')):return False
+    warnings=list(e['warnings'] or [])
+    if not d['podcast_script'].strip():warnings.append('Version podcast non générée ; le brief écrit est disponible.')
+    if reason:warnings.append(reason)
+    audit=e['audit'] or {}
+    if not audit:warnings.append('Vérification indépendante non terminée.')
+    elif not audit.get('passed'):warnings.append('Vérification indépendante non validée : contrôler les points ci-dessous avant diffusion publique.')
+    warnings.extend(audit.get('issues',[]))
+    r=e['research']
+    if r:
+        try:
+            verified={s['url'] for s in audit.get('source_checks',[]) if s.get('verified')}
+            warnings.extend('Source à vérifier : '+url for url in sorted(research_urls(r)-verified))
+            missing={n['id'] for n in r['news']}-set(audit.get('checked_ids',[]))
+            if missing:warnings.append('Actualités non contre-vérifiées : '+', '.join(sorted(missing)))
+            warnings.extend(draft_issues(d,r))
+            validate_research(r,e['day'])
+        except (ValueError,KeyError,TypeError) as exc:
+            warnings.append('Dossier à vérifier : '+str(exc))
+    else:warnings.append('Dossier de sources indisponible.')
+    warnings=list(dict.fromkeys(warnings)) or ['Vérification à compléter.']
+    update(eid,state='ready_with_warnings',stage='Disponible avec avertissements',warnings=warnings,error=None)
+    return True
+
+
+def warning_notice(e):
+    warnings=e.get('warnings') or []
+    if not warnings:return ''
+    return 'POINTS À VÉRIFIER\nLe contenu est disponible, mais les points suivants restent à contrôler.\n'+''.join('- '+w+'\n' for w in warnings)+'\n'
 
 
 def draft_issues(d, r):
@@ -325,14 +373,14 @@ def recover_today():
 def write_and_audit(eid, research, attempt=0, resume=False, draft_override=None, editorial_retry=True):
     e=get(eid)
     update(eid,stage='Rédaction du brief et du podcast')
-    evidence={'day':e['day'],'research':research,'notes':e['notes'],'polarities':e['polarities'],
+    evidence={'day':e['day'],'research':research,'notes':e['notes'],'polarities':e['polarities'],'_edition_id':eid,
               'previous_audit':e['audit'], 'previous_error':e['error']}
     saved=resume and e['draft'] and e['research']==research
     draft=draft_override or (e['draft'] if saved else model('Rédige les deux livrables à partir EXCLUSIVEMENT de ces faits vérifiés. Ne réinsère pas les polarités ni la signature : le programme les ajoute. Les news_ids relient chaque bloc à ses preuves : utilise les ids de news ; previous_us_session est réservé au dossier de clôture US et à session_source. Le podcast peut être plus long que le brief. Vise 700 à 800 mots pour le brief, titres compris, pour rester dans la cible 600-900.',evidence,DRAFT,'draft',False))
     if saved and draft_override is None and e['audit'] and e['audit']['issues']:
         draft=repair_audited_draft(evidence,draft,e['audit'])
     for repair in range(3):
-        update(eid,draft=draft,stage='Ajustement éditorial')
+        update(eid,draft=draft,audit=None,stage='Ajustement éditorial')
         errors=draft_issues(draft,research)
         notes=length_notes(draft)
         if not errors:break
@@ -342,6 +390,7 @@ def write_and_audit(eid, research, attempt=0, resume=False, draft_override=None,
     if errors:raise ValueError('Contrôle éditorial : '+' '.join(errors))
     update(eid,draft=draft,stage='Contre-vérification des sources')
     audit=model('Vérification indépendante et stricte. Ouvre les sources, contrôle chaque affirmation des DEUX livrables contre les preuves et dates, clôture versus hors-séance, résultats publiés versus attendus, absence de recyclage sans fait nouveau, pertinence et exactitude des variations chiffrées, attribution de l’histoire finale, français et interdits. Les variations chiffrées sont AUTORISÉES si utiles, sourcées et contextualisées ; ne bloque jamais un texte pour la seule présence de points, pourcentages ou signes. Evite seulement les listes décoratives de performances. passed=false si un fait est douteux, inaccessible sans corroboration, inventé ou non soutenu. checked_ids contient tous les ids réellement vérifiés. source_checks liste les URLs réellement lues et leur résultat, y compris le mot de la fin ET la source de clôture. La signature et les polarités sont ajoutées par le programme : vérifie les textes finaux fournis. issues contient seulement les défauts bloquants, pas les contrôles réussis. Ne valide pas par complaisance.',{**evidence,'draft':draft,'final_brief':text({'draft':draft,'polarities':e['polarities']}),'final_podcast':text({'draft':draft,'polarities':e['polarities']},True),'history':history()},AUDIT,'audit')
+    update(eid,audit=audit)
     research,audit=repair_source_links(eid,research,draft,audit)
     expected={n['id'] for n in research['news']}
     urls=research_urls(research)
@@ -362,6 +411,7 @@ def write_and_audit(eid, research, attempt=0, resume=False, draft_override=None,
         raise ValueError('Vérification non validée : '+' '.join(audit['issues'][:5] or ['Toutes les sources n’ont pas été confirmées.']))
     audit['editorial_notes']=length_notes(draft)
     update(eid,research=research,draft=draft,audit=audit,state='ready',stage='Prêt',error=None)
+    if get(eid)['warnings']:publish_with_warnings(eid)
 
 
 def repair_audited_draft(evidence, draft, audit):
@@ -382,16 +432,22 @@ def complete_research(eid, research):
             validate_research(research,day)
             return research
         except (ValueError,KeyError,TypeError) as exc:
-            if attempt==3:raise
-            research=model('Corrige ce dossier par une nouvelle recherche ciblée. Une news ancienne, future présentée comme publiée ou non vérifiable doit être retirée et remplacée par une actualité fraîche et corroborée. Ne maquille jamais sa date pour la conserver. Classe les événements attendus dans agenda, avec status scheduled. Complète les entreprises si nécessaire. Conserve les faits exacts et vérifie toutes les contraintes, pas seulement la première erreur. Erreur : '+str(exc),
-                           {'day':day,'research':research,'history':history()},RESEARCH,'research-repair-'+str(attempt+1))
+            if attempt==3:
+                record_warning(eid,'Dossier à vérifier : '+str(exc))
+                return research
+            try:
+                research=model('Corrige ce dossier par une nouvelle recherche ciblée. Une news ancienne, future présentée comme publiée ou non vérifiable doit être retirée et remplacée par une actualité fraîche et corroborée. Ne maquille jamais sa date pour la conserver. Classe les événements attendus dans agenda, avec status scheduled. Complète les entreprises si nécessaire. Conserve les faits exacts et vérifie toutes les contraintes, pas seulement la première erreur. Erreur : '+str(exc),
+                               {'day':day,'research':research,'history':history()},RESEARCH,'research-repair-'+str(attempt+1))
+            except Exception:
+                record_warning(eid,'Correction du dossier indisponible. Point à vérifier : '+str(exc))
+                return research
 
 
 def daily():
     """Retry the same day's saved work before escalating a failed delivery."""
     day=now().date().isoformat()
     with connect() as c:
-        if c.execute("SELECT 1 FROM editions WHERE day=? AND state='ready'",(day,)).fetchone():return
+        if c.execute("SELECT 1 FROM editions WHERE day=? AND state IN ('ready','ready_with_warnings')",(day,)).fetchone():return
         row=c.execute('SELECT id,state FROM editions WHERE day=? ORDER BY created DESC LIMIT 1',(day,)).fetchone()
     eid=row['id'] if row and row['state']=='failed' else create()
     generate_with_retries(eid)
@@ -450,6 +506,7 @@ def generate(eid, selected=None):
                 else:research=complete_research(eid,research)
             write_and_audit(eid,research,resume=same_selection and e['research']==research)
         except Exception as exc:
+            if publish_with_warnings(eid,str(exc)[:1800]):return
             update(eid,state='failed',stage='À vérifier',error=str(exc)[:1800])
             raise
 
@@ -460,9 +517,18 @@ def send_day(day=None):
     with (DATA/'delivery.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX)
         with connect() as c:
-            row=c.execute("SELECT id FROM editions WHERE day=? AND state='ready' ORDER BY created DESC LIMIT 1",(day,)).fetchone()
+            row=c.execute("SELECT id FROM editions WHERE day=? AND state IN ('ready','ready_with_warnings') ORDER BY created DESC LIMIT 1",(day,)).fetchone()
+        if not row:
+            # Also recover a saved draft after a killed or interrupted generator.
+            with (DATA/'generation.lock').open('a') as generation:
+                try:fcntl.flock(generation,fcntl.LOCK_EX|fcntl.LOCK_NB)
+                except BlockingIOError:return
+                with connect() as c:
+                    candidate=c.execute('SELECT id FROM editions WHERE day=? AND draft IS NOT NULL ORDER BY created DESC LIMIT 1',(day,)).fetchone()
+                if candidate and publish_with_warnings(candidate['id'],get(candidate['id'])['error'] or 'Préparation interrompue ; vérifications à compléter.'):
+                    row=candidate
         edition=get(row['id']) if row else None
-        # Never substitute yesterday's edition. A missing verified edition sends a clear alert.
+        # No old edition and no empty substitute, even when checks become warnings.
         if edition:
             payload={'day':day,'edition':edition['id'],'kind':'brief',
                      'title':'Brief Mood · '+day,'text':text(edition),
@@ -471,7 +537,7 @@ def send_day(day=None):
                      'polarities_missing':not bool(edition['polarities'].strip())}
         else:
             payload={'day':day,'edition':'','kind':'failure','title':'Brief Mood indisponible · '+day,
-                     'text':'Le brief du jour n’a pas passé toutes les vérifications. Aucun ancien contenu n’a été envoyé. Consulte le cockpit pour voir le statut et relancer la préparation.',
+                     'text':'Aucun contenu exploitable n’a pu être rédigé pour aujourd’hui. Aucun ancien brief n’a été envoyé. Consulte le cockpit pour voir le statut.',
                      'podcast_title':'','podcast_description':'','polarities_missing':False}
         if not os.environ.get('SMTP_PASSWORD'):raise RuntimeError('Envoi SMTP non configuré.')
         for recipient in RECIPIENTS:
@@ -482,7 +548,7 @@ def send_day(day=None):
                 raise RuntimeError('Envoi incertain : vérifier le serveur mail avant toute relance.')
             url='https://xavierfenaux.com/brief-mood/'+('?edition='+payload['edition'] if payload['edition'] else '')
             message=EmailMessage()
-            message['Subject']=payload['title']
+            message['Subject']=payload['title']+(' · Points à vérifier' if edition and edition.get('warnings') else '')
             sender=os.environ['MAIL_FROM']
             message['From']='Brief Mood <'+sender+'>'
             message['To']=recipient
@@ -492,8 +558,9 @@ def send_day(day=None):
             body=intro+'\n\nOuvrir dans le cockpit : '+url+'\n'
             if edition:body+='Préparation terminée le '+dt.datetime.fromisoformat(edition['updated']).astimezone(PARIS).strftime('%d/%m/%Y à %H:%M')+' (Paris).\n'
             if payload['polarities_missing']:body+='Polarités : à compléter dans le cockpit. Elles n’ont pas été inventées.\n'
+            if edition:body+='\n'+warning_notice(edition)
             body+='\n'+payload['text']
-            if edition:body+='\n\nVersion podcast\n'+payload['podcast_title']+'\n'+payload['podcast_description']+'\nScript complet : '+url
+            if edition and payload['podcast_title']:body+='\n\nVersion podcast\n'+payload['podcast_title']+'\n'+payload['podcast_description']+'\nScript complet : '+url
             message.set_content(body)
             started=False
             try:
