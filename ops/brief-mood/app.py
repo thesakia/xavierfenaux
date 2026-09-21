@@ -20,7 +20,7 @@ def worker(stop):
         if row:
             try:
                 selected=[n['id'] for n in json.loads(row['research'])['news']] if row['research'] else None
-                core.generate(row['id'],selected)
+                core.generate_with_retries(row['id'],selected,stop)
             except Exception:
                 pass  # Failure detail is persisted by generate; do not crash the worker.
 

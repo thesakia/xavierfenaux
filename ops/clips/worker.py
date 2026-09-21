@@ -6,6 +6,7 @@ import db
 import media
 import highlights
 import imports
+import recovery
 from config import DATA, PUBLIC_URL, KEEP_DAYS, RESERVE
 from services import Opus, OpusHTTPError, ServiceError, RateLimitError, download, ingest, captions
 
@@ -138,14 +139,20 @@ def run(stop):
                 e=jobs[0]
                 try:
                     process(e)
+                    after=db.episode(e['id'])['state']
+                    if after not in ('error','waiting_transcript','icloud_queued') and (after!='local_queued' or e['state'] in ('render_queued','manual_render_queued')):
+                        recovery.completed(e['id'],e['state'])
                 except Exception as exc:
                     message = str(exc) if isinstance(exc,(ServiceError,ValueError)) else 'Une étape a échoué. Réessayer ou vérifier les fichiers.'
                     if e['state'] in ('opus_processing','ready','opus_delayed','no_clips','opus_failed'):
                         with db.connect() as c:
                             c.execute('UPDATE episodes SET error=?,next_poll=? WHERE id=?',(message,time.time()+300,e['id']))
                     else:
+                        if recovery.schedule(e,exc):
+                            log.warning('Automatic recovery scheduled for episode %s at %s',e['id'],e['state'])
+                            continue
                         attempts=e['attempts']+1
-                        retry=e['state'] in ('fetching_audio','opus_upload_queued') and attempts<4
+                        retry=e['state']=='opus_upload_queued' and attempts<4
                         db.update(e['id'],state=e['state'] if retry else 'error',error=message,
                                   resume_state='local_queued' if e['state'] in ('local_queued','waiting_transcript','opus_upload_queued','submit_queued') else e['state'],attempts=attempts,next_poll=time.time()+60*2**min(attempts,5))
                     log.warning('Episode %s failed at %s: %s',e['id'],e['state'],type(exc).__name__)
@@ -158,11 +165,14 @@ def run(stop):
                     result=captions(clip,db.episode(clip['episode_id']))
                     with db.connect() as c:
                         c.execute("UPDATE clips SET captions=?,caption_state='ready',error=NULL WHERE id=?",(json.dumps(result,ensure_ascii=False),clip['id']))
+                    recovery.completed(clip['episode_id'],'caption:'+clip['id'])
                 except Exception as exc:
                     message=str(exc) if isinstance(exc,ServiceError) else 'Échec de génération. Réessayer.'
                     if isinstance(exc,RateLimitError):db.meta('caption_retry_after',time.time()+65)
+                    retry=recovery.caption_retry(clip,exc)
+                    if retry:db.meta('caption_retry_after',retry['next_poll'])
                     with db.connect() as c:
-                        c.execute("UPDATE clips SET caption_state=?,error=? WHERE id=?",('pending' if isinstance(exc,RateLimitError) else 'error',message,clip['id']))
+                        c.execute("UPDATE clips SET caption_state=?,error=? WHERE id=?",('pending' if retry or isinstance(exc,RateLimitError) else 'error',message,clip['id']))
             db.meta('worker',{'heartbeat':time.time()})
         except Exception:
             log.exception('Worker cycle failed')

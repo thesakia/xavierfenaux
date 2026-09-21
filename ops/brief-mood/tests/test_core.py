@@ -72,6 +72,27 @@ def test_daily_retries_same_edition_and_stops_after_success(monkeypatch):
     monkeypatch.setattr(core.time,'sleep',lambda _:None)
     core.daily();core.daily()
     assert calls==[eid,eid]
+    with core.connect() as c:
+        assert [r['outcome'] for r in c.execute('SELECT outcome FROM recovery_log ORDER BY id')]==['retry_scheduled','completed']
+
+
+def test_cockpit_retry_exhaustion_is_recorded(monkeypatch):
+    eid=core.create()
+    engine=Mock(side_effect=ValueError('temporary'))
+    monkeypatch.setattr(core,'generate',engine)
+    monkeypatch.setattr(core.time,'sleep',lambda _:None)
+    with pytest.raises(ValueError):core.generate_with_retries(eid)
+    assert engine.call_count==3
+    with core.connect() as c:
+        assert c.execute('SELECT outcome FROM recovery_log ORDER BY id DESC LIMIT 1').fetchone()['outcome']=='exhausted'
+
+
+def test_cockpit_recovery_never_retries_an_old_edition(monkeypatch):
+    eid=core.create()
+    with core.connect() as c:c.execute("UPDATE editions SET day='2000-01-01' WHERE id=?",(eid,))
+    engine=Mock();monkeypatch.setattr(core,'generate',engine)
+    with pytest.raises(ValueError):core.generate_with_retries(eid)
+    engine.assert_not_called()
 
 
 def test_daily_does_not_reuse_yesterday(monkeypatch):

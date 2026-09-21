@@ -54,11 +54,25 @@ class TranscriptExportTests(unittest.TestCase):
             self.assertIn('readonly=True', run.call_args.kwargs['input'])
 
     def test_failed_source_and_duplicate_guids_are_rejected(self):
-        with patch.object(export.subprocess, 'run', return_value=Mock(returncode=1, stdout='')):
+        with patch.object(export.subprocess, 'run', return_value=Mock(returncode=1, stdout='',stderr='unavailable')):
             with self.assertRaises(RuntimeError):
                 export.read_transcripts()
         with self.assertRaises(ValueError):
             export.validate([episode('same'), episode('same')])
+
+    def test_quota_error_is_sanitized_and_visible(self):
+        with patch.object(export.subprocess,'run',return_value=Mock(returncode=1,stdout='',stderr='private-host: project exceeded the quota')):
+            with self.assertRaisesRegex(RuntimeError,'quota exceeded') as error:
+                export.read_transcripts()
+        with tempfile.TemporaryDirectory() as directory:
+            folder=Path(directory)
+            export.write_status(folder,None,error.exception)
+            value=json.loads((folder/'status.json').read_text())
+            self.assertFalse(value['available'])
+            self.assertEqual(value['reason'],'quota')
+            self.assertNotIn('private-host',(folder/'status.json').read_text())
+            export.write_status(folder,None)
+            self.assertTrue(json.loads((folder/'status.json').read_text())['available'])
 
 
 if __name__ == '__main__':

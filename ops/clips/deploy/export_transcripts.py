@@ -6,6 +6,7 @@ import math
 import os
 from pathlib import Path
 import subprocess
+import time
 
 QUERY = '''import json
 from db import get_conn, get_cursor
@@ -33,6 +34,8 @@ def read_transcripts(local=False):
         payload = QUERY
     result = subprocess.run(command, input=payload, text=True, capture_output=True, timeout=90)
     if result.returncode:
+        if 'quota' in result.stderr.lower():
+            raise RuntimeError('Transcript source quota exceeded.')
         raise RuntimeError('Transcript source unavailable; no transcription requested.')
     return validate(json.loads(result.stdout))
 
@@ -84,16 +87,36 @@ def write_cache(episodes, folder, group):
     return count
 
 
+def write_status(folder, group, error=None):
+    folder.mkdir(mode=0o750, exist_ok=True)
+    if group is not None:os.chown(folder,0,group)
+    target=folder/'status.json'
+    temporary=folder/'status.tmp'
+    status={'checked':time.time(),'available':error is None,
+            'reason':('quota' if 'quota' in str(error).lower() else 'unavailable') if error else None}
+    temporary.write_text(json.dumps(status),encoding='utf-8')
+    temporary.chmod(0o640)
+    if group is not None:os.chown(temporary,0,group)
+    temporary.replace(target)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--stdout', action='store_true')
     args = parser.parse_args()
-    episodes = read_transcripts(local=args.stdout)
     if args.stdout:
+        episodes = read_transcripts(local=True)
         print(json.dumps(episodes, ensure_ascii=False, sort_keys=True))
         return
     import grp
-    count = write_cache(episodes, Path('/var/lib/ft-clips-transcripts'), grp.getgrnam('ft-clips').gr_gid)
+    folder=Path('/var/lib/ft-clips-transcripts');group=grp.getgrnam('ft-clips').gr_gid
+    try:
+        episodes=read_transcripts()
+        count=write_cache(episodes,folder,group)
+    except Exception as exc:
+        write_status(folder,group,exc)
+        raise
+    write_status(folder,group)
     print(f'{count} transcript cache files updated; zero audio transcription calls.')
 
 

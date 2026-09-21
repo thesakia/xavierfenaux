@@ -60,6 +60,9 @@ def init():
           state TEXT NOT NULL, detail TEXT, updated TEXT NOT NULL,
           PRIMARY KEY(day,recipient));
         CREATE TABLE IF NOT EXISTS archive (id TEXT PRIMARY KEY, day TEXT, text TEXT);
+        CREATE TABLE IF NOT EXISTS recovery_log (
+          id INTEGER PRIMARY KEY, edition TEXT NOT NULL, at TEXT NOT NULL,
+          attempt INTEGER NOT NULL, outcome TEXT NOT NULL);
         ''')
 
 
@@ -386,18 +389,35 @@ def complete_research(eid, research):
 
 def daily():
     """Retry the same day's saved work before escalating a failed delivery."""
+    day=now().date().isoformat()
+    with connect() as c:
+        if c.execute("SELECT 1 FROM editions WHERE day=? AND state='ready'",(day,)).fetchone():return
+        row=c.execute('SELECT id,state FROM editions WHERE day=? ORDER BY created DESC LIMIT 1',(day,)).fetchone()
+    eid=row['id'] if row and row['state']=='failed' else create()
+    generate_with_retries(eid)
+
+
+def generate_with_retries(eid, selected=None, stop=None):
+    """Shared recovery path for scheduled runs and cockpit-created editions."""
     for attempt in range(3):
-        day=now().date().isoformat()
-        with connect() as c:
-            if c.execute("SELECT 1 FROM editions WHERE day=? AND state='ready'",(day,)).fetchone():return
-            row=c.execute('SELECT id,state FROM editions WHERE day=? ORDER BY created DESC LIMIT 1',(day,)).fetchone()
-        eid=row['id'] if row and row['state']=='failed' else create()
+        if stop is not None and stop.is_set():return
+        if get(eid)['day']!=now().date().isoformat():
+            raise ValueError('Reprise d une ancienne edition refusee.')
         try:
-            generate(eid)
+            if selected is None:generate(eid)
+            else:generate(eid,selected)
+            with connect() as c:
+                c.execute('INSERT INTO recovery_log(edition,at,attempt,outcome) VALUES(?,?,?,?)',
+                          (eid,now().isoformat(),attempt+1,'completed'))
             return
         except Exception:
+            with connect() as c:
+                c.execute('INSERT INTO recovery_log(edition,at,attempt,outcome) VALUES(?,?,?,?)',
+                          (eid,now().isoformat(),attempt+1,'exhausted' if attempt==2 else 'retry_scheduled'))
             if attempt==2:raise
-            time.sleep(30)
+            if stop is not None:
+                if stop.wait(30):return
+            else:time.sleep(30)
 
 
 def generate(eid, selected=None):
@@ -408,6 +428,7 @@ def generate(eid, selected=None):
             update(eid,state='working',stage='Recherche US, Asie et agenda',error=None)
             e=get(eid)
             if e['day']!=now().date().isoformat():raise ValueError('Cette édition ne correspond plus à la journée en cours.')
+            same_selection=selected is None or set(selected)=={n['id'] for n in (e['research'] or {}).get('news',[])}
             if selected is None and not e['research']:
                 # Reuse the proven Radar RSS parser, without changing its sources or database.
                 import sys
@@ -427,7 +448,7 @@ def generate(eid, selected=None):
                     research['news']=[n for n in research['news'] if n['id'] in selected]
                     validate_research(research,e['day'])
                 else:research=complete_research(eid,research)
-            write_and_audit(eid,research,resume=selected is None and e['research']==research)
+            write_and_audit(eid,research,resume=same_selection and e['research']==research)
         except Exception as exc:
             update(eid,state='failed',stage='À vérifier',error=str(exc)[:1800])
             raise
