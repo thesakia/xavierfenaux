@@ -40,3 +40,8 @@ can still prevent delivery; accepted failure alerts never count as a sent brief.
 The reserved citation `previous_us_session` refers to `session_source`, which
 must still be verified by the audit. Unknown news identifiers remain errors and
 are reported explicitly to the repair agent.
+
+Failed factual audits first trigger a targeted draft correction, preserving
+unaffected passages, followed by a new independent audit. Only if that fails
+does the pipeline repair the research dossier and regenerate. Resuming a failed
+edition also applies its saved audit before checking the same text again.

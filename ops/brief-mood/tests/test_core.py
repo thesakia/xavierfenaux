@@ -249,10 +249,10 @@ def test_audit_correction_is_bounded(monkeypatch):
     eid=core.create();r=research();d=draft()
     bad={'passed':False,'issues':['Fait non confirmé'],'checked_ids':[], 'source_checks':[]}
     monkeypatch.setattr(core,'draft_issues',lambda *_:[])
-    engine=Mock(side_effect=[d,bad,r,d,bad])
+    engine=Mock(side_effect=[d,bad,d,bad,r,d,bad])
     monkeypatch.setattr(core,'model',engine)
     with pytest.raises(ValueError):core.write_and_audit(eid,r)
-    assert engine.call_count==5
+    assert engine.call_count==7
     assert core.get(eid)['state']!='ready'
 
 
@@ -343,6 +343,32 @@ def test_saved_draft_is_reaudited_without_rewriting(monkeypatch):
     core.write_and_audit(eid,r,resume=True)
     assert engine.call_count==1
     assert engine.call_args.args[3]=='audit'
+    assert core.get(eid)['state']=='ready'
+
+
+def test_factual_wording_is_repaired_without_regenerating_research(monkeypatch):
+    eid=core.create();r=research();d=draft()
+    bad={'passed':False,'issues':['Remplacer hausse par seance mixte.'],
+         'checked_ids':[n['id'] for n in r['news']],
+         'source_checks':[{'url':r['session_source']['url'],'verified':True}]}
+    good={**bad,'passed':True,'issues':[]}
+    fixed={**d,'intro':'Une seance mixte.'}
+    engine=Mock(side_effect=[d,bad,fixed,good]);monkeypatch.setattr(core,'model',engine)
+    core.write_and_audit(eid,r)
+    assert [c.args[3] for c in engine.call_args_list]==['draft','audit','repair-audit','audit']
+    assert core.get(eid)['draft']==fixed
+    assert core.get(eid)['state']=='ready'
+
+
+def test_resuming_failed_audit_repairs_before_checking_again(monkeypatch):
+    eid=core.create();r=research();d=draft()
+    bad={'passed':False,'issues':['Corriger accroche.'],'checked_ids':[],'source_checks':[]}
+    core.update(eid,state='failed',research=r,draft=d,audit=bad)
+    good={'passed':True,'issues':[],'checked_ids':[n['id'] for n in r['news']],
+          'source_checks':[{'url':r['session_source']['url'],'verified':True}]}
+    engine=Mock(side_effect=[d,good]);monkeypatch.setattr(core,'model',engine)
+    core.write_and_audit(eid,r,resume=True)
+    assert [c.args[3] for c in engine.call_args_list]==['repair-audit','audit']
     assert core.get(eid)['state']=='ready'
 
 

@@ -319,12 +319,15 @@ def recover_today():
     send_day()
 
 
-def write_and_audit(eid, research, attempt=0, resume=False):
+def write_and_audit(eid, research, attempt=0, resume=False, draft_override=None, editorial_retry=True):
     e=get(eid)
     update(eid,stage='Rédaction du brief et du podcast')
     evidence={'day':e['day'],'research':research,'notes':e['notes'],'polarities':e['polarities'],
               'previous_audit':e['audit'], 'previous_error':e['error']}
-    draft=e['draft'] if resume and e['draft'] and e['research']==research else model('Rédige les deux livrables à partir EXCLUSIVEMENT de ces faits vérifiés. Ne réinsère pas les polarités ni la signature : le programme les ajoute. Les news_ids relient chaque bloc à ses preuves : utilise les ids de news ; previous_us_session est réservé au dossier de clôture US et à session_source. Le podcast peut être plus long que le brief. Vise 700 à 800 mots pour le brief, titres compris, pour rester dans la cible 600-900.',evidence,DRAFT,'draft',False)
+    saved=resume and e['draft'] and e['research']==research
+    draft=draft_override or (e['draft'] if saved else model('Rédige les deux livrables à partir EXCLUSIVEMENT de ces faits vérifiés. Ne réinsère pas les polarités ni la signature : le programme les ajoute. Les news_ids relient chaque bloc à ses preuves : utilise les ids de news ; previous_us_session est réservé au dossier de clôture US et à session_source. Le podcast peut être plus long que le brief. Vise 700 à 800 mots pour le brief, titres compris, pour rester dans la cible 600-900.',evidence,DRAFT,'draft',False))
+    if saved and draft_override is None and e['audit'] and e['audit']['issues']:
+        draft=repair_audited_draft(evidence,draft,e['audit'])
     for repair in range(3):
         update(eid,draft=draft,stage='Ajustement éditorial')
         errors=draft_issues(draft,research)
@@ -342,16 +345,25 @@ def write_and_audit(eid, research, attempt=0, resume=False):
     verified={s['url'] for s in audit['source_checks'] if s['verified']}
     if not audit['passed'] or audit['issues'] or not expected<=set(audit['checked_ids']) or not urls<=verified:
         update(eid,audit=audit)
+        if editorial_retry and audit['issues']:
+            update(eid,stage='Correction ciblée du texte')
+            corrected=repair_audited_draft(evidence,draft,audit)
+            return write_and_audit(eid,research,attempt=attempt,draft_override=corrected,editorial_retry=False)
         if attempt == 0:
             update(eid,stage='Correction après vérification')
             repaired=model('Corrige le dossier à partir de cet audit indépendant. Remplace les URLs inaccessibles par des preuves directement lisibles, retire les sources redondantes inutilisables. Corrige les affirmations non étayées. Si le mot final est invérifiable, recherche une autre histoire documentée et vérifiable. Conserve au moins huit faits dont quatre entreprises. Ne change pas les faits exacts. Les textes seront ensuite rédigés et audités de nouveau.',
                            {'day':e['day'],'research':research,'audit':audit,'unverified_urls':sorted(urls-verified)},RESEARCH,'evidence-repair')
             repaired=complete_research(eid,repaired)
             update(eid,research=repaired)
-            return write_and_audit(eid,repaired,attempt=1)
+            return write_and_audit(eid,repaired,attempt=1,editorial_retry=False)
         raise ValueError('Vérification non validée : '+' '.join(audit['issues'][:5] or ['Toutes les sources n’ont pas été confirmées.']))
     audit['editorial_notes']=length_notes(draft)
     update(eid,research=research,draft=draft,audit=audit,state='ready',stage='Prêt',error=None)
+
+
+def repair_audited_draft(evidence, draft, audit):
+    return model('Corrige UNIQUEMENT les passages signales par cet audit, dans les deux livrables si necessaire. Applique les formulations de remplacement proposees lorsqu elles sont soutenues par le dossier. Conserve mot pour mot tous les passages non concernes, les news_ids, les metadonnees et le mot final. Ne reecris pas le brief entier. Ne transforme jamais une hausse de revenus en hausse de volumes, ni une seance mixte en hausse generale. N ajoute aucun fait. Si le dossier ne permet pas de corriger une affirmation, retire cette affirmation plutot que l inventer. Le resultat sera audite de nouveau.',
+                 {**evidence,'draft':draft,'previous_audit':audit},DRAFT,'repair-audit',False)
 
 
 def complete_research(eid, research):
