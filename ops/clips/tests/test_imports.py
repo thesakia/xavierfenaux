@@ -275,6 +275,47 @@ def test_icloud_permanent_errors_not_retried(monkeypatch):
         imports.resolve_when_ready(None, SHARE_ID)
 
 
+def test_pending_icloud_keeps_link_and_schedules_retry(studio, monkeypatch):
+    client,eid,tmp=studio
+    def pending(*args):raise imports.ICloudPending('Preparation')
+    monkeypatch.setattr(imports,'resolve_when_ready',pending)
+    client.post(f'/api/episodes/{eid}/icloud',json={'url':SHARE})
+    before=time.time()
+    worker.process(db.episode(eid))
+    e=db.episode(eid)
+    assert e['state']=='icloud_queued'
+    assert e['next_poll']>=before+60
+    assert db.meta('icloud-import:'+eid)['share_id']==SHARE_ID
+    assert db.meta('icloud-import:'+eid)['started']>=before
+    assert SHARE_ID not in client.get('/api/dashboard').text
+
+
+def test_pending_icloud_timeout_keeps_link_without_endless_retry(studio, monkeypatch):
+    client,eid,tmp=studio
+    def pending(*args):raise imports.ICloudPending('Preparation')
+    monkeypatch.setattr(imports,'resolve_when_ready',pending)
+    client.post(f'/api/episodes/{eid}/icloud',json={'url':SHARE})
+    db.meta('icloud-import:'+eid,{'share_id':SHARE_ID,'started':time.time()-1801})
+    worker.process(db.episode(eid))
+    assert db.episode(eid)['state']=='waiting_video'
+    assert '30 minutes' in db.episode(eid)['error']
+    assert db.meta('icloud-import:'+eid)['share_id']==SHARE_ID
+
+
+def test_pending_icloud_succeeds_on_next_worker_pass(studio, monkeypatch):
+    client,eid,tmp=studio
+    def pending(*args):raise imports.ICloudPending('Preparation')
+    monkeypatch.setattr(imports,'resolve_when_ready',pending)
+    client.post(f'/api/episodes/{eid}/icloud',json={'url':SHARE})
+    worker.process(db.episode(eid))
+    monkeypatch.setattr(imports,'resolve_when_ready',lambda *args:(ASSET,'ready.mp4',5))
+    monkeypatch.setattr(imports,'download_video',lambda client,url,target,size,progress:target.write_bytes(b'video'))
+    worker.process(db.episode(eid))
+    assert db.episode(eid)['state']=='sync_queued'
+    assert db.meta('icloud-import:'+eid) is None
+    assert (tmp/eid/'source.mp4').read_bytes()==b'video'
+
+
 def test_failed_import_can_be_replaced(studio, monkeypatch):
     client, eid, tmp = studio
     apple = mock_client(monkeypatch, resolve={'results': [{'serverErrorCode': 'NOT_FOUND'}]})

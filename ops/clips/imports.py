@@ -20,6 +20,7 @@ IMPORT_STATES = ('zip_queued', 'extracting', 'icloud_queued', 'icloud_downloadin
 BUSY_STATES = ('uploading', 'sync_queued', 'syncing', 'rendering',
                'render_queued', 'manual_render_queued') + IMPORT_STATES
 CK_PATH = '/database/1/com.apple.photos.cloud/production/'
+ICLOUD_WAIT_SECONDS = 30 * 60
 
 
 class ICloudPending(ValueError):
@@ -269,6 +270,7 @@ def process(e):
     eid = e['id']
     folder = db.folder(eid)
     source, archive = folder / 'source.part', folder / 'import.zip'
+    keep_import = False
     try:
         if e['state'] == 'zip_queued':
             db.update(eid, state='extracting', error=None)
@@ -279,12 +281,24 @@ def process(e):
             short_id = info.get('share_id')
             if not short_id:
                 raise ValueError('Le lien iCloud est absent. Colle a nouveau le lien.')
+            info.setdefault('started', time.time())
+            db.meta('icloud-import:' + eid, info)
             with httpx.Client(timeout=httpx.Timeout(60, connect=20), follow_redirects=False, trust_env=False) as client:
                 url, name, size = resolve_when_ready(client, short_id)
                 download_video(client, url, source, size,
                                lambda received, total: db.meta('import-progress:' + eid,
                                                               {'received': received, 'total': total}))
         accept_video(eid, source, name)
+    except ICloudPending:
+        # Keep the share across worker passes and restarts; do not occupy the
+        # worker while Apple prepares its media, or ask the user to paste again.
+        keep_import = True
+        if time.time() - info['started'] < ICLOUD_WAIT_SECONDS:
+            db.update(eid, state='icloud_queued', next_poll=time.time()+60,
+                      error='Apple prépare encore la vidéo. Clips réessaie automatiquement dans une minute.')
+        else:
+            db.update(eid, state='waiting_video', next_poll=0,
+                      error='Apple ne fournit toujours pas la vidéo après 30 minutes. Le lien est conservé ; réessaie ou importe le fichier directement.')
     except Exception as exc:
         message = str(exc) if isinstance(exc, (ValueError, ServiceError)) else 'Import interrompu. Reessaie avec le ZIP ou un nouveau lien iCloud.'
         db.update(eid, state='waiting_video', error=message)
@@ -292,4 +306,6 @@ def process(e):
         source.unlink(missing_ok=True)
         archive.unlink(missing_ok=True)
         with db.connect() as c:
-            c.execute('DELETE FROM meta WHERE key IN (?,?)', ('icloud-import:' + eid, 'import-progress:' + eid))
+            c.execute('DELETE FROM meta WHERE key=?', ('import-progress:' + eid,))
+            if not keep_import:
+                c.execute('DELETE FROM meta WHERE key=?', ('icloud-import:' + eid,))
