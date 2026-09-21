@@ -319,6 +319,58 @@ def test_editorial_repairs_never_bypass_missing_sources(monkeypatch):
     assert core.get(eid)['draft'] is not None
 
 
+def test_session_reference_uses_existing_dossier():
+    r=research();d=draft()
+    d['sections'].append({'heading':'📊 Cloture US','body':'Les faits verifies. '*30,
+                          'news_ids':['previous_us_session']})
+    assert core.draft_issues(d,r)==[]
+    r['session_source']['url']=''
+    assert any('previous_us_session' in x for x in core.draft_issues(d,r))
+
+
+def test_unknown_reference_reports_id_and_allowed_ids():
+    d=draft();d['sections'][0]['news_ids'].append('wrong-id')
+    errors=core.draft_issues(d,research())
+    assert any('wrong-id' in x and 'Identifiants autorisés' in x for x in errors)
+
+
+def test_saved_draft_is_reaudited_without_rewriting(monkeypatch):
+    eid=core.create();r=research();d=draft()
+    core.update(eid,state='failed',research=r,draft=d)
+    audit={'passed':True,'issues':[],'checked_ids':[n['id'] for n in r['news']],
+           'source_checks':[{'url':r['session_source']['url'],'verified':True}]}
+    engine=Mock(return_value=audit);monkeypatch.setattr(core,'model',engine)
+    core.write_and_audit(eid,r,resume=True)
+    assert engine.call_count==1
+    assert engine.call_args.args[3]=='audit'
+    assert core.get(eid)['state']=='ready'
+
+
+def test_changed_research_does_not_reuse_saved_draft(monkeypatch):
+    eid=core.create();r=research();d=draft()
+    core.update(eid,state='failed',research=r,draft=d)
+    r['news'][0]['facts']+=' Nouvelle precision.'
+    audit={'passed':True,'issues':[],'checked_ids':[n['id'] for n in r['news']],
+           'source_checks':[{'url':r['session_source']['url'],'verified':True}]}
+    engine=Mock(side_effect=[d,audit]);monkeypatch.setattr(core,'model',engine)
+    core.write_and_audit(eid,r,resume=True)
+    assert engine.call_count==2
+    assert engine.call_args_list[0].args[3]=='draft'
+
+
+def test_resumed_draft_still_requires_verified_session_source(monkeypatch):
+    eid=core.create();r=research();d=draft()
+    r['session_source']={**r['session_source'],'url':'https://example.com/session'}
+    core.update(eid,state='failed',research=r,draft=d)
+    audit={'passed':True,'issues':[],'checked_ids':[n['id'] for n in r['news']],
+           'source_checks':[{'url':r['news'][0]['sources'][0]['url'],'verified':True}]}
+    monkeypatch.setattr(core,'model',Mock(return_value=audit))
+    monkeypatch.setattr(core,'repair_source_links',lambda eid,r,d,a:(r,a))
+    with pytest.raises(ValueError,match='Vérification non validée'):
+        core.write_and_audit(eid,r,attempt=1,resume=True)
+    assert core.get(eid)['state']!='ready'
+
+
 def test_uncertain_smtp_is_not_retried(monkeypatch):
     for key,value in {'SMTP_PASSWORD':'test-only','SMTP_HOST':'smtp.example.com','SMTP_USER':'test','MAIL_FROM':'test@example.com'}.items():monkeypatch.setenv(key,value)
     smtp=Mock();smtp.send_message.side_effect=core.smtplib.SMTPServerDisconnected('Connection lost')

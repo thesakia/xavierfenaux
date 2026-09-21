@@ -30,3 +30,13 @@ are recorded in `/var/lib/brief-mood/agent-runs.jsonl`; no prompts or credential
 are in that telemetry. Subscription usage is not equivalent to API dollar costs.
 Savings and comparative quality require real runs; they are not guaranteed by
 this routing table. Avoid adding more agents without a measured benefit.
+
+The server starts at 03:00 Europe/Paris and checks every 20 minutes until 11:40.
+A ready edition skips all generation; SMTP delivery is idempotent. Failed runs
+reuse the same day's dossier and draft when its evidence has not changed, then
+run an independent audit again. Three attempts per run remain bounded by the
+service timeout. A running service is not started twice by its timer. An outage
+can still prevent delivery; accepted failure alerts never count as a sent brief.
+The reserved citation `previous_us_session` refers to `session_source`, which
+must still be verified by the audit. Unknown news identifiers remain errors and
+are reported explicitly to the repair agent.

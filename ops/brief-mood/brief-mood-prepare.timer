@@ -1,7 +1,7 @@
 [Unit]
-Description=Research Brief Mood at 03:00 Paris and deliver on completion
+Description=Research Brief Mood from 03:00 Paris, retry failures and deliver on completion
 [Timer]
-OnCalendar=*-*-* 03:00:00 Europe/Paris
+OnCalendar=*-*-* 03..11:00,20,40:00 Europe/Paris
 AccuracySec=1s
 Persistent=false
 Unit=brief-mood-prepare.service
